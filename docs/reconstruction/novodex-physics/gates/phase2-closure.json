@@ -358,7 +358,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSDKTests",
       "falsification": {
-        "mutation": "Replaced the successful PhysicsSDK::purgeMaterials dispatch with a no-op while retaining lock handling. The unlocked public purge then left two materials instead of the oracle\u2019s one.",
+        "mutation": "Replaced the successful PhysicsSDK::purgeMaterials dispatch with a no-op while retaining lock handling. The unlocked public purge then left two materials instead of the oracle’s one.",
         "detected": "stdout_delta=20"
       },
       "note": "The two-live-Scene public fixture also verifies the pinned lock refusal and unlocked success. Restored oracle/candidate output is exact. See evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md."
@@ -439,7 +439,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSDKTests",
       "falsification": {
-        "mutation": "Forced the successful PhysicsSDK::setPerformanceInspector dispatch result to false. The unlocked public call then returned false instead of the oracle\u2019s true.",
+        "mutation": "Forced the successful PhysicsSDK::setPerformanceInspector dispatch result to false. The unlocked public call then returned false instead of the oracle’s true.",
         "detected": "stdout_delta=18"
       },
       "note": "The two-live-Scene public fixture also verifies the pinned lock refusal and unlocked success. Restored oracle/candidate output is exact. See evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md."
@@ -1472,7 +1472,7 @@
       "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
       "reachability": "reachable_via_other_phase",
       "callers": 6,
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointStagedPairTests caught 0 of 6 mutations tried (6 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_000833",

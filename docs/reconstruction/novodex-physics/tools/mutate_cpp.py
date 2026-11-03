@@ -628,10 +628,31 @@ def main(argv=None):
     return 0 if out['caught'] else 1
 
 
+VOLATILE = ('pair_directory=', 'modules pair=', 'loaded module=')
+
+
+def output_lines(stdout):
+    """The lines of an oracle-only target's output that name the work, not the pair that was loaded."""
+    return [l for l in stdout.splitlines() if not l.startswith(VOLATILE)]
+
+
+def digest_difference(baseline, stdout, returncode, count_crash=False):
+    """The number of output lines that differ from the unmutated run, or None when nothing differs. A fault with
+    unchanged output counts only under count_crash."""
+    now = output_lines(stdout)
+    if now == baseline:
+        return 1 if (returncode != 0 and count_crash) else None
+    return max(1, len(set(now) ^ set(baseline)))
+
+
 def run_gate(mr, spec):
     """Run an already built gate once; the detection count or None."""
     import subprocess
     try:
+        if spec.get('oracle_only'):
+            cmd = [mr.harness_command(spec['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
+            r = mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO)
+            return digest_difference(spec['baseline'], r.stdout, r.returncode, spec.get('count_crash', False))
         if spec.get('staged'):
             r = mr.run_tree(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
                              'docs/reconstruction/novodex-physics/tools/run_differential.ps1', '-Targets', spec['target']],
@@ -672,6 +693,15 @@ def main_batch(argv=None):
     syms = read_text_symbols(a.map)
     sections, _ = _pe_layout(baseline)
     end = sections[0][0] + sections[0][1]
+    for p in plan:
+        if p.get('oracle_only'):
+            cmd = [mr.harness_command(p['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
+            first = output_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
+            again = output_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
+            if first != again or not first:
+                print('NOT DETERMINISTIC %s (%s); the plan is refused' % (p['id'], p['target']))
+                return 2
+            p['baseline'] = first
     entries, skipped = [], []
     for p in plan:
         path, text, span, qualified = locate(inv[p['id']], mr.REPO)

@@ -66,5 +66,14 @@ class PlanTests(unittest.TestCase):
         self.assertEqual({u['id']: u['why'] for u in unplanned}, {'d': 'no gated target named', 'e': 'target NxO1 is not a staged-pair gate'})
 
 
+
+class OracleOnlyPlanTests(unittest.TestCase):
+    def test_oracle_only_digest_targets_are_planned_and_family_targets_are_not(self):
+        rows = [{'id': 'a', 'target': 'NxJ', 'group': 'joints'}, {'id': 'b', 'target': 'NxPhysicsCollisionTests', 'group': 'joints'}]
+        plans, unplanned = fq.plans(rows, staged=set(), size=4, oracle={'NxJ', 'NxPhysicsCollisionTests'})
+        self.assertEqual(plans, [[{'id': 'a', 'target': 'NxJ', 'oracle_only': True, 'count_crash': True}]])
+        self.assertEqual(unplanned, [{'id': 'b', 'why': 'target NxPhysicsCollisionTests needs a family (its output is read by family)'}])
+
+
 if __name__ == '__main__':
     unittest.main()

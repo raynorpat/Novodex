@@ -1,0 +1,678 @@
+SURVEY phys_fn_004123 NxPhysicsJointSlotTests tried=13 caught=7 survived=6 rejected=3
+CAUGHT phys_fn_004123 NxPhysicsJointSlotTests stdout_delta=436 line 1297: 8  ->  9  (const)
+CAUGHT phys_fn_004123 NxPhysicsJointSlotTests stdout_delta=436 line 1299: +  ->  -  (arith)
+CAUGHT phys_fn_004123 NxPhysicsJointSlotTests stdout_delta=174 line 1300: +  ->  -  (arith)
+CAUGHT phys_fn_004123 NxPhysicsJointSlotTests stdout_delta=436 line 1318: +  ->  -  (arith)
+CAUGHT phys_fn_004123 NxPhysicsJointSlotTests stdout_delta=436 line 1320: +  ->  -  (arith)
+CAUGHT phys_fn_004123 NxPhysicsJointSlotTests stdout_delta=436 line 1321: +  ->  -  (arith)
+CAUGHT phys_fn_004123 NxPhysicsJointSlotTests stdout_delta=436 line 1324: +  ->  -  (arith)
+  SURVIVED line 1306: +  ->  -  (arith)
+  SURVIVED line 1286: !body0  ->  !(!body0)  (neg)
+  SURVIVED line 1296: 4  ->  5  (const)
+  SURVIVED line 1297: 7  ->  8  (const)
+  SURVIVED line 1316: 4  ->  5  (const)
+  SURVIVED line 1317: 7  ->  8  (const)
+  rejected line 1296: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 1315: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1316: 3  ->  4  (const)  [no change in the DLL]
+SURVEY phys_fn_000760 NxPhysicsJointStagedPairTests tried=6 caught=0 survived=6 rejected=1
+  SURVIVED line 1033: supportPointer(this, 0x1bc) == this  ->  !(supportPointer(this, 0x1bc) == this)  (neg)
+  SURVIVED line 1033: ==  ->  !=  (cmp)
+  SURVIVED line 1055: !(flags & 0x100)  ->  !(!(flags & 0x100))  (neg)
+  SURVIVED line 1057: +  ->  -  (arith)
+  SURVIVED line 1058: wake < gSupportWakeFloor  ->  !(wake < gSupportWakeFloor)  (neg)
+  SURVIVED line 1058: <  ->  <=  (cmp)
+  rejected line 1036: island  ->  !(island)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004127 NxPhysicsJointSlotTests tried=13 caught=13 survived=0 rejected=1
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1437: 3  ->  4  (const)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1437: +  ->  -  (arith)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1437: 5  ->  6  (const)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1437: +  ->  -  (arith)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1437: 4  ->  5  (const)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1438: 6  ->  7  (const)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1438: +  ->  -  (arith)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1438: 8  ->  9  (const)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1438: +  ->  -  (arith)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1438: 7  ->  8  (const)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1439: 2  ->  3  (const)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1439: +  ->  -  (arith)
+CAUGHT phys_fn_004127 NxPhysicsJointSlotTests stdout_delta=40 line 1439: +  ->  -  (arith)
+  rejected line 1430: !body  ->  !(!body)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004202 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 799: mPublicObject  ->  !(mPublicObject)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004135 NxPhysicsJointSlotTests tried=9 caught=0 survived=9 rejected=7
+  SURVIVED line 443: <  ->  <=  (cmp)
+  SURVIVED line 454: -  ->  +  (arith)
+  SURVIVED line 456: -  ->  +  (arith)
+  SURVIVED line 463: -  ->  +  (arith)
+  SURVIVED line 466: -  ->  +  (arith)
+  SURVIVED line 476: -  ->  +  (arith)
+  SURVIVED line 478: -  ->  +  (arith)
+  SURVIVED line 503: ==  ->  !=  (cmp)
+  SURVIVED line 503: 3  ->  4  (const)
+  rejected line 435: !plane  ->  !(!plane)  (neg)  [no change in the DLL]
+  rejected line 486: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 487: 9  ->  10  (const)  [no change in the DLL]
+  rejected line 490: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 490: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 501: kind == 0 || kind == 2  ->  !(kind == 0 || kind == 2)  (neg)  [no change in the DLL]
+  rejected line 501: ==  ->  !=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_004224 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 298: mPublicObject  ->  !(mPublicObject)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004178 NxPhysicsJointSlotTests tried=11 caught=11 survived=0 rejected=5
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=337 line 138: 2  ->  3  (const)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=501 line 139: 2  ->  3  (const)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=557 line 141: -  ->  +  (arith)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=557 line 143: +  ->  -  (arith)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=557 line 144: +  ->  -  (arith)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=557 line 147: +  ->  -  (arith)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=539 line 149: 2  ->  3  (const)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=557 line 150: +  ->  -  (arith)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=511 line 151: +  ->  -  (arith)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=561 line 152: 3  ->  4  (const)
+CAUGHT phys_fn_004178 NxPhysicsJointSlotTests stdout_delta=543 line 152: -  ->  +  (arith)
+  rejected line 135: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 140: 2  ->  3  (const)  [changed bytes outside D6JointPose::row004178]
+  rejected line 149: 3  ->  4  (const)  [changed bytes outside D6JointPose::row004178]
+  rejected line 151: 3  ->  4  (const)  [changed bytes outside D6JointPose::row004178]
+  rejected line 156: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004236 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 249: mPublicObject  ->  !(mPublicObject)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004180 NxPhysicsJointSlotTests tried=4 caught=4 survived=0 rejected=12
+CAUGHT phys_fn_004180 NxPhysicsJointSlotTests stdout_delta=559 line 197: 8  ->  9  (const)
+CAUGHT phys_fn_004180 NxPhysicsJointSlotTests stdout_delta=510 line 206: 8  ->  9  (const)
+CAUGHT phys_fn_004180 NxPhysicsJointSlotTests stdout_delta=507 line 257: 4  ->  5  (const)
+CAUGHT phys_fn_004180 NxPhysicsJointSlotTests stdout_delta=551 line 269: 8  ->  9  (const)
+  rejected line 185: 10  ->  11  (const)  [no change in the DLL]
+  rejected line 289: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 293: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 294: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 296: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 297: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 297: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 298: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 298: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 299: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 299: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 304: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004252 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 410: mPublicObject  ->  !(mPublicObject)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004188 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 353: !angular  ->  !(!angular)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004264 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 380: mPublicObject  ->  !(mPublicObject)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004190 NxPhysicsJointSlotTests tried=1 caught=1 survived=0 rejected=1
+CAUGHT phys_fn_004190 NxPhysicsJointSlotTests stdout_delta=24 line 371: 3  ->  4  (const)
+  rejected line 371: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004278 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 382: mPublicObject  ->  !(mPublicObject)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004194 NxPhysicsJointSlotTests tried=15 caught=8 survived=7 rejected=1
+CAUGHT phys_fn_004194 NxPhysicsJointSlotTests stdout_delta=8 line 431: -  ->  +  (arith)
+CAUGHT phys_fn_004194 NxPhysicsJointSlotTests stdout_delta=8 line 432: -  ->  +  (arith)
+CAUGHT phys_fn_004194 NxPhysicsJointSlotTests stdout_delta=8 line 433: -  ->  +  (arith)
+CAUGHT phys_fn_004194 NxPhysicsJointSlotTests stdout_delta=8 line 434: -  ->  +  (arith)
+CAUGHT phys_fn_004194 NxPhysicsJointSlotTests stdout_delta=8 line 436: -  ->  +  (arith)
+CAUGHT phys_fn_004194 NxPhysicsJointSlotTests stdout_delta=4 line 438: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004194 NxPhysicsJointSlotTests stdout_delta=4 line 441: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004194 NxPhysicsJointSlotTests stdout_delta=4 line 445: ==  ->  !=  (cmp)
+  SURVIVED line 441: 2  ->  3  (const)
+  SURVIVED line 445: 3  ->  4  (const)
+  SURVIVED line 445: 2  ->  3  (const)
+  SURVIVED line 445: 5  ->  6  (const)
+  SURVIVED line 446: 10  ->  11  (const)
+  SURVIVED line 441: ==  ->  !=  (cmp)
+  SURVIVED line 445: ==  ->  !=  (cmp)
+  rejected line 442: 9  ->  10  (const)  [no change in the DLL]
+SURVEY phys_fn_004302 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 891: mPublicObject  ->  !(mPublicObject)  (neg)  [changed bytes outside SphericalJoint::~SphericalJoint]
+SURVEY phys_fn_004196 NxPhysicsJointSlotTests tried=4 caught=3 survived=1 rejected=2
+CAUGHT phys_fn_004196 NxPhysicsJointSlotTests stdout_delta=12 line 482: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004196 NxPhysicsJointSlotTests stdout_delta=12 line 482: 2  ->  3  (const)
+CAUGHT phys_fn_004196 NxPhysicsJointSlotTests stdout_delta=12 line 483: 9  ->  10  (const)
+  SURVIVED line 482: ==  ->  !=  (cmp)
+  rejected line 479: !=  ->  ==  (cmp)  [no change in the DLL]
+  rejected line 483: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004322 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 109: mPublicObject  ->  !(mPublicObject)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004198 NxPhysicsJointSlotTests tried=8 caught=8 survived=0 rejected=8
+CAUGHT phys_fn_004198 NxPhysicsJointSlotTests stdout_delta=40 line 528: -  ->  +  (arith)
+CAUGHT phys_fn_004198 NxPhysicsJointSlotTests stdout_delta=16 line 549: -  ->  +  (arith)
+CAUGHT phys_fn_004198 NxPhysicsJointSlotTests stdout_delta=16 line 552: -  ->  +  (arith)
+CAUGHT phys_fn_004198 NxPhysicsJointSlotTests stdout_delta=16 line 566: +  ->  -  (arith)
+CAUGHT phys_fn_004198 NxPhysicsJointSlotTests stdout_delta=16 line 573: +  ->  -  (arith)
+CAUGHT phys_fn_004198 NxPhysicsJointSlotTests stdout_delta=8 line 584: +  ->  -  (arith)
+CAUGHT phys_fn_004198 NxPhysicsJointSlotTests stdout_delta=8 line 598: -  ->  +  (arith)
+CAUGHT phys_fn_004198 NxPhysicsJointSlotTests stdout_delta=8 line 603: +  ->  -  (arith)
+  rejected line 510: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 545: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 570: 5  ->  6  (const)  [no change in the DLL]
+  rejected line 572: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 588: 8  ->  9  (const)  [no change in the DLL]
+  rejected line 590: 7  ->  8  (const)  [no change in the DLL]
+  rejected line 591: 8  ->  9  (const)  [no change in the DLL]
+  rejected line 601: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_004368 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 331: mPublicObject  ->  !(mPublicObject)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004200 NxPhysicsJointSlotTests tried=6 caught=5 survived=1 rejected=10
+CAUGHT phys_fn_004200 NxPhysicsJointSlotTests stdout_delta=526 line 652: !((mFlags >> 9) & 1)  ->  !(!((mFlags >> 9) & 1))  (neg)
+CAUGHT phys_fn_004200 NxPhysicsJointSlotTests stdout_delta=32 line 713: +  ->  -  (arith)
+CAUGHT phys_fn_004200 NxPhysicsJointSlotTests stdout_delta=8 line 719: 8  ->  9  (const)
+CAUGHT phys_fn_004200 NxPhysicsJointSlotTests stdout_delta=32 line 752: 4  ->  5  (const)
+CAUGHT phys_fn_004200 NxPhysicsJointSlotTests stdout_delta=32 line 755: +  ->  -  (arith)
+  SURVIVED line 710: 5  ->  6  (const)
+  rejected line 668: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 688: !=  ->  ==  (cmp)  [no change in the DLL]
+  rejected line 696: !body0  ->  !(!body0)  (neg)  [no change in the DLL]
+  rejected line 724: 5  ->  6  (const)  [no change in the DLL]
+  rejected line 730: 5  ->  6  (const)  [no change in the DLL]
+  rejected line 732: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 761: 7  ->  8  (const)  [no change in the DLL]
+  rejected line 766: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 772: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 774: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004473 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004206 NxPhysicsJointSlotTests tried=14 caught=6 survived=8 rejected=2
+CAUGHT phys_fn_004206 NxPhysicsJointSlotTests stdout_delta=268 line 943: !gD6DumpStream  ->  !(!gD6DumpStream)  (neg)
+CAUGHT phys_fn_004206 NxPhysicsJointSlotTests stdout_delta=12 line 978: -  ->  +  (arith)
+CAUGHT phys_fn_004206 NxPhysicsJointSlotTests stdout_delta=8 line 992: -  ->  +  (arith)
+CAUGHT phys_fn_004206 NxPhysicsJointSlotTests stdout_delta=12 line 1101: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004206 NxPhysicsJointSlotTests stdout_delta=328 line 1111: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004206 NxPhysicsJointSlotTests stdout_delta=536 line 1127: -  ->  +  (arith)
+  SURVIVED line 1036: +  ->  -  (arith)
+  SURVIVED line 1059: +  ->  -  (arith)
+  SURVIVED line 1069: +  ->  -  (arith)
+  SURVIVED line 1150: swing1 == NX_D6JOINT_MOTION_LIMITED && swing2 == NX_D6JOINT_  ->  !(swing1 == NX_D6JOINT_MOTION_LIMITED && swing2 == NX_D6JOIN  (neg)
+  SURVIVED line 1179: 3  ->  4  (const)
+  SURVIVED line 1195: -  ->  +  (arith)
+  SURVIVED line 1008: +  ->  -  (arith)
+  SURVIVED line 1021: -  ->  +  (arith)
+  rejected line 1095: 7  ->  8  (const)  [no change in the DLL]
+  rejected line 1163: -  ->  +  (arith)  [no change in the DLL]
+SURVEY phys_fn_004509 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004207 NxPhysicsJointSlotTests tried=8 caught=2 survived=6 rejected=8
+CAUGHT phys_fn_004207 NxPhysicsJointSlotTests stdout_delta=333 line 1297: +  ->  -  (arith)
+CAUGHT phys_fn_004207 NxPhysicsJointSlotTests stdout_delta=495 line 1319: 3  ->  4  (const)
+  SURVIVED line 1269: mMotion[1] == NX_D6JOINT_MOTION_LIMITED  ->  !(mMotion[1] == NX_D6JOINT_MOTION_LIMITED)  (neg)
+  SURVIVED line 1281: +  ->  -  (arith)
+  SURVIVED line 1367: >  ->  >=  (cmp)
+  SURVIVED line 1420: >  ->  >=  (cmp)
+  SURVIVED line 1386: n1 != 0.0f && n2 != 0.0f  ->  !(n1 != 0.0f && n2 != 0.0f)  (neg)
+  SURVIVED line 1399: -  ->  +  (arith)
+  rejected line 1248: 2  ->  3  (const)  [changed bytes outside D6Joint::row_slot8]
+  rejected line 1321: ==  ->  !=  (cmp)  [changed bytes outside D6Joint::row_slot8]
+  rejected line 1339: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1357: -  ->  +  (arith)  [changed bytes outside D6Joint::row_slot8]
+  rejected line 1466: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1483: 2  ->  3  (const)  [changed bytes outside D6Joint::row_slot8]
+  rejected line 1490: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 1494: 9  ->  10  (const)  [changed bytes outside D6Joint::row_slot8]
+SURVEY phys_fn_004535 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004219 NxPhysicsJointSlotTests tried=14 caught=8 survived=6 rejected=2
+CAUGHT phys_fn_004219 NxPhysicsJointSlotTests stdout_delta=10 line 225: +  ->  -  (arith)
+CAUGHT phys_fn_004219 NxPhysicsJointSlotTests stdout_delta=10 line 226: +  ->  -  (arith)
+CAUGHT phys_fn_004219 NxPhysicsJointSlotTests stdout_delta=10 line 228: +  ->  -  (arith)
+CAUGHT phys_fn_004219 NxPhysicsJointSlotTests stdout_delta=10 line 233: -  ->  +  (arith)
+CAUGHT phys_fn_004219 NxPhysicsJointSlotTests stdout_delta=6 line 235: impulse == 0.0f  ->  !(impulse == 0.0f)  (neg)
+CAUGHT phys_fn_004219 NxPhysicsJointSlotTests stdout_delta=6 line 235: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004219 NxPhysicsJointSlotTests stdout_delta=399 line 238: support0  ->  !(support0)  (neg)
+CAUGHT phys_fn_004219 NxPhysicsJointSlotTests stdout_delta=6 line 241: support1  ->  !(support1)  (neg)
+  SURVIVED line 213: +  ->  -  (arith)
+  SURVIVED line 213: +  ->  -  (arith)
+  SURVIVED line 214: +  ->  -  (arith)
+  SURVIVED line 214: +  ->  -  (arith)
+  SURVIVED line 232: +  ->  -  (arith)
+  SURVIVED line 234: +  ->  -  (arith)
+  rejected line 209: support0  ->  !(support0)  (neg)  [no change in the DLL]
+  rejected line 221: support1  ->  !(support1)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004565 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004221 NxPhysicsJointSlotTests tried=1 caught=0 survived=1 rejected=2
+  SURVIVED line 257: ==  ->  !=  (cmp)
+  rejected line 257: jointLinearSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) == 0.  ->  !(jointLinearSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) ==   (neg)  [no change in the DLL]
+  rejected line 258: ==  ->  !=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_004595 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004228 NxPhysicsJointSlotTests tried=14 caught=7 survived=7 rejected=2
+CAUGHT phys_fn_004228 NxPhysicsJointSlotTests stdout_delta=8 line 360: <  ->  <=  (cmp)
+CAUGHT phys_fn_004228 NxPhysicsJointSlotTests stdout_delta=789 line 368: +  ->  -  (arith)
+CAUGHT phys_fn_004228 NxPhysicsJointSlotTests stdout_delta=789 line 370: +  ->  -  (arith)
+CAUGHT phys_fn_004228 NxPhysicsJointSlotTests stdout_delta=18 line 371: +  ->  -  (arith)
+CAUGHT phys_fn_004228 NxPhysicsJointSlotTests stdout_delta=18 line 381: -  ->  +  (arith)
+CAUGHT phys_fn_004228 NxPhysicsJointSlotTests stdout_delta=12 line 472: +  ->  -  (arith)
+CAUGHT phys_fn_004228 NxPhysicsJointSlotTests stdout_delta=12 line 477: !=  ->  ==  (cmp)
+  SURVIVED line 356: 2  ->  3  (const)
+  SURVIVED line 466: +  ->  -  (arith)
+  SURVIVED line 369: 3  ->  4  (const)
+  SURVIVED line 395: -  ->  +  (arith)
+  SURVIVED line 418: ==  ->  !=  (cmp)
+  SURVIVED line 447: -  ->  +  (arith)
+  SURVIVED line 461: mSupport[1]  ->  !(mSupport[1])  (neg)
+  rejected line 414: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 424: 10  ->  11  (const)  [no change in the DLL]
+SURVEY phys_fn_004621 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004232 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=3
+  rejected line 205: jointLinearSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) == 0.  ->  !(jointLinearSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) ==   (neg)  [no change in the DLL]
+  rejected line 205: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 206: ==  ->  !=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_004653 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004240 NxPhysicsJointSlotTests tried=12 caught=8 survived=4 rejected=4
+CAUGHT phys_fn_004240 NxPhysicsJointSlotTests stdout_delta=8 line 327: -  ->  +  (arith)
+CAUGHT phys_fn_004240 NxPhysicsJointSlotTests stdout_delta=1084 line 328: -  ->  +  (arith)
+CAUGHT phys_fn_004240 NxPhysicsJointSlotTests stdout_delta=8 line 332: dist != 0.0f  ->  !(dist != 0.0f)  (neg)
+CAUGHT phys_fn_004240 NxPhysicsJointSlotTests stdout_delta=8 line 332: !=  ->  ==  (cmp)
+CAUGHT phys_fn_004240 NxPhysicsJointSlotTests stdout_delta=8 line 341: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004240 NxPhysicsJointSlotTests stdout_delta=4 line 344: -  ->  +  (arith)
+CAUGHT phys_fn_004240 NxPhysicsJointSlotTests stdout_delta=4 line 403: flags & NX_DJF_SPRING_ENABLED  ->  !(flags & NX_DJF_SPRING_ENABLED)  (neg)
+CAUGHT phys_fn_004240 NxPhysicsJointSlotTests stdout_delta=4 line 405: +  ->  -  (arith)
+  SURVIVED line 347: +  ->  -  (arith)
+  SURVIVED line 369: -  ->  +  (arith)
+  SURVIVED line 371: flags & NX_DJF_SPRING_ENABLED  ->  !(flags & NX_DJF_SPRING_ENABLED)  (neg)
+  SURVIVED line 397: <  ->  <=  (cmp)
+  rejected line 341: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 341: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 366: (flags & NX_DJF_MAX_DISTANCE_ENABLED) && dist > mMaxDistance  ->  !((flags & NX_DJF_MAX_DISTANCE_ENABLED) && dist > mMaxDistan  (neg)  [no change in the DLL]
+  rejected line 397: !((flags & NX_DJF_MIN_DISTANCE_ENABLED) && dist < mMinDistan  ->  !(!((flags & NX_DJF_MIN_DISTANCE_ENABLED) && dist < mMinDist  (neg)  [no change in the DLL]
+SURVEY phys_fn_004679 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004246 NxPhysicsJointSlotTests tried=14 caught=9 survived=5 rejected=2
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=20 line 246: 8  ->  9  (const)
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=4 line 275: -  ->  +  (arith)
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=12 line 320: pose1  ->  !(pose1)  (neg)
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=12 line 325: +  ->  -  (arith)
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=12 line 326: +  ->  -  (arith)
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=12 line 337: -  ->  +  (arith)
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=12 line 338: -  ->  +  (arith)
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=4 line 354: +  ->  -  (arith)
+CAUGHT phys_fn_004246 NxPhysicsJointSlotTests stdout_delta=4 line 380: 2  ->  3  (const)
+  SURVIVED line 335: -  ->  +  (arith)
+  SURVIVED line 240: body0  ->  !(body0)  (neg)
+  SURVIVED line 245: 5  ->  6  (const)
+  SURVIVED line 323: 2  ->  3  (const)
+  SURVIVED line 355: 5  ->  6  (const)
+  rejected line 260: body0  ->  !(body0)  (neg)  [no change in the DLL]
+  rejected line 336: 3  ->  4  (const)  [no change in the DLL]
+SURVEY phys_fn_004757 NxPhysicsJointStagedPairTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004258 NxPhysicsJointSlotTests tried=13 caught=11 survived=2 rejected=3
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 162: body0  ->  !(body0)  (neg)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 168: +  ->  -  (arith)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 182: +  ->  -  (arith)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 183: 3  ->  4  (const)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 184: +  ->  -  (arith)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 209: +  ->  -  (arith)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 211: +  ->  -  (arith)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 212: +  ->  -  (arith)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 227: -  ->  +  (arith)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 235: -  ->  +  (arith)
+CAUGHT phys_fn_004258 NxPhysicsJointSlotTests stdout_delta=4 line 259: +  ->  -  (arith)
+  SURVIVED line 185: +  ->  -  (arith)
+  SURVIVED line 244: -  ->  +  (arith)
+  rejected line 167: 5  ->  6  (const)  [changed bytes outside PointInPlaneJoint::row_slot6]
+  rejected line 167: 4  ->  5  (const)  [changed bytes outside PointInPlaneJoint::row_slot6]
+  rejected line 210: 4  ->  5  (const)  [changed bytes outside PointInPlaneJoint::row_slot6]
+SURVEY phys_fn_004260 NxPhysicsJointSlotTests tried=16 caught=14 survived=2 rejected=0
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=1262 line 291: !((mFlags >> 9) & 1)  ->  !(!((mFlags >> 9) & 1))  (neg)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=4 line 309: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=4 line 311: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=4 line 328: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=4 line 330: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 343: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 343: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 344: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 344: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 345: 7  ->  8  (const)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 345: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 345: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 346: +  ->  -  (arith)
+CAUGHT phys_fn_004260 NxPhysicsJointSlotTests stdout_delta=12 line 348: +  ->  -  (arith)
+  SURVIVED line 296: jointLinearSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) != 0.  ->  !(jointLinearSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) !=   (neg)
+  SURVIVED line 315: jointLinearSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) != 0.  ->  !(jointLinearSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) !=   (neg)
+SURVEY phys_fn_004272 NxPhysicsJointSlotTests tried=10 caught=9 survived=1 rejected=6
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=8 line 191: +  ->  -  (arith)
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=8 line 218: body1  ->  !(body1)  (neg)
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=8 line 224: +  ->  -  (arith)
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=8 line 225: +  ->  -  (arith)
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=8 line 228: +  ->  -  (arith)
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=8 line 242: +  ->  -  (arith)
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=8 line 254: -  ->  +  (arith)
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=8 line 263: -  ->  +  (arith)
+CAUGHT phys_fn_004272 NxPhysicsJointSlotTests stdout_delta=4 line 279: +  ->  -  (arith)
+  SURVIVED line 183: body0  ->  !(body0)  (neg)
+  rejected line 188: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 189: 8  ->  9  (const)  [no change in the DLL]
+  rejected line 192: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 197: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 198: 5  ->  6  (const)  [no change in the DLL]
+  rejected line 199: 8  ->  9  (const)  [no change in the DLL]
+SURVEY phys_fn_004274 NxPhysicsJointSlotTests tried=9 caught=8 survived=1 rejected=7
+CAUGHT phys_fn_004274 NxPhysicsJointSlotTests stdout_delta=1448 line 309: !((mFlags >> 9) & 1)  ->  !(!((mFlags >> 9) & 1))  (neg)
+CAUGHT phys_fn_004274 NxPhysicsJointSlotTests stdout_delta=1448 line 309: 9  ->  10  (const)
+CAUGHT phys_fn_004274 NxPhysicsJointSlotTests stdout_delta=12 line 340: !body1  ->  !(!body1)  (neg)
+CAUGHT phys_fn_004274 NxPhysicsJointSlotTests stdout_delta=12 line 347: +  ->  -  (arith)
+CAUGHT phys_fn_004274 NxPhysicsJointSlotTests stdout_delta=12 line 348: +  ->  -  (arith)
+CAUGHT phys_fn_004274 NxPhysicsJointSlotTests stdout_delta=12 line 349: +  ->  -  (arith)
+CAUGHT phys_fn_004274 NxPhysicsJointSlotTests stdout_delta=12 line 351: +  ->  -  (arith)
+CAUGHT phys_fn_004274 NxPhysicsJointSlotTests stdout_delta=12 line 352: +  ->  -  (arith)
+  SURVIVED line 326: jointLinearSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) != 0.  ->  !(jointLinearSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) !=   (neg)
+  rejected line 314: !=  ->  ==  (cmp)  [changed bytes outside PointOnLineJoint::row_slot4]
+  rejected line 347: +  ->  -  (arith)  [changed bytes outside PointOnLineJoint::row_slot4]
+  rejected line 348: 4  ->  5  (const)  [changed bytes outside PointOnLineJoint::row_slot4]
+  rejected line 348: 5  ->  6  (const)  [changed bytes outside PointOnLineJoint::row_slot4]
+  rejected line 349: 7  ->  8  (const)  [changed bytes outside PointOnLineJoint::row_slot4]
+  rejected line 349: +  ->  -  (arith)  [changed bytes outside PointOnLineJoint::row_slot4]
+  rejected line 349: 6  ->  7  (const)  [changed bytes outside PointOnLineJoint::row_slot4]
+SURVEY phys_fn_004294 NxPhysicsJointSlotTests tried=16 caught=16 survived=0 rejected=0
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 408: body0  ->  !(body0)  (neg)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 414: -  ->  +  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 415: -  ->  +  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 416: -  ->  +  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 417: +  ->  -  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 418: +  ->  -  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 419: +  ->  -  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 428: body1  ->  !(body1)  (neg)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 435: -  ->  +  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 436: -  ->  +  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 437: +  ->  -  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 438: +  ->  -  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 439: +  ->  -  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 440: -  ->  +  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 441: -  ->  +  (arith)
+CAUGHT phys_fn_004294 NxPhysicsJointSlotTests stdout_delta=16 line 442: -  ->  +  (arith)
+SURVEY phys_fn_004298 NxPhysicsJointSlotTests tried=8 caught=7 survived=1 rejected=0
+CAUGHT phys_fn_004298 NxPhysicsJointSlotTests stdout_delta=178 line 839: !(lengthSquared >= sphericalMul(mProjectionDistance, mProjec  ->  !(!(lengthSquared >= sphericalMul(mProjectionDistance, mProj  (neg)
+CAUGHT phys_fn_004298 NxPhysicsJointSlotTests stdout_delta=158 line 841: bodyPointer == mBody[0]  ->  !(bodyPointer == mBody[0])  (neg)
+CAUGHT phys_fn_004298 NxPhysicsJointSlotTests stdout_delta=158 line 841: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004298 NxPhysicsJointSlotTests stdout_delta=156 line 850: -  ->  +  (arith)
+CAUGHT phys_fn_004298 NxPhysicsJointSlotTests stdout_delta=156 line 855: +  ->  -  (arith)
+CAUGHT phys_fn_004298 NxPhysicsJointSlotTests stdout_delta=156 line 856: +  ->  -  (arith)
+CAUGHT phys_fn_004298 NxPhysicsJointSlotTests stdout_delta=158 line 857: +  ->  -  (arith)
+  SURVIVED line 839: >=  ->  >  (cmp)
+SURVEY phys_fn_004306 NxPhysicsJointSlotTests tried=11 caught=9 survived=2 rejected=5
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=8 line 944: !body0  ->  !(!body0)  (neg)
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=8 line 956: 5  ->  6  (const)
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=8 line 957: 6  ->  7  (const)
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=1946 line 960: 3  ->  4  (const)
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=8 line 961: 6  ->  7  (const)
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=8 line 1000: +  ->  -  (arith)
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=8 line 1016: -  ->  +  (arith)
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=8 line 1032: +  ->  -  (arith)
+CAUGHT phys_fn_004306 NxPhysicsJointSlotTests stdout_delta=1946 line 1033: +  ->  -  (arith)
+  SURVIVED line 993: <  ->  <=  (cmp)
+  SURVIVED line 1019: !=  ->  ==  (cmp)
+  rejected line 981: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 983: 8  ->  9  (const)  [no change in the DLL]
+  rejected line 985: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 986: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 987: 7  ->  8  (const)  [no change in the DLL]
+SURVEY phys_fn_004308 NxPhysicsJointSlotTests tried=15 caught=11 survived=4 rejected=1
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=16 line 1059: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=20 line 1071: mMaxForce < NX_MAX_REAL  ->  !(mMaxForce < NX_MAX_REAL)  (neg)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=16 line 1111: +  ->  -  (arith)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=16 line 1119: 2  ->  3  (const)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=16 line 1119: +  ->  -  (arith)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=16 line 1120: 4  ->  5  (const)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=16 line 1120: 3  ->  4  (const)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=16 line 1121: 7  ->  8  (const)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=16 line 1121: 6  ->  7  (const)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=12 line 1127: -  ->  +  (arith)
+CAUGHT phys_fn_004308 NxPhysicsJointSlotTests stdout_delta=12 line 1141: body1  ->  !(body1)  (neg)
+  SURVIVED line 1074: +  ->  -  (arith)
+  SURVIVED line 1078: +  ->  -  (arith)
+  SURVIVED line 1079: lengthSquared > mMaxImpulseSquared  ->  !(lengthSquared > mMaxImpulseSquared)  (neg)
+  SURVIVED line 1095: -  ->  +  (arith)
+  rejected line 1137: -  ->  +  (arith)  [no change in the DLL]
+SURVEY phys_fn_004310 NxPhysicsJointSlotTests tried=16 caught=9 survived=7 rejected=0
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=4 line 1183: mSphericalFlags & (NX_SJF_TWIST_LIMIT_ENABLED | NX_SJF_TWIST  ->  !(mSphericalFlags & (NX_SJF_TWIST_LIMIT_ENABLED | NX_SJF_TWI  (neg)
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=1942 line 1198: 8  ->  9  (const)
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=12 line 1217: 8  ->  9  (const)
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=4 line 1232: -  ->  +  (arith)
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=1938 line 1257: length > 0.0001f  ->  !(length > 0.0001f)  (neg)
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=2 line 1278: !=  ->  ==  (cmp)
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=1940 line 1296: ==  ->  !=  (cmp)
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=4 line 1341: -  ->  +  (arith)
+CAUGHT phys_fn_004310 NxPhysicsJointSlotTests stdout_delta=4 line 1355: 2  ->  3  (const)
+  SURVIVED line 1304: 3  ->  4  (const)
+  SURVIVED line 1314: 2  ->  3  (const)
+  SURVIVED line 1197: 4  ->  5  (const)
+  SURVIVED line 1216: 4  ->  5  (const)
+  SURVIVED line 1246: -  ->  +  (arith)
+  SURVIVED line 1273: -  ->  +  (arith)
+  SURVIVED line 1334: (mSphericalFlags & NX_SJF_SWING_LIMIT_ENABLED) && swingCos <  ->  !((mSphericalFlags & NX_SJF_SWING_LIMIT_ENABLED) && swingCos  (neg)
+SURVEY phys_fn_004312 NxPhysicsJointSlotTests tried=13 caught=7 survived=6 rejected=3
+CAUGHT phys_fn_004312 NxPhysicsJointSlotTests stdout_delta=1938 line 1397: !((mFlags >> 9) & 1)  ->  !(!((mFlags >> 9) & 1))  (neg)
+CAUGHT phys_fn_004312 NxPhysicsJointSlotTests stdout_delta=32 line 1459: +  ->  -  (arith)
+CAUGHT phys_fn_004312 NxPhysicsJointSlotTests stdout_delta=8 line 1467: 5  ->  6  (const)
+CAUGHT phys_fn_004312 NxPhysicsJointSlotTests stdout_delta=56 line 1619: +  ->  -  (arith)
+CAUGHT phys_fn_004312 NxPhysicsJointSlotTests stdout_delta=96 line 1657: body1  ->  !(body1)  (neg)
+CAUGHT phys_fn_004312 NxPhysicsJointSlotTests stdout_delta=184 line 1718: !=  ->  ==  (cmp)
+CAUGHT phys_fn_004312 NxPhysicsJointSlotTests stdout_delta=92 line 1741: +  ->  -  (arith)
+  SURVIVED line 1497: 4  ->  5  (const)
+  SURVIVED line 1505: 3  ->  4  (const)
+  SURVIVED line 1556: 8  ->  9  (const)
+  SURVIVED line 1581: 4  ->  5  (const)
+  SURVIVED line 1628: 12  ->  13  (const)
+  SURVIVED line 1678: 4  ->  5  (const)
+  rejected line 1436: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1489: 2  ->  3  (const)  [changed bytes outside SphericalJoint::row_slot4]
+  rejected line 1546: body0  ->  !(body0)  (neg)  [changed bytes outside SphericalJoint::row_slot4]
+SURVEY phys_fn_004314 NxPhysicsJointSlotTests tried=13 caught=7 survived=6 rejected=3
+CAUGHT phys_fn_004314 NxPhysicsJointSlotTests stdout_delta=1938 line 1397: !((mFlags >> 9) & 1)  ->  !(!((mFlags >> 9) & 1))  (neg)
+CAUGHT phys_fn_004314 NxPhysicsJointSlotTests stdout_delta=32 line 1459: +  ->  -  (arith)
+CAUGHT phys_fn_004314 NxPhysicsJointSlotTests stdout_delta=8 line 1467: 5  ->  6  (const)
+CAUGHT phys_fn_004314 NxPhysicsJointSlotTests stdout_delta=56 line 1619: +  ->  -  (arith)
+CAUGHT phys_fn_004314 NxPhysicsJointSlotTests stdout_delta=96 line 1657: body1  ->  !(body1)  (neg)
+CAUGHT phys_fn_004314 NxPhysicsJointSlotTests stdout_delta=184 line 1718: !=  ->  ==  (cmp)
+CAUGHT phys_fn_004314 NxPhysicsJointSlotTests stdout_delta=92 line 1741: +  ->  -  (arith)
+  SURVIVED line 1497: 4  ->  5  (const)
+  SURVIVED line 1505: 3  ->  4  (const)
+  SURVIVED line 1556: 8  ->  9  (const)
+  SURVIVED line 1581: 4  ->  5  (const)
+  SURVIVED line 1628: 12  ->  13  (const)
+  SURVIVED line 1678: 4  ->  5  (const)
+  rejected line 1436: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1489: 2  ->  3  (const)  [changed bytes outside SphericalJoint::row_slot4]
+  rejected line 1546: body0  ->  !(body0)  (neg)  [changed bytes outside SphericalJoint::row_slot4]
+SURVEY phys_fn_004318 NxPhysicsJointSlotTests tried=14 caught=7 survived=7 rejected=2
+CAUGHT phys_fn_004318 NxPhysicsJointSlotTests stdout_delta=2426 line 522: !((mFlags >> 9) & 1)  ->  !(!((mFlags >> 9) & 1))  (neg)
+CAUGHT phys_fn_004318 NxPhysicsJointSlotTests stdout_delta=8 line 568: 2  ->  3  (const)
+CAUGHT phys_fn_004318 NxPhysicsJointSlotTests stdout_delta=8 line 585: 8  ->  9  (const)
+CAUGHT phys_fn_004318 NxPhysicsJointSlotTests stdout_delta=8 line 586: +  ->  -  (arith)
+CAUGHT phys_fn_004318 NxPhysicsJointSlotTests stdout_delta=8 line 590: 5  ->  6  (const)
+CAUGHT phys_fn_004318 NxPhysicsJointSlotTests stdout_delta=8 line 591: 8  ->  9  (const)
+CAUGHT phys_fn_004318 NxPhysicsJointSlotTests stdout_delta=8 line 592: 2  ->  3  (const)
+  SURVIVED line 543: 2  ->  3  (const)
+  SURVIVED line 562: +  ->  -  (arith)
+  SURVIVED line 527: !=  ->  ==  (cmp)
+  SURVIVED line 560: 4  ->  5  (const)
+  SURVIVED line 561: 7  ->  8  (const)
+  SURVIVED line 567: 6  ->  7  (const)
+  SURVIVED line 584: 5  ->  6  (const)
+  rejected line 540: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 566: 3  ->  4  (const)  [changed bytes outside Joint::row004318]
+SURVEY phys_fn_004326 NxPhysicsJointSlotTests tried=13 caught=6 survived=7 rejected=3
+CAUGHT phys_fn_004326 NxPhysicsJointSlotTests stdout_delta=36 line 293: +  ->  -  (arith)
+CAUGHT phys_fn_004326 NxPhysicsJointSlotTests stdout_delta=36 line 308: +  ->  -  (arith)
+CAUGHT phys_fn_004326 NxPhysicsJointSlotTests stdout_delta=16 line 336: -  ->  +  (arith)
+CAUGHT phys_fn_004326 NxPhysicsJointSlotTests stdout_delta=16 line 347: +  ->  -  (arith)
+CAUGHT phys_fn_004326 NxPhysicsJointSlotTests stdout_delta=20 line 426: -  ->  +  (arith)
+CAUGHT phys_fn_004326 NxPhysicsJointSlotTests stdout_delta=20 line 439: -  ->  +  (arith)
+  SURVIVED line 208: +  ->  -  (arith)
+  SURVIVED line 225: 8  ->  9  (const)
+  SURVIVED line 235: +  ->  -  (arith)
+  SURVIVED line 319: -  ->  +  (arith)
+  SURVIVED line 388: +  ->  -  (arith)
+  SURVIVED line 409: +  ->  -  (arith)
+  SURVIVED line 270: +  ->  -  (arith)
+  rejected line 176: !body0  ->  !(!body0)  (neg)  [no change in the DLL]
+  rejected line 193: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 260: 4  ->  5  (const)  [no change in the DLL]
+SURVEY phys_fn_004352 NxPhysicsJointSlotTests tried=16 caught=9 survived=7 rejected=0
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=2854 line 1642: !body0  ->  !(!body0)  (neg)
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=2854 line 1655: +  ->  -  (arith)
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=4 line 1657: +  ->  -  (arith)
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=4 line 1660: +  ->  -  (arith)
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=4 line 1661: +  ->  -  (arith)
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=2854 line 1677: +  ->  -  (arith)
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=4 line 1678: +  ->  -  (arith)
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=4 line 1678: 8  ->  9  (const)
+CAUGHT phys_fn_004352 NxPhysicsJointSlotTests stdout_delta=4 line 1683: +  ->  -  (arith)
+  SURVIVED line 1659: +  ->  -  (arith)
+  SURVIVED line 1684: <  ->  <=  (cmp)
+  SURVIVED line 1656: 3  ->  4  (const)
+  SURVIVED line 1657: 7  ->  8  (const)
+  SURVIVED line 1660: 4  ->  5  (const)
+  SURVIVED line 1676: +  ->  -  (arith)
+  SURVIVED line 1677: 3  ->  4  (const)
+SURVEY phys_fn_004356 NxPhysicsJointSlotTests tried=10 caught=5 survived=5 rejected=6
+CAUGHT phys_fn_004356 NxPhysicsJointSlotTests stdout_delta=80 line 1246: lengthSquared >= revoluteMul(mProjectionDistance, mProjectio  ->  !(lengthSquared >= revoluteMul(mProjectionDistance, mProject  (neg)
+CAUGHT phys_fn_004356 NxPhysicsJointSlotTests stdout_delta=2805 line 1290: 8  ->  9  (const)
+CAUGHT phys_fn_004356 NxPhysicsJointSlotTests stdout_delta=72 line 1310: +  ->  -  (arith)
+CAUGHT phys_fn_004356 NxPhysicsJointSlotTests stdout_delta=88 line 1358: 7  ->  8  (const)
+CAUGHT phys_fn_004356 NxPhysicsJointSlotTests stdout_delta=6 line 1450: !projected  ->  !(!projected)  (neg)
+  SURVIVED line 1348: <  ->  <=  (cmp)
+  SURVIVED line 1373: 8  ->  9  (const)
+  SURVIVED line 1390: 4  ->  5  (const)
+  SURVIVED line 1420: +  ->  -  (arith)
+  SURVIVED line 1275: 4  ->  5  (const)
+  rejected line 1353: 2  ->  3  (const)  [changed bytes outside RevoluteJoint::row_slot8]
+  rejected line 1355: 4  ->  5  (const)  [changed bytes outside RevoluteJoint::row_slot8]
+  rejected line 1356: 5  ->  6  (const)  [changed bytes outside RevoluteJoint::row_slot8]
+  rejected line 1363: 4  ->  5  (const)  [changed bytes outside RevoluteJoint::row_slot8]
+  rejected line 1382: 2  ->  3  (const)  [changed bytes outside RevoluteJoint::row_slot8]
+  rejected line 1410: 7  ->  8  (const)  [changed bytes outside RevoluteJoint::row_slot8]
+SURVEY phys_fn_004358 NxPhysicsJointSlotTests tried=16 caught=16 survived=0 rejected=0
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1726: body0  ->  !(body0)  (neg)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1732: -  ->  +  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1733: -  ->  +  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1734: -  ->  +  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1735: +  ->  -  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1736: +  ->  -  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1737: +  ->  -  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1746: body1  ->  !(body1)  (neg)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1753: -  ->  +  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1754: -  ->  +  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1755: +  ->  -  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1756: +  ->  -  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1757: +  ->  -  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1758: -  ->  +  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1759: -  ->  +  (arith)
+CAUGHT phys_fn_004358 NxPhysicsJointSlotTests stdout_delta=16 line 1760: -  ->  +  (arith)
+SURVEY phys_fn_004360 NxPhysicsJointSlotTests tried=10 caught=8 survived=2 rejected=6
+CAUGHT phys_fn_004360 NxPhysicsJointSlotTests stdout_delta=26 line 810: body1  ->  !(body1)  (neg)
+CAUGHT phys_fn_004360 NxPhysicsJointSlotTests stdout_delta=32 line 858: +  ->  -  (arith)
+CAUGHT phys_fn_004360 NxPhysicsJointSlotTests stdout_delta=32 line 927: +  ->  -  (arith)
+CAUGHT phys_fn_004360 NxPhysicsJointSlotTests stdout_delta=26 line 954: -  ->  +  (arith)
+CAUGHT phys_fn_004360 NxPhysicsJointSlotTests stdout_delta=8 line 1019: 7  ->  8  (const)
+CAUGHT phys_fn_004360 NxPhysicsJointSlotTests stdout_delta=16 line 1025: +  ->  -  (arith)
+CAUGHT phys_fn_004360 NxPhysicsJointSlotTests stdout_delta=16 line 1045: 4  ->  5  (const)
+CAUGHT phys_fn_004360 NxPhysicsJointSlotTests stdout_delta=8 line 1068: 3  ->  4  (const)
+  SURVIVED line 788: 5  ->  6  (const)
+  SURVIVED line 848: 8  ->  9  (const)
+  rejected line 764: body0  ->  !(body0)  (neg)  [changed bytes outside RevoluteJoint::row_slot6]
+  rejected line 875: body1  ->  !(body1)  (neg)  [changed bytes outside RevoluteJoint::row_slot6]
+  rejected line 895: 6  ->  7  (const)  [changed bytes outside RevoluteJoint::row_slot6]
+  rejected line 906: 4  ->  5  (const)  [changed bytes outside RevoluteJoint::row_slot6]
+  rejected line 917: 2  ->  3  (const)  [changed bytes outside RevoluteJoint::row_slot6]
+  rejected line 973: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004362 NxPhysicsJointSlotTests tried=13 caught=3 survived=10 rejected=3
+CAUGHT phys_fn_004362 NxPhysicsJointSlotTests stdout_delta=2596 line 1149: !=  ->  ==  (cmp)
+CAUGHT phys_fn_004362 NxPhysicsJointSlotTests stdout_delta=2848 line 1178: (mRevoluteFlags & NX_RJF_SPRING_ENABLED) && (mSpring.spring   ->  !((mRevoluteFlags & NX_RJF_SPRING_ENABLED) && (mSpring.sprin  (neg)
+CAUGHT phys_fn_004362 NxPhysicsJointSlotTests stdout_delta=6 line 1201: 10  ->  11  (const)
+  SURVIVED line 1105: <  ->  <=  (cmp)
+  SURVIVED line 1112: 2  ->  3  (const)
+  SURVIVED line 1118: value < revoluteSdkParameter(NX_BOUNCE_TRESHOLD)  ->  !(value < revoluteSdkParameter(NX_BOUNCE_TRESHOLD))  (neg)
+  SURVIVED line 1122: >  ->  >=  (cmp)
+  SURVIVED line 1135: mLimit.high.restitution != 0.0f  ->  !(mLimit.high.restitution != 0.0f)  (neg)
+  SURVIVED line 1138: value < revoluteSdkParameter(NX_BOUNCE_TRESHOLD)  ->  !(value < revoluteSdkParameter(NX_BOUNCE_TRESHOLD))  (neg)
+  SURVIVED line 1156: <  ->  <=  (cmp)
+  SURVIVED line 1178: !=  ->  ==  (cmp)
+  SURVIVED line 1195: 2  ->  3  (const)
+  SURVIVED line 1199: 3  ->  4  (const)
+  rejected line 1102: (mRevoluteFlags & NX_RJF_LIMIT_ENABLED) && mLimit.low.value   ->  !((mRevoluteFlags & NX_RJF_LIMIT_ENABLED) && mLimit.low.valu  (neg)  [no change in the DLL]
+  rejected line 1187: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 1199: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004364 NxPhysicsJointSlotTests tried=13 caught=8 survived=5 rejected=3
+CAUGHT phys_fn_004364 NxPhysicsJointSlotTests stdout_delta=2846 line 506: !((mFlags >> 9) & 1)  ->  !(!((mFlags >> 9) & 1))  (neg)
+CAUGHT phys_fn_004364 NxPhysicsJointSlotTests stdout_delta=16 line 547: 5  ->  6  (const)
+CAUGHT phys_fn_004364 NxPhysicsJointSlotTests stdout_delta=8 line 551: 5  ->  6  (const)
+CAUGHT phys_fn_004364 NxPhysicsJointSlotTests stdout_delta=8 line 556: 8  ->  9  (const)
+CAUGHT phys_fn_004364 NxPhysicsJointSlotTests stdout_delta=16 line 583: 7  ->  8  (const)
+CAUGHT phys_fn_004364 NxPhysicsJointSlotTests stdout_delta=8 line 608: +  ->  -  (arith)
+CAUGHT phys_fn_004364 NxPhysicsJointSlotTests stdout_delta=56 line 679: +  ->  -  (arith)
+CAUGHT phys_fn_004364 NxPhysicsJointSlotTests stdout_delta=2870 line 684: i > 0  ->  !(i > 0)  (neg)
+  SURVIVED line 648: 2  ->  3  (const)
+  SURVIVED line 540: 3  ->  4  (const)
+  SURVIVED line 576: 7  ->  8  (const)
+  SURVIVED line 587: 6  ->  7  (const)
+  SURVIVED line 669: -  ->  +  (arith)
+  rejected line 629: 2  ->  3  (const)  [changed bytes outside RevoluteJoint::row_slot4]
+  rejected line 642: 7  ->  8  (const)  [no change in the DLL]
+  rejected line 702: 7  ->  8  (const)  [no change in the DLL]
+SURVEY phys_fn_004374 NxPhysicsJointSlotTests tried=16 caught=5 survived=11 rejected=0
+CAUGHT phys_fn_004374 NxPhysicsJointSlotTests stdout_delta=16 line 385: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+CAUGHT phys_fn_004374 NxPhysicsJointSlotTests stdout_delta=24 line 391: mMaxForce < NX_MAX_REAL  ->  !(mMaxForce < NX_MAX_REAL)  (neg)
+CAUGHT phys_fn_004374 NxPhysicsJointSlotTests stdout_delta=16 line 432: +  ->  -  (arith)
+CAUGHT phys_fn_004374 NxPhysicsJointSlotTests stdout_delta=16 line 441: 8  ->  9  (const)
+CAUGHT phys_fn_004374 NxPhysicsJointSlotTests stdout_delta=12 line 458: -  ->  +  (arith)
+  SURVIVED line 395: +  ->  -  (arith)
+  SURVIVED line 398: +  ->  -  (arith)
+  SURVIVED line 399: >  ->  >=  (cmp)
+  SURVIVED line 415: -  ->  +  (arith)
+  SURVIVED line 439: 2  ->  3  (const)
+  SURVIVED line 440: 5  ->  6  (const)
+  SURVIVED line 440: 4  ->  5  (const)
+  SURVIVED line 441: 7  ->  8  (const)
+  SURVIVED line 445: -  ->  +  (arith)
+  SURVIVED line 447: -  ->  +  (arith)
+  SURVIVED line 461: body1  ->  !(body1)  (neg)
+SURVEY phys_fn_004389 NxPhysicsJointSlotTests tried=12 caught=0 survived=12 rejected=3
+  SURVIVED line 534: mFlags & 0x400  ->  !(mFlags & 0x400)  (neg)
+  SURVIVED line 537: !body1  ->  !(!body1)  (neg)
+  SURVIVED line 540: +  ->  -  (arith)
+  SURVIVED line 546: +  ->  -  (arith)
+  SURVIVED line 549: -  ->  +  (arith)
+  SURVIVED line 550: -  ->  +  (arith)
+  SURVIVED line 551: -  ->  +  (arith)
+  SURVIVED line 552: +  ->  -  (arith)
+  SURVIVED line 552: +  ->  -  (arith)
+  SURVIVED line 559: +  ->  -  (arith)
+  SURVIVED line 572: +  ->  -  (arith)
+  SURVIVED line 577: -  ->  +  (arith)
+  rejected line 544: !body0  ->  !(!body0)  (neg)  [no change in the DLL]
+  rejected line 557: body0  ->  !(body0)  (neg)  [no change in the DLL]
+  rejected line 570: !body1  ->  !(!body1)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004391 NxPhysicsJointSlotTests tried=13 caught=13 survived=0 rejected=3
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=144 line 596: !((mFlags >> 10) & 1)  ->  !(!((mFlags >> 10) & 1))  (neg)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=64 line 604: +  ->  -  (arith)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=60 line 605: 3  ->  4  (const)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=60 line 606: 6  ->  7  (const)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=56 line 622: 8  ->  9  (const)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=68 line 631: body0  ->  !(body0)  (neg)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=68 line 642: mBody[1]  ->  !(mBody[1])  (neg)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=68 line 646: +  ->  -  (arith)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=60 line 660: 8  ->  9  (const)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=60 line 676: +  ->  -  (arith)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=52 line 677: +  ->  -  (arith)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=60 line 679: +  ->  -  (arith)
+CAUGHT phys_fn_004391 NxPhysicsJointSlotTests stdout_delta=144 line 692: ==  ->  !=  (cmp)
+  rejected line 621: 5  ->  6  (const)  [no change in the DLL]
+  rejected line 659: 5  ->  6  (const)  [no change in the DLL]
+  rejected line 672: body1  ->  !(body1)  (neg)  [no change in the DLL]
+SURVEY phys_fn_004393 NxPhysicsJointSlotTests tried=5 caught=3 survived=2 rejected=0
+CAUGHT phys_fn_004393 NxPhysicsJointSlotTests stdout_delta=20 line 708: arg1 >= 0.0f  ->  !(arg1 >= 0.0f)  (neg)
+CAUGHT phys_fn_004393 NxPhysicsJointSlotTests stdout_delta=20 line 710: arg0 >= 0.0f  ->  !(arg0 >= 0.0f)  (neg)
+CAUGHT phys_fn_004393 NxPhysicsJointSlotTests stdout_delta=20 line 712: +  ->  -  (arith)
+  SURVIVED line 708: >=  ->  >  (cmp)
+  SURVIVED line 710: >=  ->  >  (cmp)
+SURVEY phys_fn_004485 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004487 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004517 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004519 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004547 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004549 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004575 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004579 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004603 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004605 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004629 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004631 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004661 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004663 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004737 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004739 NxPhysicsJointSlotTests tried=0 caught=0 survived=0 rejected=0

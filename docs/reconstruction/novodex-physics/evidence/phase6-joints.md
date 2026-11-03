@@ -11481,3 +11481,24 @@ Phase 7 continuation 2026-10-19 — `phys_fn_004826`: the pairwise AABB helper m
 ## Testing pass
 
 - `phys_fn_002300`: 0x00058877 mov ebx, dword ptr [esp + 0x10c] -> mov ebx, dword ptr [esp + 0x110]; `NxPhysicsPhase6RowsTests` mismatches=35.
+
+## Testing pass
+
+- `phys_fn_004127`: Physics/src/core/Joint.cpp line 1437: 3 -> 4 (const); `NxPhysicsJointSlotTests` stdout_delta=40.
+- `phys_fn_004178`: Physics/src/core/D6Joint.cpp line 138: 2 -> 3 (const); `NxPhysicsJointSlotTests` stdout_delta=337.
+- `phys_fn_004180`: Physics/src/core/D6Joint.cpp line 197: 8 -> 9 (const); `NxPhysicsJointSlotTests` stdout_delta=559.
+- `phys_fn_004190`: Physics/src/core/D6Joint.cpp line 371: 3 -> 4 (const); `NxPhysicsJointSlotTests` stdout_delta=24.
+- `phys_fn_004196`: Physics/src/core/D6Joint.cpp line 482: == -> != (cmp); `NxPhysicsJointSlotTests` stdout_delta=12.
+- `phys_fn_004198`: Physics/src/core/D6Joint.cpp line 528: - -> + (arith); `NxPhysicsJointSlotTests` stdout_delta=40.
+- `phys_fn_004200`: Physics/src/core/D6Joint.cpp line 652: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg); `NxPhysicsJointSlotTests` stdout_delta=526.
+- `phys_fn_004258`: Physics/src/core/PointInPlaneJoint.cpp line 162: body0 -> !(body0) (neg); `NxPhysicsJointSlotTests` stdout_delta=4.
+- `phys_fn_004260`: Physics/src/core/PointInPlaneJoint.cpp line 291: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg); `NxPhysicsJointSlotTests` stdout_delta=1262.
+- `phys_fn_004272`: Physics/src/core/PointOnLineJoint.cpp line 191: + -> - (arith); `NxPhysicsJointSlotTests` stdout_delta=8.
+- `phys_fn_004274`: Physics/src/core/PointOnLineJoint.cpp line 309: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg); `NxPhysicsJointSlotTests` stdout_delta=1448.
+- `phys_fn_004294`: Physics/src/core/SphericalJoint.cpp line 408: body0 -> !(body0) (neg); `NxPhysicsJointSlotTests` stdout_delta=16.
+- `phys_fn_004298`: Physics/src/core/SphericalJoint.cpp line 839: !(lengthSquared >= sphericalMul(mProjectionDistance, mProjec -> !(!(lengthSquared >= sphericalMul(mProjectionDistance, mProj (neg); `NxPhysicsJointSlotTests` stdout_delta=178.
+- `phys_fn_004306`: Physics/src/core/SphericalJoint.cpp line 944: !body0 -> !(!body0) (neg); `NxPhysicsJointSlotTests` stdout_delta=8.
+- `phys_fn_004358`: Physics/src/core/RevoluteJoint.cpp line 1726: body0 -> !(body0) (neg); `NxPhysicsJointSlotTests` stdout_delta=16.
+- `phys_fn_004360`: Physics/src/core/RevoluteJoint.cpp line 810: body1 -> !(body1) (neg); `NxPhysicsJointSlotTests` stdout_delta=26.
+- `phys_fn_004391`: Physics/src/core/JointSupport.cpp line 596: !((mFlags >> 10) & 1) -> !(!((mFlags >> 10) & 1)) (neg); `NxPhysicsJointSlotTests` stdout_delta=144.
+- `phys_fn_004393`: Physics/src/core/JointSupport.cpp line 708: arg1 >= 0.0f -> !(arg1 >= 0.0f) (neg); `NxPhysicsJointSlotTests` stdout_delta=20.

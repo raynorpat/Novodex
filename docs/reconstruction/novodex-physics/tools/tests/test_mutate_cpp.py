@@ -389,5 +389,22 @@ class CrlfTests(unittest.TestCase):
         self.assertEqual(path.read_bytes(), crlf.encode('latin-1'))
 
 
+
+class OracleOnlyTests(unittest.TestCase):
+    def test_output_lines_drop_the_pair_header(self):
+        out = chr(10).join(['pair_directory=D:\\x', 'modules pair=2', 'loaded module=NxPhysics.dll', 'case a ok', 'case b ok'])
+        self.assertEqual(mc.output_lines(out), ['case a ok', 'case b ok'])
+
+    def test_no_difference_is_not_a_detection(self):
+        self.assertIsNone(mc.digest_difference(['a', 'b'], 'a' + chr(10) + 'b', 0))
+
+    def test_a_changed_line_is_counted(self):
+        self.assertEqual(mc.digest_difference(['a', 'b'], 'a' + chr(10) + 'c', 0), 2)
+
+    def test_a_crash_with_the_same_output_counts_only_when_asked(self):
+        self.assertIsNone(mc.digest_difference(['a'], 'a', -1073741819))
+        self.assertEqual(mc.digest_difference(['a'], 'a', -1073741819, count_crash=True), 1)
+
+
 if __name__ == '__main__':
     unittest.main()

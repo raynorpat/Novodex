@@ -14843,7 +14843,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2140",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2); also executed on the body-construction path (then Scene.cpp nxActorComputeMass, now DynamicBody::construct, 000797's order) under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 16 times in NxPhysicsEffectorTests (4 at body construction, 12 in the actor releases through 000632/000778 and 000776) against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?row000760@Row000760Fixture@@QAEXXZ hit 1037 times (Life 24, DynF 4, BFlag 36, Dyn 20, DSet 32, Mom 48, Force 124, CMass 100, SMut 208, BodyC 28, JSP 157, JAll 10, JSlot 122, SRay 28, SVis 20, Eff 16, Dump 60); equal to the oracle row's count on every target.",
-      "notes": "The island-object arm (+0x1e0 non-null) calls phys_fn_004167, reconstructed as the two-array island teardown in Physics/src/core/JointSupport.cpp and directly differentially tested by NxPhysicsJointSupportTests. This arm is not reached by the current public simulation path.",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointStagedPairTests caught 0 of 6 mutations tried (6 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
@@ -80461,7 +80461,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13657",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 30 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 7 of 13 mutations tried (6 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {
@@ -80529,13 +80529,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1554",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13675",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 22 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/Joint.cpp line 1437: 3 -> 4 (const)) is detected (stdout_delta=40). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {
@@ -80683,7 +80683,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13703",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 26 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 0 of 9 mutations tried (9 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {
@@ -81516,13 +81516,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/D6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1579",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13895",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 52 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/D6Joint.cpp line 138: 2 -> 3 (const)) is detected (stdout_delta=337). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81553,13 +81553,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/D6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1580",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13896",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 24 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/D6Joint.cpp line 197: 8 -> 9 (const)) is detected (stdout_delta=559). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81707,7 +81707,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13904",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 8 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81738,13 +81738,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/D6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1582",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13907",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 12 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/D6Joint.cpp line 371: 3 -> 4 (const)) is detected (stdout_delta=24). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81818,7 +81818,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13915",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 8 of 15 mutations tried (7 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81849,13 +81849,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/D6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1585",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13926",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 6 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/D6Joint.cpp line 482: == -> != (cmp)) is detected (stdout_delta=12). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81886,13 +81886,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/D6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1586",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13936",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/D6Joint.cpp line 528: - -> + (arith)) is detected (stdout_delta=40). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81923,13 +81923,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/D6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1587",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13937",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/D6Joint.cpp line 652: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)) is detected (stdout_delta=526). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81966,7 +81966,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13949",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -82047,7 +82047,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13960",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 6 of 14 mutations tried (8 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -82066,7 +82066,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13988",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 8 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 2 of 8 mutations tried (6 survived, 8 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -82288,7 +82288,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14046",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 8 of 14 mutations tried (6 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
@@ -82325,7 +82325,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14054",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 0 of 1 mutations tried (1 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
@@ -82381,7 +82381,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14068",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
@@ -82455,7 +82455,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14083",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 7 of 14 mutations tried (7 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
@@ -82529,7 +82529,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14109",
       "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 3 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
@@ -82603,7 +82603,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14123",
       "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
@@ -82677,7 +82677,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14138",
       "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 8 of 12 mutations tried (4 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
@@ -82788,7 +82788,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14187",
       "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 9 of 14 mutations tried (5 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
@@ -82898,7 +82898,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14247",
       "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
@@ -83003,13 +83003,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/PointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1603",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14265",
       "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/PointInPlaneJoint.cpp line 162: body0 -> !(body0) (neg)) is detected (stdout_delta=4). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
@@ -83040,13 +83040,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/PointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2058",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14287",
       "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/PointInPlaneJoint.cpp line 291: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)) is detected (stdout_delta=1262). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
@@ -83120,7 +83120,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14299",
       "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
@@ -83262,13 +83262,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1607",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14321",
       "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/PointOnLineJoint.cpp line 191: + -> - (arith)) is detected (stdout_delta=8). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
@@ -83299,13 +83299,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1608",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14355",
       "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/PointOnLineJoint.cpp line 309: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)) is detected (stdout_delta=1448). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
@@ -83379,7 +83379,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14367",
       "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
@@ -83671,13 +83671,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1614",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14397",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/SphericalJoint.cpp line 408: body0 -> !(body0) (neg)) is detected (stdout_delta=16). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -83745,13 +83745,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1615",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14459",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 8 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/SphericalJoint.cpp line 839: !(lengthSquared >= sphericalMul(mProjectionDistance, mProjec -> !(!(lengthSquared >= sphericalMul(mProjectionDistance, mProj (neg)) is detected (stdout_delta=178). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -83825,7 +83825,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14469",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -83893,13 +83893,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1618",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14488",
       "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/SphericalJoint.cpp line 944: !body0 -> !(!body0) (neg)) is detected (stdout_delta=8). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -83936,7 +83936,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14501",
       "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 11 of 15 mutations tried (4 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -83973,7 +83973,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14510",
       "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 9 of 16 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -84010,7 +84010,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14574",
       "static_proof": "transcribed from the Capstone listing with the ghidra supplement decompile of 0x000a5ee0 (whose body covers 0xa5ee0-0xa704d and 0xa7050-0xa71fe); the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 7 of 13 mutations tried (6 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -84047,7 +84047,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14609",
       "static_proof": "not a function: the swing-limit loop and epilogue of phys_fn_004312 (entered by the last instruction of 004312, `jmp 0x100a7050` at 0xa704b, looping on itself at 0xa71eb and ending `add esp,0xe8; ret 4` with the frame and purge of 004312), written as the second loop of SphericalJoint::row_slot4 in Physics/src/core/SphericalJoint.cpp, whose stable-ID line for this row stands above the one of 004312; transcribed from the Capstone listing with the ghidra supplement decompile of 0x000a5ee0 (whose body covers 0xa5ee0-0xa704d and 0xa7050-0xa71fe); the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the internal-slot differential as the swing-limit loop of phys_fn_004312: a cdb breakpoint on SphericalJoint::row_slot4 in the candidate build was hit 4 times in NxPhysicsJointSlotTests (NxPhysics.dll sha256 5fc6534573c8cd34), and on the swing-limited case (spherical config 0) the recorded renderer calls include the cone's 24 spokes this loop draws, identical to the oracle's (stdout_delta=0); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "continuation of the entry at 0x000a5ee0",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 7 of 13 mutations tried (6 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -84121,7 +84121,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14618",
       "static_proof": "written once as Joint::row004318 in Physics/src/core/CylindricalJoint.cpp and called by both CylindricalJoint::row_slot4 and PrismaticJoint::row_slot4 (the oracle names this one body at slot 4 of the cylindrical table 0x1011a048 and the prismatic table 0x1011a4d0); transcribed from units/core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 7 of 14 mutations tried (7 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
@@ -84195,7 +84195,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14632",
       "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
@@ -84269,7 +84269,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14650",
       "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 6 of 13 mutations tried (7 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
@@ -84752,7 +84752,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14740",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 6 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 9 of 16 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -84826,7 +84826,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14760",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 8 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 5 of 10 mutations tried (5 survived, 6 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -84857,13 +84857,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1635",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14786",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/RevoluteJoint.cpp line 1726: body0 -> !(body0) (neg)) is detected (stdout_delta=16). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -84894,13 +84894,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2108",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14790",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/RevoluteJoint.cpp line 810: body1 -> !(body1) (neg)) is detected (stdout_delta=26). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -84937,7 +84937,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14829",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 3 of 13 mutations tried (10 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -84974,7 +84974,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14870",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 8 of 13 mutations tried (5 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -85048,7 +85048,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14897",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 5 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -85159,7 +85159,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14928",
       "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 5 of 16 mutations tried (11 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -85436,7 +85436,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15044",
       "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointSlotTests caught 0 of 12 mutations tried (12 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
@@ -85467,13 +85467,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1647",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15051",
       "static_proof": "transcribed from units/gap__core__PrismaticJoint.cpp__to__core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 72 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/JointSupport.cpp line 596: !((mFlags >> 10) & 1) -> !(!((mFlags >> 10) & 1)) (neg)) is detected (stdout_delta=144). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
@@ -85504,13 +85504,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1648",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15064",
       "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 10 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests (NxPhysicsJointSlotTests): a mutation inside the row itself (Physics/src/core/JointSupport.cpp line 708: arg1 >= 0.0f -> !(arg1 >= 0.0f) (neg)) is detected (stdout_delta=20). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Shipped C++ function; falsified by the source mutation above (falsification pass).",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
@@ -87021,7 +87021,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15186",
       "static_proof": "transcribed from units/gap__core__NpD6Joint.cpp__to__core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpD6Joint.cpp"
     },
     {
@@ -87243,7 +87243,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15199",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87280,7 +87280,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15202",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87688,7 +87688,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15225",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87836,7 +87836,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15236",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -87873,7 +87873,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15239",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -88170,7 +88170,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15259",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -88399,7 +88399,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15276",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88436,7 +88436,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15279",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88733,7 +88733,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15299",
       "static_proof": "transcribed from units/gap__core__NpFixedJoint.cpp__to__core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88918,7 +88918,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15311",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -88992,7 +88992,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15315",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -89289,7 +89289,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15335",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -89437,7 +89437,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15346",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89474,7 +89474,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15349",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89771,7 +89771,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15369",
       "static_proof": "transcribed from units/gap__core__NpPointOnLineJoint.cpp__to__core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; the gap row is the point-on-line Np unit's constructor/destructor tail (units/joint-families-contract.md ## PointOnLine ### Row assignment); layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89919,7 +89919,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15380",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -89956,7 +89956,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15383",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90364,7 +90364,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15410",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90512,7 +90512,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15421",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -90549,7 +90549,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15424",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -90846,7 +90846,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15444",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -91920,7 +91920,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15509",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
@@ -91957,7 +91957,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15512",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
@@ -92291,7 +92291,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15533",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {

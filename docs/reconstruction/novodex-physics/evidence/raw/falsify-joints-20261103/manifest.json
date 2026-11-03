@@ -1,0 +1,131 @@
+{
+ "doc": "evidence/raw/falsify-joints-20261103/survey.log",
+ "rows": {
+  "phys_fn_004127": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/Joint.cpp line 1437: 3 -> 4 (const)",
+   "detected": "stdout_delta=40",
+   "source_mutation": true
+  },
+  "phys_fn_004178": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/D6Joint.cpp line 138: 2 -> 3 (const)",
+   "detected": "stdout_delta=337",
+   "source_mutation": true
+  },
+  "phys_fn_004180": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/D6Joint.cpp line 197: 8 -> 9 (const)",
+   "detected": "stdout_delta=559",
+   "source_mutation": true
+  },
+  "phys_fn_004190": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/D6Joint.cpp line 371: 3 -> 4 (const)",
+   "detected": "stdout_delta=24",
+   "source_mutation": true
+  },
+  "phys_fn_004196": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/D6Joint.cpp line 482: == -> != (cmp)",
+   "detected": "stdout_delta=12",
+   "source_mutation": true
+  },
+  "phys_fn_004198": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/D6Joint.cpp line 528: - -> + (arith)",
+   "detected": "stdout_delta=40",
+   "source_mutation": true
+  },
+  "phys_fn_004200": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/D6Joint.cpp line 652: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)",
+   "detected": "stdout_delta=526",
+   "source_mutation": true
+  },
+  "phys_fn_004258": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/PointInPlaneJoint.cpp line 162: body0 -> !(body0) (neg)",
+   "detected": "stdout_delta=4",
+   "source_mutation": true
+  },
+  "phys_fn_004260": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/PointInPlaneJoint.cpp line 291: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)",
+   "detected": "stdout_delta=1262",
+   "source_mutation": true
+  },
+  "phys_fn_004272": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/PointOnLineJoint.cpp line 191: + -> - (arith)",
+   "detected": "stdout_delta=8",
+   "source_mutation": true
+  },
+  "phys_fn_004274": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/PointOnLineJoint.cpp line 309: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)",
+   "detected": "stdout_delta=1448",
+   "source_mutation": true
+  },
+  "phys_fn_004294": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/SphericalJoint.cpp line 408: body0 -> !(body0) (neg)",
+   "detected": "stdout_delta=16",
+   "source_mutation": true
+  },
+  "phys_fn_004298": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/SphericalJoint.cpp line 839: !(lengthSquared >= sphericalMul(mProjectionDistance, mProjec -> !(!(lengthSquared >= sphericalMul(mProjectionDistance, mProj (neg)",
+   "detected": "stdout_delta=178",
+   "source_mutation": true
+  },
+  "phys_fn_004306": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/SphericalJoint.cpp line 944: !body0 -> !(!body0) (neg)",
+   "detected": "stdout_delta=8",
+   "source_mutation": true
+  },
+  "phys_fn_004358": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/RevoluteJoint.cpp line 1726: body0 -> !(body0) (neg)",
+   "detected": "stdout_delta=16",
+   "source_mutation": true
+  },
+  "phys_fn_004360": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/RevoluteJoint.cpp line 810: body1 -> !(body1) (neg)",
+   "detected": "stdout_delta=26",
+   "source_mutation": true
+  },
+  "phys_fn_004391": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/JointSupport.cpp line 596: !((mFlags >> 10) & 1) -> !(!((mFlags >> 10) & 1)) (neg)",
+   "detected": "stdout_delta=144",
+   "source_mutation": true
+  },
+  "phys_fn_004393": {
+   "gate": "NxPhysicsJointSlotTests",
+   "family": "NxPhysicsJointSlotTests",
+   "mutation": "Physics/src/core/JointSupport.cpp line 708: arg1 >= 0.0f -> !(arg1 >= 0.0f) (neg)",
+   "detected": "stdout_delta=20",
+   "source_mutation": true
+  }
+ }
+}

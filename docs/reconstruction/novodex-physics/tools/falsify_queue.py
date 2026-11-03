@@ -77,17 +77,26 @@ def batches(rows, size):
     return out
 
 
-def plans(rows, staged, size):
-    """(batch plans, unplanned): plan rows are {id, target, staged: true, count_crash: true} for mutate_cpp --plan; a row
-    whose target is not a registered staged-pair gate (or is unnamed) is unplanned, with the reason."""
+FAMILY_TARGETS = ('NxPhysicsCollisionTests', 'NxPhysicsPhase6RowsTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsAssetTests')
+
+
+def plans(rows, staged, size, oracle=()):
+    """(batch plans, unplanned): plan rows for mutate_cpp --plan. A staged-pair target is detected by its stdout delta; an
+    oracle-differential target whose output is not read by family is detected by its output differing from the unmutated
+    run (`oracle_only`); a family target needs a family chosen by hand and is unplanned, with the reason."""
     ok, unplanned = [], []
     for r in rows:
-        if not r.get('target'):
+        t = r.get('target')
+        if not t:
             unplanned.append({'id': r['id'], 'why': 'no gated target named'})
-        elif r['target'] not in staged:
-            unplanned.append({'id': r['id'], 'why': 'target %s is not a staged-pair gate' % r['target']})
+        elif t in staged:
+            ok.append({'id': r['id'], 'target': t, 'staged': True, 'count_crash': True})
+        elif t in FAMILY_TARGETS and t in oracle:
+            unplanned.append({'id': r['id'], 'why': 'target %s needs a family (its output is read by family)' % t})
+        elif t in oracle:
+            ok.append({'id': r['id'], 'target': t, 'oracle_only': True, 'count_crash': True})
         else:
-            ok.append({'id': r['id'], 'target': r['target'], 'staged': True, 'count_crash': True})
+            unplanned.append({'id': r['id'], 'why': 'target %s is not a staged-pair gate' % t})
     return batches(ok, size), unplanned
 
 
@@ -114,8 +123,8 @@ def main(argv=None):
         print('%-18s rows=%5d bytes=%7d' % ('total', len(queue), sum(sizes.values())))
     if a.plan_dir:
         import close_static_rows
-        _oracle, staged = close_static_rows.gate_targets(str(Path(a.inventory).parent / 'tools' / 'gate_targets.ps1'))
-        pl, un = plans(queue, set(staged), a.batch_size)
+        oracle, staged = close_static_rows.gate_targets(str(Path(a.inventory).parent / 'tools' / 'gate_targets.ps1'))
+        pl, un = plans(queue, set(staged), a.batch_size, set(oracle))
         Path(a.plan_dir).mkdir(parents=True, exist_ok=True)
         for k, rows in enumerate(pl):
             (Path(a.plan_dir) / ('plan-%02d.json' % k)).write_text(json.dumps({'rows': rows}, indent=1), encoding='utf-8')

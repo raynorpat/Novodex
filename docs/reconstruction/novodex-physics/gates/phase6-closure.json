@@ -64,10 +64,11 @@
     ]
   },
   "counts": {
-    "differential_falsified": 161,
+    "differential_falsified": 179,
     "oracle_differential_falsified": 28,
-    "deferred_reconstructed_not_falsified": 242,
-    "deferred_not_reconstructed_in_phase": 2
+    "deferred_reconstructed_not_falsified": 188,
+    "deferred_not_reconstructed_in_phase": 2,
+    "deferred_not_independently_falsifiable": 36
   },
   "closed": [
     {
@@ -1973,6 +1974,186 @@
         "mutation": "0x0009ae50 mov ecx, dword ptr [eax + 8] -> mov ecx, dword ptr [eax + 12]",
         "detected": "mismatches=7"
       }
+    },
+    {
+      "id": "phys_fn_004127",
+      "rva": "0x00099590",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/Joint.cpp line 1437: 3 -> 4 (const)",
+        "detected": "stdout_delta=40"
+      }
+    },
+    {
+      "id": "phys_fn_004178",
+      "rva": "0x0009b270",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/D6Joint.cpp line 138: 2 -> 3 (const)",
+        "detected": "stdout_delta=337"
+      }
+    },
+    {
+      "id": "phys_fn_004180",
+      "rva": "0x0009b400",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/D6Joint.cpp line 197: 8 -> 9 (const)",
+        "detected": "stdout_delta=559"
+      }
+    },
+    {
+      "id": "phys_fn_004190",
+      "rva": "0x0009b6a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/D6Joint.cpp line 371: 3 -> 4 (const)",
+        "detected": "stdout_delta=24"
+      }
+    },
+    {
+      "id": "phys_fn_004196",
+      "rva": "0x0009ba70",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/D6Joint.cpp line 482: == -> != (cmp)",
+        "detected": "stdout_delta=12"
+      }
+    },
+    {
+      "id": "phys_fn_004198",
+      "rva": "0x0009bbd0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/D6Joint.cpp line 528: - -> + (arith)",
+        "detected": "stdout_delta=40"
+      }
+    },
+    {
+      "id": "phys_fn_004200",
+      "rva": "0x0009c060",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/D6Joint.cpp line 652: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)",
+        "detected": "stdout_delta=526"
+      }
+    },
+    {
+      "id": "phys_fn_004258",
+      "rva": "0x000a10e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/PointInPlaneJoint.cpp line 162: body0 -> !(body0) (neg)",
+        "detected": "stdout_delta=4"
+      }
+    },
+    {
+      "id": "phys_fn_004260",
+      "rva": "0x000a1650",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/PointInPlaneJoint.cpp line 291: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)",
+        "detected": "stdout_delta=1262"
+      }
+    },
+    {
+      "id": "phys_fn_004272",
+      "rva": "0x000a1d10",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/PointOnLineJoint.cpp line 191: + -> - (arith)",
+        "detected": "stdout_delta=8"
+      }
+    },
+    {
+      "id": "phys_fn_004274",
+      "rva": "0x000a2530",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/PointOnLineJoint.cpp line 309: !((mFlags >> 9) & 1) -> !(!((mFlags >> 9) & 1)) (neg)",
+        "detected": "stdout_delta=1448"
+      }
+    },
+    {
+      "id": "phys_fn_004294",
+      "rva": "0x000a2f80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/SphericalJoint.cpp line 408: body0 -> !(body0) (neg)",
+        "detected": "stdout_delta=16"
+      }
+    },
+    {
+      "id": "phys_fn_004298",
+      "rva": "0x000a47b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/SphericalJoint.cpp line 839: !(lengthSquared >= sphericalMul(mProjectionDistance, mProjec -> !(!(lengthSquared >= sphericalMul(mProjectionDistance, mProj (neg)",
+        "detected": "stdout_delta=178"
+      }
+    },
+    {
+      "id": "phys_fn_004306",
+      "rva": "0x000a4ac0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/SphericalJoint.cpp line 944: !body0 -> !(!body0) (neg)",
+        "detected": "stdout_delta=8"
+      }
+    },
+    {
+      "id": "phys_fn_004358",
+      "rva": "0x000a9f50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/RevoluteJoint.cpp line 1726: body0 -> !(body0) (neg)",
+        "detected": "stdout_delta=16"
+      }
+    },
+    {
+      "id": "phys_fn_004360",
+      "rva": "0x000aa060",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/RevoluteJoint.cpp line 810: body1 -> !(body1) (neg)",
+        "detected": "stdout_delta=26"
+      }
+    },
+    {
+      "id": "phys_fn_004391",
+      "rva": "0x000af3c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/JointSupport.cpp line 596: !((mFlags >> 10) & 1) -> !(!((mFlags >> 10) & 1)) (neg)",
+        "detected": "stdout_delta=144"
+      }
+    },
+    {
+      "id": "phys_fn_004393",
+      "rva": "0x000af710",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "falsification": {
+        "mutation": "Physics/src/core/JointSupport.cpp line 708: arg1 >= 0.0f -> !(arg1 >= 0.0f) (neg)",
+        "detected": "stdout_delta=20"
+      }
     }
   ],
   "deferred": [
@@ -2226,16 +2407,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004127",
-      "rva": "0x00099590",
-      "size": 235,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 7 of 13 mutations tried (6 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004133",
@@ -2253,7 +2425,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 0 of 9 mutations tried (9 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004147",
@@ -2276,24 +2448,6 @@
       "id": "phys_fn_004163",
       "rva": "0x0009aca0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004178",
-      "rva": "0x0009b270",
-      "size": 396,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004180",
-      "rva": "0x0009b400",
-      "size": 330,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
@@ -2330,19 +2484,10 @@
       "id": "phys_fn_004188",
       "rva": "0x0009b5e0",
       "size": 181,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004190",
-      "rva": "0x0009b6a0",
-      "size": 98,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004192",
@@ -2360,43 +2505,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004196",
-      "rva": "0x0009ba70",
-      "size": 349,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004198",
-      "rva": "0x0009bbd0",
-      "size": 1164,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004200",
-      "rva": "0x0009c060",
-      "size": 2098,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 8 of 15 mutations tried (7 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004202",
       "rva": "0x0009c8a0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004206",
@@ -2405,7 +2523,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 6 of 14 mutations tried (8 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004207",
@@ -2414,7 +2532,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 2 of 8 mutations tried (6 survived, 8 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004210",
@@ -2468,7 +2586,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 8 of 14 mutations tried (6 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004221",
@@ -2477,7 +2595,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 0 of 1 mutations tried (1 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004222",
@@ -2492,10 +2610,10 @@
       "id": "phys_fn_004224",
       "rva": "0x0009eac0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004226",
@@ -2513,7 +2631,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 7 of 14 mutations tried (7 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004230",
@@ -2528,10 +2646,10 @@
       "id": "phys_fn_004232",
       "rva": "0x0009f230",
       "size": 564,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 3 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004234",
@@ -2546,10 +2664,10 @@
       "id": "phys_fn_004236",
       "rva": "0x0009f520",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004238",
@@ -2567,7 +2685,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 8 of 12 mutations tried (4 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004244",
@@ -2585,7 +2703,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 9 of 14 mutations tried (5 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004248",
@@ -2609,33 +2727,15 @@
       "id": "phys_fn_004252",
       "rva": "0x000a0fd0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004254",
       "rva": "0x000a1010",
       "size": 141,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004258",
-      "rva": "0x000a10e0",
-      "size": 1391,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004260",
-      "rva": "0x000a1650",
-      "size": 1273,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
@@ -2654,10 +2754,10 @@
       "id": "phys_fn_004264",
       "rva": "0x000a1bb0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004266",
@@ -2678,24 +2778,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004272",
-      "rva": "0x000a1d10",
-      "size": 2073,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004274",
-      "rva": "0x000a2530",
-      "size": 1345,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_004276",
       "rva": "0x000a2a80",
       "size": 84,
@@ -2708,10 +2790,10 @@
       "id": "phys_fn_004278",
       "rva": "0x000a2ae0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004280",
@@ -2768,24 +2850,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004294",
-      "rva": "0x000a2f80",
-      "size": 269,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004298",
-      "rva": "0x000a47b0",
-      "size": 317,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_004300",
       "rva": "0x000a48f0",
       "size": 194,
@@ -2798,10 +2862,10 @@
       "id": "phys_fn_004302",
       "rva": "0x000a49c0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004304",
@@ -2813,22 +2877,13 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004306",
-      "rva": "0x000a4ac0",
-      "size": 1075,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_004308",
       "rva": "0x000a4f00",
       "size": 1107,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 11 of 15 mutations tried (4 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004310",
@@ -2837,7 +2892,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 9 of 16 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004312",
@@ -2846,7 +2901,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 7 of 13 mutations tried (6 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004314",
@@ -2855,7 +2910,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 7 of 13 mutations tried (6 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004318",
@@ -2864,7 +2919,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 7 of 14 mutations tried (7 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004320",
@@ -2879,10 +2934,10 @@
       "id": "phys_fn_004322",
       "rva": "0x000a7700",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004324",
@@ -2900,7 +2955,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 6 of 13 mutations tried (7 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004328",
@@ -2918,7 +2973,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 9 of 16 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004354",
@@ -2936,25 +2991,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004358",
-      "rva": "0x000a9f50",
-      "size": 269,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004360",
-      "rva": "0x000aa060",
-      "size": 4460,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 5 of 10 mutations tried (5 survived, 6 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004362",
@@ -2963,7 +3000,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 3 of 13 mutations tried (10 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004364",
@@ -2972,7 +3009,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 8 of 13 mutations tried (5 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004366",
@@ -2987,10 +3024,10 @@
       "id": "phys_fn_004368",
       "rva": "0x000ac5f0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004372",
@@ -3008,7 +3045,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 5 of 16 mutations tried (11 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004378",
@@ -3053,25 +3090,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004391",
-      "rva": "0x000af3c0",
-      "size": 837,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004393",
-      "rva": "0x000af710",
-      "size": 122,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointSlotTests caught 0 of 12 mutations tried (12 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004399",
@@ -3148,10 +3167,10 @@
       "id": "phys_fn_004473",
       "rva": "0x000b0c20",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004475",
@@ -3184,19 +3203,19 @@
       "id": "phys_fn_004485",
       "rva": "0x000b0df0",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004487",
       "rva": "0x000b0e50",
       "size": 97,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004489",
@@ -3265,10 +3284,10 @@
       "id": "phys_fn_004509",
       "rva": "0x000b1160",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004511",
@@ -3301,19 +3320,19 @@
       "id": "phys_fn_004517",
       "rva": "0x000b12c0",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004519",
       "rva": "0x000b1320",
       "size": 97,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004521",
@@ -3382,10 +3401,10 @@
       "id": "phys_fn_004535",
       "rva": "0x000b15a0",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004541",
@@ -3418,19 +3437,19 @@
       "id": "phys_fn_004547",
       "rva": "0x000b1790",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004549",
       "rva": "0x000b17f0",
       "size": 97,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004551",
@@ -3499,10 +3518,10 @@
       "id": "phys_fn_004565",
       "rva": "0x000b1a70",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004567",
@@ -3535,19 +3554,19 @@
       "id": "phys_fn_004575",
       "rva": "0x000b1c00",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004579",
       "rva": "0x000b1c90",
       "size": 97,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004581",
@@ -3616,10 +3635,10 @@
       "id": "phys_fn_004595",
       "rva": "0x000b1f10",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004597",
@@ -3652,19 +3671,19 @@
       "id": "phys_fn_004603",
       "rva": "0x000b2070",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004605",
       "rva": "0x000b20d0",
       "size": 97,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004607",
@@ -3733,10 +3752,10 @@
       "id": "phys_fn_004621",
       "rva": "0x000b2350",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004623",
@@ -3769,19 +3788,19 @@
       "id": "phys_fn_004629",
       "rva": "0x000b24b0",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004631",
       "rva": "0x000b2510",
       "size": 97,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004633",
@@ -3868,10 +3887,10 @@
       "id": "phys_fn_004653",
       "rva": "0x000b2890",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004655",
@@ -3904,19 +3923,19 @@
       "id": "phys_fn_004661",
       "rva": "0x000b29f0",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004663",
       "rva": "0x000b2a50",
       "size": 97,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004665",
@@ -3985,10 +4004,10 @@
       "id": "phys_fn_004679",
       "rva": "0x000b2cd0",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004701",
@@ -4048,19 +4067,19 @@
       "id": "phys_fn_004737",
       "rva": "0x000b3550",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004739",
       "rva": "0x000b35b0",
       "size": 97,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004741",
@@ -4129,10 +4148,10 @@
       "id": "phys_fn_004757",
       "rva": "0x000b3860",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_004763",
