@@ -99,5 +99,29 @@ class FamilyTests(unittest.TestCase):
         self.assertEqual([u['id'] for u in unplanned], ['d'])
 
 
+
+class VendoredPlanTests(unittest.TestCase):
+    COV = {('qhull', '0x00001000'): 'thirdparty:qh_a=exact+qh_a_x87=exact', ('qhull', '0x00002000'): 'thirdparty:qh_a=exact',
+           ('opcode', '0x00003000'): 'thirdparty:op_b=exact'}
+    NAMES = {'qh_a', 'qh_a_x87', 'op_b'}
+
+    def rows(self):
+        return [{'id': 'a', 'rva': 0x1000, 'third_party': 'qhull', 'group': 'vendored_qhull'},
+                {'id': 'b', 'rva': 0x2000, 'third_party': 'qhull', 'group': 'vendored_qhull'},
+                {'id': 'c', 'rva': 0x3000, 'third_party': 'opcode', 'group': 'vendored_opcode'},
+                {'id': 'd', 'rva': 0x4000, 'third_party': 'opcode', 'group': 'vendored_opcode'}]
+
+    def test_plans_name_the_families_and_keep_overlapping_rows_apart(self):
+        plans = fq.vendored_plans(self.rows(), self.COV, self.NAMES, 5)
+        by = {r['id']: r for p in plans for r in p}
+        self.assertEqual(by['a']['families'], ['qh_a', 'qh_a_x87'])
+        self.assertEqual(by['c']['families'], ['op_b'])
+        self.assertEqual(by['d']['families'], [])
+        self.assertTrue(all(r['lines'] and r['target'] == 'NxPhysicsThirdPartyTests' for p in plans for r in p))
+        together = [sorted(r['id'] for r in p) for p in plans]
+        self.assertFalse(any({'a', 'b'} <= set(t) for t in together))
+        self.assertTrue(any(t == ['d'] for t in together))
+
+
 if __name__ == '__main__':
     unittest.main()

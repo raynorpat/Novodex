@@ -114,6 +114,18 @@ def plans(rows, staged, size, oracle=(), families=None):
     return batches(ok, size), unplanned
 
 
+def vendored_plans(rows, coverage, names, size):
+    """Batch plans for vendored rows gated by NxPhysicsThirdPartyTests: {id, target, lines: true, families}. A row's families
+    are the ones its coverage row names that the target prints; rows whose families overlap never share a batch."""
+    import vendor_gate
+    plan_rows = []
+    for r in rows:
+        diff = coverage.get((r.get('third_party'), '0x%08x' % r['rva']), '')
+        plan_rows.append({'id': r['id'], 'target': 'NxPhysicsThirdPartyTests', 'lines': True,
+                          'families': vendor_gate.row_families(diff, names)})
+    return vendor_gate.pack(plan_rows, size)
+
+
 def main(argv=None):
     here = Path(__file__).resolve().parents[1]
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -123,6 +135,9 @@ def main(argv=None):
     ap.add_argument('--summary', action='store_true')
     ap.add_argument('--plan-dir', help='write plan-<k>.json (staged-pair rows, no two sharing a target) and unplanned.json')
     ap.add_argument('--batch-size', type=int, default=3)
+    ap.add_argument('--vendored-plans', help='write plan-<k>.json for the vendored rows of the queue (needs --coverage and --names)')
+    ap.add_argument('--coverage', help='evidence/phase4-third-party-map/vendored_coverage.csv')
+    ap.add_argument('--names', help='the family names NxPhysicsThirdPartyTests prints, one per line')
     ap.add_argument('--families', help='a file with the family names the target prints, one per line (NxPhysicsCollisionTests default run)')
     ap.add_argument('--force-target', help='the gated target to try for rows whose proof names none')
     ap.add_argument('--exclude-log', action='append', default=[], help='skip rows that already have a SURVEY line in this mutate_cpp log')
@@ -145,6 +160,15 @@ def main(argv=None):
         for g, n in counts.most_common():
             print('%-18s rows=%5d bytes=%7d' % (g, n, sizes[g]))
         print('%-18s rows=%5d bytes=%7d' % ('total', len(queue), sum(sizes.values())))
+    if a.vendored_plans:
+        import csv
+        cov = {(c['library'], c['rva']): c['differential'] for c in csv.DictReader(open(a.coverage, encoding='utf-8'))}
+        names = set(x.strip() for x in open(a.names, encoding='utf-8') if x.strip())
+        pl = vendored_plans([r for r in queue if r.get('third_party')], cov, names, a.batch_size)
+        Path(a.vendored_plans).mkdir(parents=True, exist_ok=True)
+        for k, rows in enumerate(pl):
+            (Path(a.vendored_plans) / ('plan-%03d.json' % k)).write_text(json.dumps({'rows': rows}, indent=1), encoding='utf-8')
+        print('%d vendored plans' % len(pl))
     if a.plan_dir:
         import close_static_rows
         oracle, staged = close_static_rows.gate_targets(str(Path(a.inventory).parent / 'tools' / 'gate_targets.ps1'))

@@ -534,5 +534,31 @@ class ListingFlagTests(unittest.TestCase):
         self.assertNotIn('listing', m['rows']['phys_fn_000002'])
 
 
+
+class VendoredLocateTests(unittest.TestCase):
+    def test_a_vendored_row_is_located_in_the_merged_tree_copy(self):
+        repo = Path(tempfile.mkdtemp())
+        merged = repo / 'build' / 'External' / 'qhull-tree'
+        merged.mkdir(parents=True)
+        (merged / 'geom.c').write_text('/* merged */' + chr(10) + 'int qh_x(int a)' + chr(10) + '{' + chr(10) + '  return a + 2;' + chr(10) + '}' + chr(10), encoding='utf-8')
+        row = {'id': 'phys_fn_000001', 'implementation': 'External/qhull/upstream/src/geom.c', 'implementation_symbol': 'qh_x'}
+        path, text, span, q = mc.locate(row, repo)
+        self.assertEqual(Path(path), merged / 'geom.c')
+        self.assertEqual(q, 'qh_x')
+        self.assertIn('a + 2', text[span[0]:span[1]])
+
+
+class LinesGateTests(unittest.TestCase):
+    OUT = chr(10).join(['loaded module=x', 'thirdparty name=f1 oracle=aa mismatches=0', 'thirdparty name=f2 oracle=bb mismatches=0'])
+
+    def test_a_lines_spec_is_detected_by_its_own_families(self):
+        import vendor_gate as vg
+        spec = {'target': 'NxPhysicsThirdPartyTests', 'lines': True, 'families': ['f2'], 'base_lines': vg.parse_lines(self.OUT)}
+        mr = RunGateFamilyTests.FakeMr(self.OUT.replace('oracle=aa', 'oracle=zz'))
+        self.assertIsNone(mc.run_gate(mr, spec))
+        mr = RunGateFamilyTests.FakeMr(self.OUT.replace('oracle=bb', 'oracle=zz'))
+        self.assertEqual(mc.run_gate(mr, spec), 1)
+
+
 if __name__ == '__main__':
     unittest.main()

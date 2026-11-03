@@ -610,7 +610,8 @@ def locate(row, repo):
     rel = row.get('implementation') or row.get('source')
     if not rel:
         return None, None, None, 'no source file'
-    path = Path(repo) / rel
+    import vendor_gate
+    path = Path(repo) / (vendor_gate.merged_path(rel) or rel)
     if not path.is_file():
         return path, None, None, 'source file missing'
     text = path.read_bytes().decode('latin-1')   # byte offsets, CRLF kept: a span must index the bytes that are rewritten
@@ -705,6 +706,11 @@ def run_gate(mr, spec):
     """Run an already built gate once; the detection count or None."""
     import subprocess
     try:
+        if spec.get('lines'):
+            import vendor_gate
+            cmd = [mr.harness_command(spec['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
+            now = vendor_gate.parse_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
+            return vendor_gate.detection(spec['base_lines'], now, spec.get('families') or [])
         if spec.get('oracle_only'):
             cmd = [mr.harness_command(spec['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
             r = mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO)
@@ -750,6 +756,15 @@ def main_batch(argv=None):
     sections, _ = _pe_layout(baseline)
     end = sections[0][0] + sections[0][1]
     for p in plan:
+        if p.get('lines'):
+            import vendor_gate
+            cmd = [mr.harness_command(p['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
+            first = vendor_gate.parse_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
+            again = vendor_gate.parse_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
+            if first != again or not first:
+                print('NOT DETERMINISTIC %s (%s); the plan is refused' % (p['id'], p['target']))
+                return 2
+            p['base_lines'] = first
         if p.get('oracle_only'):
             cmd = [mr.harness_command(p['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
             run1 = mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO)
@@ -775,7 +790,7 @@ def main_batch(argv=None):
             continue
         # key: what keeps two rows of one family out of a batch; gate_family: what the gate prints
         entries.append(dict(p, path=str(path), span=span, qualified=qualified, rva=rva, oracle=(int(row['rva'], 16), size),
-                            gate_family=p.get('family') or '', family=p['target'] + ':' + (p.get('family') or '')))
+                            gate_family=p.get('family') or '', family=p['target'] + ':' + (p['id'] if p.get('lines') else (p.get('family') or ''))))
     kept = []
     for e in entries:
         if run_gate(mr, e):
@@ -785,14 +800,31 @@ def main_batch(argv=None):
     entries = kept
     specs = {e['family']: e for e in entries}
 
+    round_out = {}
+
+    def run_family(fam):
+        """One run of a lines gate serves every row of the build; any other gate is run per row."""
+        e = specs[fam]
+        if not e.get('lines'):
+            return run_gate(mr, e)
+        import vendor_gate
+        if 'now' not in round_out:
+            cmd = [mr.harness_command(e['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
+            try:
+                round_out['now'] = vendor_gate.parse_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
+            except Exception:
+                round_out['now'] = e['base_lines']
+        return vendor_gate.detection(e['base_lines'], round_out['now'], e.get('families') or [])
+
     def build_all():
+        round_out.clear()
         mr.remove_stale_dll(mr.REPO)
         ok = mr._build('NxPhysics', False)
         for t in targets:
             ok = ok and mr._build(t, False)
         return Path(a.dll).read_bytes() if ok else None
 
-    out = sweep_batch(entries, syms, end, baseline, lambda fam: run_gate(mr, specs[fam]), build_all, a.limit)
+    out = sweep_batch(entries, syms, end, baseline, run_family, build_all, a.limit)
     lines = []
     for e in entries:
         res = out[e['id']]
