@@ -595,7 +595,9 @@ def main_manifest(argv=None):
     ap.add_argument('--family', action='append', default=[], help='ROW=family (repeatable) for a harness family')
     a = ap.parse_args(argv)
     inv = {r['id']: r for r in json.load(open(a.inventory, encoding='utf-8'))['functions']}
-    sources = {rid: (r.get('implementation') or r.get('source')) for rid, r in inv.items()}
+    import vendor_gate
+    repo = here.parents[3]
+    sources = {rid: vendor_gate.source_file(r, repo) for rid, r in inv.items()}
     fams = dict(f.split('=', 1) for f in a.family)
     m = write_manifest(open(a.manifest, encoding='utf-8').read().splitlines(), a.doc, sources, fams)
     Path(a.out).write_text(json.dumps(m, indent=1), encoding='utf-8')
