@@ -702,6 +702,10 @@ def digest_difference(baseline, stdout, returncode, count_crash=False, baseline_
     return max(1, len(set(now) ^ set(baseline)))
 
 
+def crashed(returncode):
+    return returncode < 0 or returncode >= 0xC0000000
+
+
 def run_gate(mr, spec):
     """Run an already built gate once; the detection count or None."""
     import subprocess
@@ -709,7 +713,10 @@ def run_gate(mr, spec):
         if spec.get('lines'):
             import vendor_gate
             cmd = [mr.harness_command(spec['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
-            now = vendor_gate.parse_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
+            done = mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO)
+            if crashed(done.returncode) and not spec.get('count_crash'):
+                return None     # a crash truncates the output; the missing lines are not a difference the gate saw
+            now = vendor_gate.parse_lines(done.stdout)
             return vendor_gate.detection(spec['base_lines'], now, spec.get('families') or [])
         if spec.get('oracle_only'):
             cmd = [mr.harness_command(spec['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
@@ -811,9 +818,13 @@ def main_batch(argv=None):
         if 'now' not in round_out:
             cmd = [mr.harness_command(e['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
             try:
-                round_out['now'] = vendor_gate.parse_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
+                done = mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO)
+                round_out['now'] = vendor_gate.parse_lines(done.stdout)
+                round_out['crashed'] = crashed(done.returncode)
             except Exception:
-                round_out['now'] = e['base_lines']
+                round_out['now'], round_out['crashed'] = e['base_lines'], False
+        if round_out['crashed'] and not e.get('count_crash'):
+            return None
         return vendor_gate.detection(e['base_lines'], round_out['now'], e.get('families') or [])
 
     def build_all():

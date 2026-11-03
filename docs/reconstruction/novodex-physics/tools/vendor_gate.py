@@ -35,6 +35,33 @@ def merged_path(rel):
     return None
 
 
+def _remainder(rel):
+    rel = (rel or '').replace(chr(92), '/')
+    for src, dst in ROOTS:
+        if rel.startswith(src):
+            return dst, rel[len(src):]
+    return None, None
+
+
+def same_source(a, b):
+    """True when two repository paths are the same vendored file: one upstream, one the overlay that shadows it."""
+    da, ra = _remainder(a)
+    db, rb = _remainder(b)
+    return da is not None and da == db and ra == rb
+
+
+def source_file(row, repo):
+    """The repository file a vendored row's mutation actually lands in: the overlay when one shadows the upstream file."""
+    rel = (row.get('implementation') or row.get('source') or '').replace(chr(92), '/')
+    dst, rest = _remainder(rel)
+    if dst is None:
+        return rel
+    for src, d in ROOTS:
+        if d == dst and 'novodex' in src and (Path(repo) / (src + rest)).is_file():
+            return src + rest
+    return rel
+
+
 def parse_lines(stdout):
     """{family: line} for the lines of the target's output that name a family."""
     out = {}
@@ -61,7 +88,7 @@ def detection(base, now, families):
 
 def row_families(differential, names):
     """The families named in a coverage row's `differential` column that the target prints, sorted."""
-    found = set(re.findall(r'(?:^|[:+;])([a-z0-9_]+)=(?:exact|discrete|divergent)', differential or ''))
+    found = set(re.findall(r'(?:^|[:+;])([a-z0-9_.]+)=(?:exact|discrete|divergent|lastbit)', differential or ''))
     return sorted(found & set(names))
 
 

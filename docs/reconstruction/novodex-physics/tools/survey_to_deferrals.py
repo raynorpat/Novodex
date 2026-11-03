@@ -20,7 +20,7 @@ def classify(lines, limit=2):
             stats[m.group(1)] = (m.group(2),) + tuple(int(x) for x in m.groups()[2:6]) + (int(m.group(7) or 0),)
     closable, deferred = [], {}
     for rid, (target, tried, caught, survived, rejected, nobuild) in stats.items():
-        if caught >= 1 and survived <= limit:
+        if caught >= 1 and survived <= min(limit, tried // 4):
             closable.append(rid)
         elif tried == 0 and nobuild >= rejected > 0:
             continue    # every attempt failed to build: nothing was learned about the row
@@ -42,7 +42,8 @@ def classify(lines, limit=2):
 def main(argv=None):
     argv = argv or sys.argv[1:]
     log, doc, out = argv[:3]
-    closable, deferred = classify(open(log, encoding='utf-8').read().splitlines())
+    limit = int(argv[3]) if len(argv) > 3 else 2    # survivors allowed for a closable row (1 when only 6 mutations were tried)
+    closable, deferred = classify(open(log, encoding='utf-8').read().splitlines(), limit)
     json.dump({'doc': doc, 'rows': deferred}, open(out, 'w', encoding='utf-8'), indent=1)
     print('closable %d, deferred %d' % (len(closable), len(deferred)))
 

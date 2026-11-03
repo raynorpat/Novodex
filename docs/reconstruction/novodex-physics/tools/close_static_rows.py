@@ -159,7 +159,9 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
             if not re.search(r'\bline \d+', spec['mutation']):
                 raise ValueError('%s: a source mutation must name its line: %r' % (rid, spec['mutation']))
             home = (r.get('implementation') or r.get('source') or '').replace('\\', '/')
-            if not home or not spec['mutation'].replace('\\', '/').startswith(home + ' '):
+            named = spec['mutation'].replace('\\', '/').split(' line ')[0]
+            import vendor_gate
+            if not home or not (named == home or vendor_gate.same_source(named, home)):
                 raise ValueError('%s: the mutation %r does not name the row\'s own source file %s' % (rid, spec['mutation'], home))
         else:
             if r['state'] != 'reconstructed' or AWAITS not in (r.get('notes') or ''):
