@@ -339,5 +339,32 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(p.read_text(encoding='utf-8'), TWO)
 
 
+
+class ManifestTests(unittest.TestCase):
+    LOG = [
+        'SURVEY phys_fn_000001 NxPhysicsJointSlotTests tried=2 caught=2 survived=0 rejected=1',
+        'CAUGHT phys_fn_000001 NxPhysicsJointSlotTests stdout_delta=2842 line 935: determinant == 0.0f  ->  !(determinant == 0.0f)  (neg)',
+        'CAUGHT phys_fn_000001 NxPhysicsJointSlotTests stdout_delta=16 line 1045: 4  ->  5  (const)',
+        'CAUGHT phys_fn_000002 NxPhysicsCollisionTests mismatches=3 line 12: a < b  ->  a <= b  (cmp)',
+        'NOT CAUGHT phys_fn_000003 (4 survived, 0 rejected)']
+
+    def test_manifest_from_log(self):
+        m = mc.write_manifest(self.LOG, 'evidence/raw/x/survey.log',
+                              {'phys_fn_000001': 'Physics/src/core/RevoluteJoint.cpp', 'phys_fn_000002': 'Physics/src/Distance.cpp'},
+                              {'phys_fn_000002': 'convex_mesh_faces'})
+        self.assertEqual(sorted(m['rows']), ['phys_fn_000001', 'phys_fn_000002'])
+        a = m['rows']['phys_fn_000001']
+        self.assertEqual((a['gate'], a['family'], a['detected'], a['source_mutation']),
+                         ('NxPhysicsJointSlotTests', 'NxPhysicsJointSlotTests', 'stdout_delta=2842', True))
+        self.assertTrue(a['mutation'].startswith('Physics/src/core/RevoluteJoint.cpp line 935'))
+        b = m['rows']['phys_fn_000002']
+        self.assertEqual((b['gate'], b['family'], b['detected']), ('NxPhysicsCollisionTests', 'convex_mesh_faces', 'mismatches=3'))
+        self.assertEqual(m['doc'], 'evidence/raw/x/survey.log')
+
+    def test_manifest_skips_rows_without_a_catch(self):
+        m = mc.write_manifest(self.LOG, 'd', {'phys_fn_000001': 'a.cpp', 'phys_fn_000002': 'b.cpp'}, {})
+        self.assertNotIn('phys_fn_000003', m['rows'])
+
+
 if __name__ == '__main__':
     unittest.main()

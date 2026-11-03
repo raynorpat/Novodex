@@ -508,6 +508,45 @@ def sweep_batch(entries, syms, end, baseline, run_family, build_all, limit, writ
     return out
 
 
+# ---- the closing manifest -----------------------------------------------------------------------------------------
+
+def write_manifest(lines, doc, sources, families=None):
+    """The `close_static_rows.py --falsified` manifest for the first CAUGHT line of each row in a log.
+
+    sources: row id -> source file (named in the mutation text); families: row id -> family name (default: the target,
+    which is what a staged-pair gate calls its family)."""
+    families = families or {}
+    rows = {}
+    for line in lines:
+        m = re.match(r'CAUGHT (phys_fn_\d+) (\w+) (stdout_delta|mismatches)=(\d+) (line \d+: .*)$', line.strip())
+        if not m or m.group(1) in rows:
+            continue
+        rid, gate, kind, n, desc = m.groups()
+        rows[rid] = {'gate': gate, 'family': families.get(rid, gate), 'mutation': '%s %s' % (sources.get(rid, '?'), ' '.join(desc.split())),
+                     'detected': '%s=%s' % (kind, n), 'source_mutation': True}
+    return {'doc': doc, 'rows': rows}
+
+
+def main_manifest(argv=None):
+    import argparse
+    import json
+    here = Path(__file__).resolve().parent
+    ap = argparse.ArgumentParser(description='write the closing manifest from a mutate_cpp log')
+    ap.add_argument('--manifest', required=True, help='the log')
+    ap.add_argument('--doc', required=True, help='the evidence file the manifest cites (relative to the novodex-physics directory)')
+    ap.add_argument('--out', required=True)
+    ap.add_argument('--inventory', default=str(here.parent / 'inventory.json'))
+    ap.add_argument('--family', action='append', default=[], help='ROW=family (repeatable) for a harness family')
+    a = ap.parse_args(argv)
+    inv = {r['id']: r for r in json.load(open(a.inventory, encoding='utf-8'))['functions']}
+    sources = {rid: (r.get('implementation') or r.get('source')) for rid, r in inv.items()}
+    fams = dict(f.split('=', 1) for f in a.family)
+    m = write_manifest(open(a.manifest, encoding='utf-8').read().splitlines(), a.doc, sources, fams)
+    Path(a.out).write_text(json.dumps(m, indent=1), encoding='utf-8')
+    print('manifest rows %d' % len(m['rows']))
+    return 0
+
+
 # ---- command line -------------------------------------------------------------------------------------------------
 
 def locate(row, repo):
@@ -678,4 +717,4 @@ def main_batch(argv=None):
 
 if __name__ == '__main__':
     import sys
-    sys.exit(main_batch() if '--plan' in sys.argv else main())
+    sys.exit(main_batch() if '--plan' in sys.argv else main_manifest() if '--manifest' in sys.argv else main())

@@ -137,6 +137,9 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
     Row manifest: {"gate": target, "family": name, "mutation": text, "detected": "mismatches=N" | "stdout_delta=N"}.
     The proof kind follows the detection: mismatches= closes as oracle_differential_falsified (the gate must be a
     registered oracle-differential target), stdout_delta= as differential_falsified (a staged-pair target).
+    A row with "source_mutation": true is shipped C++ (not a listing transcription): its mutation is a source edit named
+    by file and line ("... line N: old -> new"), tools/mutate_cpp.py has already checked that the edit changed only the
+    row's own compiled function, and it need not await the testing pass; vendored_not_falsified entries close the same way.
     """
     by = {r['id']: r for r in inventory['functions']}
     for rid, spec in manifest['rows'].items():
@@ -149,27 +152,39 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
         if spec['gate'] not in registered:
             raise ValueError('%s: gate %s is not a registered %s target' % (rid, spec['gate'], proof))
         gate_phases = sorted(registered[spec['gate']])
-        if r['state'] != 'reconstructed' or AWAITS not in (r.get('notes') or ''):
-            raise ValueError('%s is %s and does not await the testing pass' % (rid, r['state']))
-        at = re.search(r'0x([0-9a-fA-F]+)', spec['mutation'])
-        lo = int(r['rva'], 16)
-        if not at or not lo <= int(at.group(1), 16) < lo + int(r['size']):
-            raise ValueError('%s: mutation %r is not at an address inside the row (%s, %s bytes)'
-                             % (rid, spec['mutation'], r['rva'], r['size']))
+        source = bool(spec.get('source_mutation'))
+        if source:
+            if r['state'] not in ('reconstructed', 'statically_reviewed'):
+                raise ValueError('%s is %s, not a row awaiting a mutation' % (rid, r['state']))
+            if not re.search(r'\bline \d+', spec['mutation']):
+                raise ValueError('%s: a source mutation must name its line: %r' % (rid, spec['mutation']))
+        else:
+            if r['state'] != 'reconstructed' or AWAITS not in (r.get('notes') or ''):
+                raise ValueError('%s is %s and does not await the testing pass' % (rid, r['state']))
+            at = re.search(r'0x([0-9a-fA-F]+)', spec['mutation'])
+            lo = int(r['rva'], 16)
+            if not at or not lo <= int(at.group(1), 16) < lo + int(r['size']):
+                raise ValueError('%s: mutation %r is not at an address inside the row (%s, %s bytes)'
+                                 % (rid, spec['mutation'], r['rva'], r['size']))
         r['state'] = 'dynamically_gated'
         r['dynamic_proof'] = ('%s (%s): a mutation inside the row itself (%s) is detected (%s). See %s.'
                               % (spec['gate'], spec['family'], spec['mutation'], spec['detected'], manifest['doc']))
         # a manifest says "wired": false for a row that is driven directly in the harness and not called by the product
         how = 'wired and driven' if spec.get('wired', True) else 'driven directly in the oracle-differential harness (not wired into the product by this closure)'
-        r['notes'] = 'Listing transcription, %s; falsified by the mutation above (testing pass).' % how
+        if source:
+            r['notes'] = 'Shipped C++ function; falsified by the source mutation above (falsification pass).'
+        else:
+            r['notes'] = 'Listing transcription, %s; falsified by the mutation above (testing pass).' % how
         phase = int(r['phase'])
         ledger = closures[phase]
         entries = [e for e in ledger['deferred'] if e['id'] == rid]
-        if len(entries) != 1 or entries[0]['reason'] != 'reconstructed_not_falsified':
-            raise ValueError('%s: not a reconstructed_not_falsified entry in the phase %d closure' % (rid, phase))
+        allowed = ('reconstructed_not_falsified', 'vendored_not_falsified') if source else ('reconstructed_not_falsified',)
+        if len(entries) != 1 or entries[0]['reason'] not in allowed:
+            raise ValueError('%s: not a %s entry in the phase %d closure' % (rid, ' or '.join(allowed), phase))
         counts = ledger['counts']
-        if counts.get('deferred_reconstructed_not_falsified', 0) <= 0:
-            raise ValueError('phase %d closure count deferred_reconstructed_not_falsified is already 0' % phase)
+        count_key = 'deferred_' + entries[0]['reason']
+        if counts.get(count_key, 0) <= 0:
+            raise ValueError('phase %d closure count %s is already 0' % (phase, count_key))
         e = entries[0]
         closed = {'id': rid, 'rva': e['rva'], 'proof': proof, 'gate': spec['gate'],
                   'falsification': {'mutation': spec['mutation'], 'detected': spec['detected']}}
@@ -182,7 +197,7 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
             closed['discharged_by_phase'] = later[0]
             closed['driving_phases'] = later
         ledger['deferred'].remove(e)
-        counts['deferred_reconstructed_not_falsified'] -= 1
+        counts[count_key] -= 1
         counts[proof] = counts.get(proof, 0) + 1
         ledger.setdefault('closed', []).append(closed)
     return inventory, closures

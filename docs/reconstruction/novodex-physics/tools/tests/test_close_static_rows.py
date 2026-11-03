@@ -307,3 +307,55 @@ class FalsifiedModeTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+SRCMAN = {'doc': 'evidence/falsify-x.md', 'rows': {
+    'phys_fn_000001': {'gate': 'NxPhysicsActorShapeMutationTests', 'family': 'NxPhysicsActorShapeMutationTests',
+                       'mutation': 'Physics/src/core/RevoluteJoint.cpp line 935: determinant == 0.0f  ->  !(determinant == 0.0f)  (neg)',
+                       'detected': 'stdout_delta=2842', 'source_mutation': True}}}
+
+
+class SourceMutationTest(unittest.TestCase):
+    def cpp_row(self, n=1, **extra):
+        r = inv_row(n, state='reconstructed', phase='3', notes='', implementation='Physics/src/core/RevoluteJoint.cpp',
+                    implementation_symbol='RevoluteJoint::row_slot6')
+        r.update(extra)
+        return r
+
+    def run_source(self, manifest=SRCMAN, rows=None, ledger=None):
+        rows = rows or [self.cpp_row()]
+        clo = {3: ledger or fclosure(*[r['id'] for r in rows])}
+        return close_static_rows.falsify(manifest, {'functions': rows}, clo, ORACLE, STAGED)
+
+    def test_a_c_plus_plus_row_closes_on_a_source_mutation(self):
+        inventory, closures = self.run_source()
+        r = inventory['functions'][0]
+        self.assertEqual(r['state'], 'dynamically_gated')
+        self.assertIn('line 935', r['dynamic_proof'])
+        self.assertIn('C++', r['notes'])
+        e = closures[3]['closed'][0]
+        self.assertEqual(e['proof'], 'differential_falsified')
+        self.assertIn('line 935', e['falsification']['mutation'])
+        self.assertEqual(closures[3]['deferred'], [])
+
+    def test_a_source_mutation_needs_a_line_number(self):
+        man = {'doc': 'd', 'rows': {'phys_fn_000001': dict(SRCMAN['rows']['phys_fn_000001'], mutation='a mutation somewhere')}}
+        with self.assertRaises(ValueError):
+            self.run_source(man)
+
+    def test_without_the_flag_the_testing_pass_note_is_still_required(self):
+        man = {'doc': 'd', 'rows': {'phys_fn_000001': dict(SRCMAN['rows']['phys_fn_000001'], mutation='je -> jne at 0x1014', detected='stdout_delta=4')}}
+        del man['rows']['phys_fn_000001']['source_mutation']
+        with self.assertRaises(ValueError):
+            self.run_source(man)
+
+    def test_a_vendored_entry_closes_and_its_count_follows(self):
+        row = self.cpp_row(phase='4', third_party='qhull')
+        ledger = {'phase': 4, 'counts': {'deferred_vendored_not_falsified': 1, 'differential_falsified': 0, 'oracle_differential_falsified': 0},
+                  'closed': [], 'deferred': [{'id': row['id'], 'rva': '0x00001010', 'reason': 'vendored_not_falsified', 'driving_phases': []}]}
+        man = {'doc': 'd', 'rows': {row['id']: dict(SRCMAN['rows']['phys_fn_000001'], gate='NxPhysicsActorShapeMutationTests')}}
+        clo = {4: ledger}
+        close_static_rows.falsify(man, {'functions': [row]}, clo, ORACLE, {'NxPhysicsActorShapeMutationTests': [4, 5, 6, 7]})
+        self.assertEqual(clo[4]['counts']['deferred_vendored_not_falsified'], 0)
+        self.assertEqual(clo[4]['counts']['differential_falsified'], 1)
+        self.assertEqual(len(clo[4]['closed']), 1)
