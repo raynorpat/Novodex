@@ -94,3 +94,27 @@ def dirty_tree_files(tree, upstream, overlay):
         if src.is_file() and _digest(f) != _digest(src):
             dirty.append(str(rel).replace(chr(92), '/'))
     return dirty
+
+
+def restore_tree(tree, upstream, overlay):
+    """Copy the source back over every merged-tree file that differs from it (after a killed run); the names restored."""
+    import shutil
+    tree, upstream, overlay = Path(tree), Path(upstream), Path(overlay)
+    dirty = dirty_tree_files(tree, upstream, overlay)
+    for rel in dirty:
+        src = overlay / rel if (overlay / rel).is_file() else upstream / rel
+        shutil.copyfile(src, tree / rel)
+    return dirty
+
+
+def check_trees(repo, build=None):
+    """Restore both merged trees of a build directory from their sources; the files that had to be restored."""
+    build = build or build_dir()
+    repo = Path(repo)
+    out = []
+    for lib, up, ov in (('qhull', 'External/qhull/upstream/src', 'External/qhull/novodex'),
+                        ('opcode', 'External/opcode/upstream/Opcode', 'External/opcode/novodex')):
+        tree = repo / build / 'External' / ('%s-tree' % lib)
+        if tree.is_dir():
+            out += [lib + '/' + f for f in restore_tree(tree, repo / up, repo / ov)]
+    return out

@@ -102,5 +102,18 @@ class TreeCleanTests(unittest.TestCase):
         self.assertEqual(vg.dirty_tree_files(d / 'tree', d / 'up', d / 'ov'), ['a.c'])
 
 
+
+class RestoreTests(unittest.TestCase):
+    def test_restore_tree_puts_the_sources_back(self):
+        d = Path(tempfile.mkdtemp())
+        for sub in ('up', 'ov', 'tree'):
+            (d / sub).mkdir()
+        (d / 'up' / 'a.c').write_text('one', encoding='utf-8')
+        (d / 'tree' / 'a.c').write_text('one MUTATED', encoding='utf-8')
+        self.assertEqual(vg.restore_tree(d / 'tree', d / 'up', d / 'ov'), ['a.c'])
+        self.assertEqual((d / 'tree' / 'a.c').read_text(encoding='utf-8'), 'one')
+        self.assertEqual(vg.restore_tree(d / 'tree', d / 'up', d / 'ov'), [])
+
+
 if __name__ == '__main__':
     unittest.main()
