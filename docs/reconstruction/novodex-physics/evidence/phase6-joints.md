@@ -11477,3 +11477,7 @@ Phase 7 continuation 2026-10-19 — `phys_fn_004826`: the pairwise AABB helper m
 - `phys_fn_004820`: 0x000b4794 mov esi, dword ptr [esp + 0x28] -> mov esi, dword ptr [esp + 0x2c]; `NxPhysicsPhase6RowsTests` mismatches=1.
 - `phys_fn_004822`: 0x000b4910 add dword ptr [esp + 0x34], 4 -> add dword ptr [esp + 0x38], 4; `NxPhysicsPhase6RowsTests` mismatches=1.
 - `phys_fn_004824`: 0x000b49fe mov ebx, dword ptr [esp + 0x10] -> mov ebx, dword ptr [esp + 0x14]; `NxPhysicsPhase6RowsTests` mismatches=1.
+
+## Testing pass
+
+- `phys_fn_002300`: 0x00058877 mov ebx, dword ptr [esp + 0x10c] -> mov ebx, dword ptr [esp + 0x110]; `NxPhysicsPhase6RowsTests` mismatches=35.

@@ -502,6 +502,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsSweepCapture PRIVATE
 		Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsSweepCapture bcrypt)
+	# The same recorder for any row (rva and displaced length on the command line); fixtures are read by phase7_rowreplay.
+	add_executable(NxPhysicsRowCapture tests/PhysicsRowCaptureTool.cpp)
+	target_include_directories(NxPhysicsRowCapture PRIVATE
+		Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsRowCapture bcrypt)
 	add_executable(NxPhysicsStepCapture tests/PhysicsStepCaptureTool.cpp)
 	target_include_directories(NxPhysicsStepCapture PRIVATE
 		Foundation/include Physics/include)
@@ -1269,6 +1274,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		target_link_options(NxPhysicsCollisionTests PRIVATE /MAP)
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_SWEEP_FIXTURE="${CMAKE_SOURCE_DIR}/tests/fixtures/sweep2296.bin")
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_STEP_FIXTURE="${CMAKE_SOURCE_DIR}/tests/fixtures/step2350.bin")
+	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_ROW_FIXTURE_DIR="${CMAKE_SOURCE_DIR}/tests/fixtures")
 	endif()
 	# Phase 4's focused type-3 oracle differential uses the same in-process
 	# candidate harness with a narrow command-line fixture selector.

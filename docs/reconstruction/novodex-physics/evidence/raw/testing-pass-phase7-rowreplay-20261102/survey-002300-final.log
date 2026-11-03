@@ -1,0 +1,17 @@
+SURVEY phys_fn_002300 NxPhysicsCollisionTests tried=16 caught=15 survived=1
+  caught   0x00058885  mov byte ptr [edi + 0x40], 0  ->  mov byte ptr [edi + 0x44], 0
+  caught   0x00058889  mov ecx, dword ptr [ebp + 4]  ->  mov ecx, dword ptr [ebp + 8]
+  caught   0x0005888c  mov eax, dword ptr [ebp]  ->  mov eax, dword ptr [ebp + 4]
+  caught   0x00058892  mov dword ptr [esp + 0x24], ecx  ->  mov dword ptr [esp + 0x28], ecx
+  caught   0x00058896  mov ecx, dword ptr [esp + 0x118]  ->  mov ecx, dword ptr [esp + 0x11c]
+  caught   0x0005889f  mov dword ptr [esp + 0x20], eax  ->  mov dword ptr [esp + 0x24], eax
+  caught   0x000588a3  fadd dword ptr [ebp]  ->  fadd dword ptr [ebp + 4]
+  SURVIVED 0x000588af  mov dword ptr [esp + 0x8c], edi  ->  mov dword ptr [esp + 0x90], edi
+  caught   0x000588b6  fstp dword ptr [esp + 0x10]  ->  fstp dword ptr [esp + 0x14]
+  caught   0x000588ba  mov byte ptr [esp + 0xf], 0  ->  mov byte ptr [esp + 0x13], 0
+  caught   0x000588c2  mov dword ptr [esp + 0x28], edx  ->  mov dword ptr [esp + 0x2c], edx
+  caught   0x000588c6  fadd dword ptr [ecx + 4]  ->  fadd dword ptr [ecx + 8]
+  caught   0x000588d1  fstp dword ptr [esp + 0x14]  ->  fstp dword ptr [esp + 0x18]
+  caught   0x000588d5  fld dword ptr [ebp + 8]  ->  fld dword ptr [ebp + 12]
+  caught   0x000588db  fstp dword ptr [esp + 0x18]  ->  fstp dword ptr [esp + 0x1c]
+  caught   0x000588df  je L58e5f  ->  jne L58e5f

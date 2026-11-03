@@ -73,7 +73,7 @@ extern "C" void* nxP7ImpImpnxFoundationSDKAllocator3PAVNxUserAll;
 #pragma comment(linker, "/alternatename:_nxP7CallGetEdgesX=?GetEdges@AABB@IceMaths@@QBEPBIXZ")
 #pragma comment(linker, "/alternatename:_nxP7CallGetVertexNormals=?GetVertexNormals@AABB@IceMaths@@QBEPBVPoint@2@XZ")
 #pragma comment(linker, "/alternatename:_nxP7CallInflate=?Inflate@Triangle@IceMaths@@QAEXM_N@Z")
-#pragma comment(linker, "/alternatename:_nxP7CallInitialise=?initialise@NxSceneInternal@@QAE_NABVNxSceneDesc@@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallInitialise=?createActor@NxSceneInternal@@QAEPAVNxActor@@ABVNxActorDescBase@@@Z")
 #pragma comment(linker, "/alternatename:_nxP7CallInvertPRMatrix=?InvertPRMatrix@IceMaths@@YAXAAVMatrix4x4@1@ABV21@@Z")
 #pragma comment(linker, "/alternatename:_nxP7CallLock=?lock@ReadWriteLock@@QAE_NXZ")
 #pragma comment(linker, "/alternatename:_nxP7CallMalloc=_malloc")

@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 171 of the 184 rows closed; 13 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 172 of the 184 rows closed; 12 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -600,3 +600,13 @@ marked superseded), M8 (`mutate_rows.py` reads `NX_ORACLE_DIR`, defaulting to th
 
 Every minor from the whole-pass review is now closed; nothing is deferred.
 
+
+## Phase 7 closure (twenty-fifth slice): 002300 closed; Phase 7 passes; the "unreachable" rows were only unhooked
+
+`evidence/phase7-closure-audit.md` has the full table. Short version: a breakpoint count showed 002300-002310, 002332, 002336
+and 002400 all run in the controller scene, so `NxPhysicsRowCapture` + `nxReplayOneRow` (families `phase7_row_<id>`) now record and
+replay any row. All eight replayable rows equal the oracle on every recorded call; **002300** also catches 15 of 16 spread mutants
+and is closed. 002302, 002298, 002304, 002306, 002308, 002310, 002332, 002336 stay deferred (2-10 of 16 caught: their recorded
+calls take early or empty paths); 002400 is the simulation thread's endless loop and is ruled out by design. Phase 7 is
+recorded as `pass` (547 + 1 closed, 12 deferred, as phases 2-6 pass with deferrals), and the six carried obligations plus the
+disposition matrix and trajectory scenarios move to the Phase 8 audit.

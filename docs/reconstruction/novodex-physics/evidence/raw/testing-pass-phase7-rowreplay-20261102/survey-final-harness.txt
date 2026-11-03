@@ -1,0 +1,69 @@
+SURVEY phys_fn_002308 NxPhysicsCollisionTests tried=16 caught=10 survived=6
+  caught   0x0005971e  mov edx, dword ptr [eax + 4]  ->  mov edx, dword ptr [eax + 8]
+  caught   0x00059724  mov dword ptr [esp + 0xc], ecx  ->  mov dword ptr [esp + 0x10], ecx
+  SURVIVED 0x0005972c  lea ecx, [esi + 0x40]  ->  lea ecx, [esi + 0x44]
+  caught   0x00059731  mov dword ptr [esp + 0x14], eax  ->  mov dword ptr [esp + 0x18], eax
+  SURVIVED 0x00059738  mov ecx, dword ptr [ecx + 8]  ->  mov ecx, dword ptr [ecx + 12]
+  SURVIVED 0x0005973f  mov dword ptr [esp + 0x1c], eax  ->  mov dword ptr [esp + 0x20], eax
+  caught   0x00059748  mov eax, dword ptr [esp + 0x2c]  ->  mov eax, dword ptr [esp + 0x30]
+  SURVIVED 0x00059750  mov ecx, dword ptr [esp + 0x34]  ->  mov ecx, dword ptr [esp + 0x38]
+  SURVIVED 0x0005975e  mov edx, dword ptr [esp + 0x34]  ->  mov edx, dword ptr [esp + 0x38]
+  SURVIVED 0x00059766  push 0  ->  push 1
+  caught   0x0005976b  lea ecx, [esp + 0x20]  ->  lea ecx, [esp + 0x24]
+  caught   0x0005977e  mov eax, dword ptr [esp + 0x2c]  ->  mov eax, dword ptr [esp + 0x30]
+  caught   0x00059786  mov edx, dword ptr [esp + 0x34]  ->  mov edx, dword ptr [esp + 0x38]
+  caught   0x0005978c  mov dword ptr [edi + 4], ecx  ->  mov dword ptr [edi + 8], ecx
+  caught   0x00059792  mov eax, dword ptr [esi + 0x24]  ->  mov eax, dword ptr [esi + 0x28]
+  caught   0x000597a4  je L597ae  ->  jne L597ae
+warning: in the working copy of 'Physics/src/Phase7Rows.cpp', LF will be replaced by CRLF the next time Git touches it
+SURVEY phys_fn_002332 NxPhysicsCollisionTests tried=16 caught=7 survived=9
+  caught   0x0005a53c  lea ecx, [esi + 8]  ->  lea ecx, [esi + 12]
+  SURVIVED 0x0005a563  mov edx, dword ptr [ebx + 0x34]  ->  mov edx, dword ptr [ebx + 0x38]
+  SURVIVED 0x0005a586  mov dword ptr [esp + 0xc4], edi  ->  mov dword ptr [esp + 0xc8], edi
+  caught   0x0005a5c3  fstp dword ptr [esp + 0x140]  ->  fstp dword ptr [esp + 0x144]
+  caught   0x0005a601  mov dword ptr [esp + 0xf4], edi  ->  mov dword ptr [esp + 0xf8], edi
+  SURVIVED 0x0005a639  mov dword ptr [esp + 0x118], 0x3ecccccc  ->  mov dword ptr [esp + 0x11c], 0x3ecccccc
+  caught   0x0005a694  mov dword ptr [esp + 0x6c], 2  ->  mov dword ptr [esp + 0x70], 2
+  SURVIVED 0x0005a6ca  mov dword ptr [esp + 0x84], edi  ->  mov dword ptr [esp + 0x88], edi
+  SURVIVED 0x0005a712  mov word ptr [esp + 0xa6], di  ->  mov word ptr [esp + 0xaa], di
+  SURVIVED 0x0005a743  mov dword ptr [esp + 0x64], edi  ->  mov dword ptr [esp + 0x68], edi
+  SURVIVED 0x0005a76b  mov dword ptr [esp + 0x24], edi  ->  mov dword ptr [esp + 0x28], edi
+  caught   0x0005a793  mov dword ptr [esp + 0x54], edi  ->  mov dword ptr [esp + 0x58], edi
+  SURVIVED 0x0005a7c3  mov dword ptr [edx], ebp  ->  mov dword ptr [edx + 4], ebp
+  SURVIVED 0x0005a7e6  mov ecx, dword ptr [esp + 0x5c]  ->  mov ecx, dword ptr [esp + 0x60]
+  caught   0x0005a80d  mov ebx, dword ptr [esp + 0x5c]  ->  mov ebx, dword ptr [esp + 0x60]
+  caught   0x0005a82e  mov ecx, dword ptr [esi + 0x34]  ->  mov ecx, dword ptr [esi + 0x38]
+warning: in the working copy of 'Physics/src/Phase7Rows.cpp', LF will be replaced by CRLF the next time Git touches it
+SURVEY phys_fn_002336 NxPhysicsCollisionTests tried=13 caught=8 survived=5
+  caught   0x0005a88f  jne L5a8ce  ->  je L5a8ce
+  caught   0x0005a896  mov ecx, dword ptr [eax]  ->  mov ecx, dword ptr [eax + 4]
+  caught   0x0005a898  mov edx, dword ptr [ecx]  ->  mov edx, dword ptr [ecx + 4]
+  SURVIVED 0x0005a89a  push 0  ->  push 1
+  caught   0x0005a89c  push 0x4c  ->  push 0x4d
+  SURVIVED 0x0005a89e  call dword ptr [edx + 8]  ->  call dword ptr [edx + 12]
+  caught   0x0005a8a3  je L5a8b7  ->  jne L5a8b7
+  caught   0x0005a8b0  je L5a8b9  ->  jne L5a8b9
+  SURVIVED 0x0005a8b2  lea ecx, [eax + 8]  ->  lea ecx, [eax + 12]
+  caught   0x0005a8bd  je L5a8ce  ->  jne L5a8ce
+  SURVIVED 0x0005a8bf  mov edx, dword ptr [esi + 0x5a8]  ->  mov edx, dword ptr [esi + 0x5ac]
+  SURVIVED 0x0005a8c5  mov dword ptr [ecx + 0x30], edx  ->  mov dword ptr [ecx + 0x34], edx
+  caught   0x0005a8c8  mov dword ptr [esi + 0x5a8], ecx  ->  mov dword ptr [esi + 0x5ac], ecx
+warning: in the working copy of 'Physics/src/Phase7Rows.cpp', LF will be replaced by CRLF the next time Git touches it
+SURVEY phys_fn_002300 NxPhysicsCollisionTests tried=16 caught=15 survived=1
+  caught   0x00058885  mov byte ptr [edi + 0x40], 0  ->  mov byte ptr [edi + 0x44], 0
+  caught   0x00058889  mov ecx, dword ptr [ebp + 4]  ->  mov ecx, dword ptr [ebp + 8]
+  caught   0x0005888c  mov eax, dword ptr [ebp]  ->  mov eax, dword ptr [ebp + 4]
+  caught   0x00058892  mov dword ptr [esp + 0x24], ecx  ->  mov dword ptr [esp + 0x28], ecx
+  caught   0x00058896  mov ecx, dword ptr [esp + 0x118]  ->  mov ecx, dword ptr [esp + 0x11c]
+  caught   0x0005889f  mov dword ptr [esp + 0x20], eax  ->  mov dword ptr [esp + 0x24], eax
+  caught   0x000588a3  fadd dword ptr [ebp]  ->  fadd dword ptr [ebp + 4]
+  SURVIVED 0x000588af  mov dword ptr [esp + 0x8c], edi  ->  mov dword ptr [esp + 0x90], edi
+  caught   0x000588b6  fstp dword ptr [esp + 0x10]  ->  fstp dword ptr [esp + 0x14]
+  caught   0x000588ba  mov byte ptr [esp + 0xf], 0  ->  mov byte ptr [esp + 0x13], 0
+  caught   0x000588c2  mov dword ptr [esp + 0x28], edx  ->  mov dword ptr [esp + 0x2c], edx
+  caught   0x000588c6  fadd dword ptr [ecx + 4]  ->  fadd dword ptr [ecx + 8]
+  caught   0x000588d1  fstp dword ptr [esp + 0x14]  ->  fstp dword ptr [esp + 0x18]
+  caught   0x000588d5  fld dword ptr [ebp + 8]  ->  fld dword ptr [ebp + 12]
+  caught   0x000588db  fstp dword ptr [esp + 0x18]  ->  fstp dword ptr [esp + 0x1c]
+  caught   0x000588df  je L58e5f  ->  jne L58e5f
+warning: in the working copy of 'Physics/src/Phase7Rows.cpp', LF will be replaced by CRLF the next time Git touches it

@@ -5733,6 +5733,30 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=phase7_query index=- rva=0x000f2090 owner=phys_fn_005566 checks=120 oracle=095008be255f2a5d',
         'collision coverage name=phase7_query row=005566 case=octree_box_query_subtree_and_children',
         'collision input name=phase7_query words=120 input=c468dd803780d5e5',
+        'collision name=phase7_row_002298 index=- rva=0x00058830 owner=phys_fn_002298 checks=34 oracle=b291d23063d918ef',
+        'collision coverage name=phase7_row_002298 row=002298 case=recorded_controller_calls_replayed',
+        'collision input name=phase7_row_002298 words=68 input=7235496cd5a62554',
+        'collision name=phase7_row_002300 index=- rva=0x00058870 owner=phys_fn_002300 checks=35 oracle=15cfa074b7e6d05b',
+        'collision coverage name=phase7_row_002300 row=002300 case=recorded_controller_calls_replayed',
+        'collision input name=phase7_row_002300 words=70 input=9faccc70e664d11b',
+        'collision name=phase7_row_002304 index=- rva=0x00058ea0 owner=phys_fn_002304 checks=35 oracle=4a16a08b8eb36a89',
+        'collision coverage name=phase7_row_002304 row=002304 case=recorded_controller_calls_replayed',
+        'collision input name=phase7_row_002304 words=70 input=9b5aab3d7577084a',
+        'collision name=phase7_row_002306 index=- rva=0x00059320 owner=phys_fn_002306 checks=11 oracle=5e86a4f57ba0a98d',
+        'collision coverage name=phase7_row_002306 row=002306 case=recorded_controller_calls_replayed',
+        'collision input name=phase7_row_002306 words=22 input=143f376cd33bab79',
+        'collision name=phase7_row_002308 index=- rva=0x00059710 owner=phys_fn_002308 checks=11 oracle=3a74d84ff413d6f4',
+        'collision coverage name=phase7_row_002308 row=002308 case=recorded_controller_calls_replayed',
+        'collision input name=phase7_row_002308 words=22 input=a368c745615a42ad',
+        'collision name=phase7_row_002310 index=- rva=0x000597c0 owner=phys_fn_002310 checks=35 oracle=f4aec89d3763f812',
+        'collision coverage name=phase7_row_002310 row=002310 case=recorded_controller_calls_replayed',
+        'collision input name=phase7_row_002310 words=70 input=bd00d6b526d583da',
+        'collision name=phase7_row_002332 index=- rva=0x0005a520 owner=phys_fn_002332 checks=2 oracle=2c6e827d9217743e',
+        'collision coverage name=phase7_row_002332 row=002332 case=recorded_controller_calls_replayed',
+        'collision input name=phase7_row_002332 words=4 input=c2b8ee5eff69ba54',
+        'collision name=phase7_row_002336 index=- rva=0x0005a880 owner=phys_fn_002336 checks=2 oracle=c8003c3d1b85e01c',
+        'collision coverage name=phase7_row_002336 row=002336 case=recorded_controller_calls_replayed',
+        'collision input name=phase7_row_002336 words=4 input=216fc0982ccf42d4',
         'collision name=pruner_support_stream index=- rva=0x000b3f50 owner=phys_fn_004799 checks=100 oracle=4701fb540aa892a8',
         'collision coverage name=pruner_support_stream row=004799 case=block_store_growth',
         'collision coverage name=pruner_support_stream row=005586 case=pool_save_and_load',
@@ -6735,7 +6759,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1881  # plus the three phase7_query lines (row 005566); previous 1878: plus the five phase7_pruning lines (phase 7 rows 004820, 004822, 004824); previous 1873: plus the three phase7_step_replay lines (recorded calls of 002350, which stays held); previous 1870: plus the four phase7_replay lines (recorded calls of 002296/002298, which stay held); previous 1866: plus the six phase7_sweep coverage lines of rows 002282-002294; previous 1860: plus the phase7_sweep lines (phase 7 rows 002268, 002270, 002274, 002276, 002278); previous 1853: plus the phase7_rows lines (phase 7 rows 002316, 002280, 002288); previous 1848: plus the phase3_rows lines (phase 3 rows 001303, 001305, 001345, 001935, 001947); previous 1841: plus the phase6_large lines (rows 004159, 004161, 004169, 004171, 004401, 004413); previous 1833: plus the phase6_rows and pruner_support_stream lines of NxPhysicsPhase6RowsTests (rows 004405, 004537, 004759, 004761, 004799); previous 1820: includes the row 003503 FluidCreate argument digest marker
+	'6' = 1905  # plus the 24 phase7_row_<id> lines (recorded calls of 002298-002336); previous 1881: plus the three phase7_query lines (row 005566); previous 1878: plus the five phase7_pruning lines (phase 7 rows 004820, 004822, 004824); previous 1873: plus the three phase7_step_replay lines (recorded calls of 002350, which stays held); previous 1870: plus the four phase7_replay lines (recorded calls of 002296/002298, which stay held); previous 1866: plus the six phase7_sweep coverage lines of rows 002282-002294; previous 1860: plus the phase7_sweep lines (phase 7 rows 002268, 002270, 002274, 002276, 002278); previous 1853: plus the phase7_rows lines (phase 7 rows 002316, 002280, 002288); previous 1848: plus the phase3_rows lines (phase 3 rows 001303, 001305, 001345, 001935, 001947); previous 1841: plus the phase6_large lines (rows 004159, 004161, 004169, 004171, 004401, 004413); previous 1833: plus the phase6_rows and pruner_support_stream lines of NxPhysicsPhase6RowsTests (rows 004405, 004537, 004759, 004761, 004799); previous 1820: includes the row 003503 FluidCreate argument digest marker
 	          # includes current locked-array, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
@@ -6789,7 +6813,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3255  # plus the three phase7_query lines; previous 3252: plus the five phase7_pruning lines; previous 3247: plus the three phase7_step_replay lines; previous 3244: plus the four phase7_replay lines; previous 3240: plus the six phase7_sweep coverage lines of rows 002282-002294; previous 3234: plus the phase7_sweep lines of NxPhysicsPhase6RowsTests; previous 3227: plus the 33 lines of NxPhysicsPhase6RowsTests, which phase 7 also runs (it discharges the phase 7 rows 002280, 002288, 002316); previous 3194: plus the 15 vendored-rows drive families (vendored-rows pass, Task 6); previous 3179: plus the three pruner cluster lines (rows 005223, 005234 to 005260, 005301, 005320, 002148); previous 3176: plus the six pruner octree and octree query lines (002xxx omitted; rows 005295 to 005318, 005545 to 005560); previous 3170: plus the three mesh topology lines (002067, 002085, 002087 to 002093); previous 3167: plus the six mesh debug and mesh mass lines (001393 to 001397, 000835, 002156, 002241)
+	'7' = 3279  # plus the 24 phase7_row lines; previous 3255: plus the three phase7_query lines; previous 3252: plus the five phase7_pruning lines; previous 3247: plus the three phase7_step_replay lines; previous 3244: plus the four phase7_replay lines; previous 3240: plus the six phase7_sweep coverage lines of rows 002282-002294; previous 3234: plus the phase7_sweep lines of NxPhysicsPhase6RowsTests; previous 3227: plus the 33 lines of NxPhysicsPhase6RowsTests, which phase 7 also runs (it discharges the phase 7 rows 002280, 002288, 002316); previous 3194: plus the 15 vendored-rows drive families (vendored-rows pass, Task 6); previous 3179: plus the three pruner cluster lines (rows 005223, 005234 to 005260, 005301, 005320, 002148); previous 3176: plus the six pruner octree and octree query lines (002xxx omitted; rows 005295 to 005318, 005545 to 005560); previous 3170: plus the three mesh topology lines (002067, 002085, 002087 to 002093); previous 3167: plus the six mesh debug and mesh mass lines (001393 to 001397, 000835, 002156, 002241)
 	           # previous 3161: the three mesh-raycast lines (001405)
 	           # previous 3158: the two hull-shape families (rows 001411, 001415 to 001419)
 	           # previous 3156: the three P-Hull class families (rows 001443 to 001494)

@@ -46,7 +46,7 @@ ROWS = [('nxP70001', 0x1000, 0x1030),
         ('nxP72400', 0x5b9e0, 0x5ba3a),
         ('nxP74031', 0x91de0, 0x91dff)]
 EXPECTED = {0x1000: 'nxP70001',
-            0x11730: '?initialise@NxSceneInternal@@QAE_NABVNxSceneDesc@@@Z',
+            0x11730: '?createActor@NxSceneInternal@@QAEPAVNxActor@@ABVNxActorDescBase@@@Z',
             0x13c40: '?simulateFrame@NxSceneInternal@@QAEXXZ',
             0x146e0: '?overlapAABBShapes@NxSceneInternal@@QAEIABVNxBounds3@@W4NxShapesType@@IPAPAVNxShape@@PAV?$NxUserEntityReport@PAVNxShape@@@@@Z',
             0x203c0: '?nxPOSetCenterExtents@@YIXPAX0PBX1@Z',

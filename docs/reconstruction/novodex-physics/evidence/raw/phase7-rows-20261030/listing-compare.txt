@@ -44,10 +44,10 @@ ALL EQUAL
   call nxP72282 -> oracle 0x100e48e0 ; candidate ?ComputePoints@OBB@IceMaths@@QBE_NPAVPoint@2@@Z
   call nxP72282 -> oracle 0x100e9b20 ; candidate ?nxP45404@@YIIPAX0I@Z
   call nxP72282 -> oracle 0x100e4200 ; candidate ?InvertPRMatrix@IceMaths@@YAXAAVMatrix4x4@1@ABV21@@Z
-  call nxP72282 -> oracle 0x10056ad0 ; candidate ?NxRayAABBSlab@@YAHPBM000PAM1@Z
+  call nxP72282 -> oracle 0x10056ad0 ; candidate _nxP7CallNxRayAABBSlab
   call nxP72282 -> oracle 0x100e9b20 ; candidate ?nxP45404@@YIIPAX0I@Z
   call nxP72282 -> oracle 0x100e4200 ; candidate ?InvertPRMatrix@IceMaths@@YAXAAVMatrix4x4@1@ABV21@@Z
-  call nxP72282 -> oracle 0x10056ad0 ; candidate ?NxRayAABBSlab@@YAHPBM000PAM1@Z
+  call nxP72282 -> oracle 0x10056ad0 ; candidate _nxP7CallNxRayAABBSlab
   call nxP72282 -> oracle 0x100e4ca0 ; candidate ?GetEdges@OBB@IceMaths@@QBEPBIXZ
   call nxP72282 -> oracle 0x100e4ca0 ; candidate ?GetEdges@OBB@IceMaths@@QBEPBIXZ
   call nxP72282 -> oracle 0x100e4cb0 ; candidate ?ComputeWorldEdgeNormal@OBB@IceMaths@@QBEXIAAVPoint@2@@Z
@@ -57,7 +57,7 @@ ALL EQUAL
   call nxP72290 -> oracle 0x100e4090 ; candidate ?Inflate@Triangle@IceMaths@@QAEXM_N@Z
   call nxP72290 -> oracle 0x100e3190 ; candidate ?GetVertexNormals@AABB@IceMaths@@QBEPBVPoint@2@XZ
   call nxP72290 -> oracle 0x10056fa0 ; candidate ?nxP72278@@YIIPAX0@Z
-  call nxP72290 -> oracle 0x10056ad0 ; candidate ?NxRayAABBSlab@@YAHPBM000PAM1@Z
+  call nxP72290 -> oracle 0x10056ad0 ; candidate _nxP7CallNxRayAABBSlab
   call nxP72290 -> oracle 0x100e31b0 ; candidate ?GetEdgeNormals@AABB@IceMaths@@QBEPBVPoint@2@XZ
   call nxP72290 -> oracle 0x100e31a0 ; candidate ?GetEdges@AABB@IceMaths@@QBEPBIXZ
   call nxP72290 -> oracle 0x10056c40 ; candidate ?nxP72276@@YIIPAX0@Z
@@ -131,7 +131,7 @@ ALL EQUAL
   call nxP72332 -> oracle 0x1005a0f0 ; candidate ?nxP72316@@YIIPAX0II@Z
   call nxP72332 -> oracle 0x100f4722 ; candidate _malloc
   call nxP72332 -> oracle 0x100f4734 ; candidate _free
-  call nxP72332 -> oracle 0x10011730 ; candidate ?initialise@NxSceneInternal@@QAE_NABVNxSceneDesc@@@Z
+  call nxP72332 -> oracle 0x10011730 ; candidate ?createActor@NxSceneInternal@@QAEPAVNxActor@@ABVNxActorDescBase@@@Z
   call nxP72332 -> oracle 0x100f4734 ; candidate _free
   call nxP72336 -> oracle 0x1005a520 ; candidate ?nxP72332@@YIIPAX0II@Z
   call nxP72350 -> oracle 0x100f47b0 ; candidate __alloca_probe

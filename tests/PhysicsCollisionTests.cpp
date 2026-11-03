@@ -30,6 +30,7 @@
 
 #define NOMINMAX
 #include <new>
+#include <vector>
 #include <windows.h>
 #include <bcrypt.h>
 #include <math.h>
@@ -7215,6 +7216,330 @@ static unsigned nxDrivePhase7StepReplay(unsigned char* base)
 	return mismatches;
 	}
 
+unsigned __fastcall nxP72298(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3, unsigned a4, unsigned a5, unsigned a6, unsigned a7, unsigned a8, unsigned a9);
+unsigned __fastcall nxP72300(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3, unsigned a4, unsigned a5, unsigned a6, unsigned a7, unsigned a8, unsigned a9, unsigned a10, unsigned a11, unsigned a12, unsigned a13, unsigned a14, unsigned a15);
+unsigned __fastcall nxP72304(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3, unsigned a4, unsigned a5, unsigned a6, unsigned a7, unsigned a8, unsigned a9, unsigned a10);
+unsigned __cdecl nxP72306();
+unsigned __fastcall nxP72308(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3);
+unsigned __cdecl nxP72310();
+unsigned __fastcall nxP72332(void* self, void* edxUnused, unsigned a0, unsigned a1);
+unsigned __fastcall nxP72336(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP72400(void* self, void* edxUnused);
+// A recorded call of any one row (tests/fixtures/rowNNNNNN.bin, made by NxPhysicsRowCapture): the three registers and sixteen
+// stack words are put back, whatever the row's convention, and the row is run at the oracle's address and as the
+// transcription on identical copies of everything the call could reach.
+struct NxRowSpec { const char* id; unsigned rva; void* fn; bool useEax; unsigned notifyAt; };
+// Stands in for a callback the row makes through an object's table (slot 0x2c, one argument it pops) when the real one needs
+// the process's registries: it records the object and the three words the argument names.
+static unsigned gNotifyCalls, gNotifyLog[16];
+__declspec(naked) static void __stdcall nxRowNotify(const unsigned* vector)
+	{
+	__asm
+		{
+		mov eax, dword ptr [gNotifyCalls]
+		cmp eax, 4
+		jae full
+		mov edx, eax
+		shl edx, 4
+		mov dword ptr [gNotifyLog + edx], ecx
+		mov eax, dword ptr [esp + 4]
+		mov eax, dword ptr [eax]
+		mov dword ptr [gNotifyLog + edx + 4], eax
+		mov eax, dword ptr [esp + 4]
+		mov eax, dword ptr [eax + 4]
+		mov dword ptr [gNotifyLog + edx + 8], eax
+		mov eax, dword ptr [esp + 4]
+		mov eax, dword ptr [eax + 8]
+		mov dword ptr [gNotifyLog + edx + 12], eax
+	full:
+		inc dword ptr [gNotifyCalls]
+		xor eax, eax
+		ret 4
+		}
+	}
+static void* gNotifyTable[16];
+static unsigned gRowThunkEsp, gRowThunkEax;
+__declspec(naked) static unsigned __cdecl nxRowCall(void* fn, unsigned eaxValue, unsigned ecxValue, unsigned edxValue, const unsigned* words, unsigned count)
+	{
+	__asm
+		{
+		push ebp
+		mov ebp, esp
+		pushad
+		mov dword ptr [gRowThunkEsp], esp
+		mov esi, dword ptr [ebp + 0x18]
+		mov ecx, dword ptr [ebp + 0x1c]
+	again:
+		test ecx, ecx
+		je pushed
+		dec ecx
+		push dword ptr [esi + ecx*4]
+		jmp again
+	pushed:
+		mov eax, dword ptr [ebp + 0x0c]
+		mov edx, dword ptr [ebp + 0x14]
+		mov ecx, dword ptr [ebp + 0x10]
+		call dword ptr [ebp + 8]
+		mov esp, dword ptr [gRowThunkEsp]
+		mov dword ptr [gRowThunkEax], eax
+		popad
+		mov eax, dword ptr [gRowThunkEax]
+		pop ebp
+		ret
+		}
+	}
+
+static int nxRowFilter(EXCEPTION_POINTERS* info, unsigned char* base, const char* id, unsigned side, unsigned call)
+	{
+	if(getenv("NX_ROW_TRACE"))
+		printf("row %s call %u side %u fault code=%08lx at base+%08x address=%p\n", id, call, side, info->ExceptionRecord->ExceptionCode, (unsigned) ((unsigned char*) info->ExceptionRecord->ExceptionAddress - base), (void*) info->ExceptionRecord->ExceptionInformation[1]);
+	return EXCEPTION_EXECUTE_HANDLER;
+	}
+
+static unsigned gTrace[2][60000];
+static size_t gTraceCount[2];
+extern "C" void* nxP7Tab108740[2]; extern "C" void* nxP7TabR1[8]; extern "C" void* nxP7TabR2[6];
+static unsigned nxReplayOneRow(unsigned char* base, const NxRowSpec& spec)
+	{
+	char path[512];
+	snprintf(path, sizeof(path), "%s/row%s.bin", NX_ROW_FIXTURE_DIR, spec.id);
+	FILE* file = fopen(path, "rb");
+	if(!file)
+		return nxFail("phase 7 row replay fixture is missing");
+	fseek(file, 0, SEEK_END);
+	const long length = ftell(file);
+	fseek(file, 0, SEEK_SET);
+	unsigned char* image = (unsigned char*) ::malloc(length);
+	if(fread(image, 1, length, file) != (size_t) length) { fclose(file); return nxFail("phase 7 row replay fixture is unreadable"); }
+	fclose(file);
+	const unsigned* head = (const unsigned*) image;
+	if(length < 8 || head[0] != 0x31435752u)
+		return nxFail("phase 7 row replay fixture has the wrong magic");
+	const unsigned calls = head[1];
+	gReplayOldBase = head[2];
+	gReplayImageSize = head[3];
+	gReplayNewBase = (unsigned) base;
+	gReplayOldFoundation = head[4];
+	gReplayFoundationSize = head[5];
+	gReplayNewFoundation = (unsigned) GetModuleHandleW(L"NxFoundation.dll");
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	unsigned mismatches = 0, cases = 0, faults = 0;
+	unsigned char* const zero = (unsigned char*) ::calloc(1, 0x4000);
+	const unsigned char* cursor = image + 24;
+	unsigned* const oracleCache = *(unsigned**) (base + 0x572a4);
+	const unsigned savedOracleCache = *oracleCache, savedCandidateCache = nxP7SweepCache;
+	for(unsigned c = 0; c < calls; ++c)
+		{
+		const unsigned* header = (const unsigned*) cursor;
+		const unsigned eax = header[0], ecx = header[1], edx = header[2], cacheWord = header[3];
+		unsigned stack[16];
+		memcpy(stack, header + 4, sizeof(stack));
+		const unsigned regionCount = header[20];
+		cursor += 21 * 4;
+		NxReplayRegion regions[520];
+		for(unsigned i = 0; i < regionCount; ++i)
+			{
+			regions[i].lo = ((const unsigned*) cursor)[0];
+			regions[i].size = ((const unsigned*) cursor)[1];
+			regions[i].data = (unsigned char*) cursor + 8;
+			cursor += 8 + regions[i].size;
+			}
+		const unsigned danglingCount = *(const unsigned*) cursor;
+		const unsigned* dangling = (const unsigned*) cursor + 1;
+		cursor += 4 + danglingCount * 8;
+		{
+		unsigned long long results[2];
+		gTraceCount[0] = gTraceCount[1] = 0;
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			NxP6Canon canon;
+			// one arena that keeps the regions' addresses relative to each other, so a row that compares two pointers, or
+			// takes their difference, sees the order and distance it saw when the call was recorded
+			unsigned minLo = 0xffffffffu, maxHi = 0;
+			for(unsigned i = 0; i < regionCount; ++i)
+				{
+				if(regions[i].lo < minLo) minLo = regions[i].lo;
+				if(regions[i].lo + regions[i].size > maxHi) maxHi = regions[i].lo + regions[i].size;
+				}
+			const unsigned span = regionCount ? maxHi - minLo : 0;
+			if(span > 0x10000000u)
+				return nxFail("phase 7 row replay fixture spans too much memory");
+			unsigned char* const arena = (unsigned char*) VirtualAlloc(0, span + 0x10000, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+			if(!arena)
+				return nxFail("phase 7 row replay arena could not be reserved");
+			for(unsigned i = 0; i < regionCount; ++i)
+				{
+				regions[i].copy = arena + (regions[i].lo - minLo);
+				memcpy(regions[i].copy, regions[i].data, regions[i].size);
+				}
+			canon.add(arena, span + 0x10000);
+			canon.add(zero, 0x4000);
+			struct Reloc
+				{
+				static unsigned map(const NxReplayRegion* regions, unsigned count, unsigned v)
+					{
+					if(v - gReplayOldBase < gReplayImageSize) return v - gReplayOldBase + gReplayNewBase;
+					if(gReplayNewFoundation && v - gReplayOldFoundation < gReplayFoundationSize) return v - gReplayOldFoundation + gReplayNewFoundation;
+					for(unsigned i = 0; i < count; ++i)
+						if(v >= regions[i].lo && v - regions[i].lo <= regions[i].size) return (unsigned) regions[i].copy + (v - regions[i].lo);
+					return v;
+					}
+				};
+			for(unsigned i = 0; i < regionCount; ++i)
+				for(unsigned o = 0; o + 4 <= regions[i].size; o += 4)
+					{
+					unsigned* word = (unsigned*) (regions[i].copy + o);
+					*word = Reloc::map(regions, regionCount, *word);
+					}
+			for(unsigned i = 0; i < danglingCount; ++i)
+				*(unsigned*) (regions[dangling[2 * i]].copy + dangling[2 * i + 1]) = (unsigned) zero + 0x2000;
+			gNotifyCalls = 0;
+			memset(gNotifyLog, 0, sizeof(gNotifyLog));
+			if(spec.notifyAt)
+				{
+				for(unsigned k = 0; k < 16; ++k) gNotifyTable[k] = (void*) &nxRowNotify;
+				const unsigned self = Reloc::map(regions, regionCount, ecx);
+				unsigned* const object = (unsigned*) *(unsigned*) (self + spec.notifyAt);
+				if(object) *object = (unsigned) gNotifyTable;
+				}
+			for(unsigned i = 0; i < regionCount; ++i)
+				{
+				regions[i].before = (unsigned char*) ::malloc(regions[i].size + 4);
+				memcpy(regions[i].before, regions[i].copy, regions[i].size);
+				}
+			unsigned w[16];
+			for(unsigned i = 0; i < 16; ++i) w[i] = Reloc::map(regions, regionCount, stack[i]);
+			NxReplayAllocator replayAllocator;
+			// the oracle takes its blocks from a heap of its own, the transcription from this allocator: neither is entered in the
+			replayAllocator.canon = 0;
+			NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+			nxFoundationSDKAllocator = &replayAllocator;
+			unsigned answer = 0xdead;
+			if(getenv("NX_ROW_TRACE")) { printf("row %s call %u side %u start\n", spec.id, c, side); fflush(stdout); }
+			// the sweep cache pointer is a global of both sides
+			if(side == 0) *oracleCache = Reloc::map(regions, regionCount, cacheWord); else nxP7SweepCache = Reloc::map(regions, regionCount, cacheWord);
+			__try
+				{
+				// the recorded registers and sixteen stack words, whatever the row's convention: the thunk restores esp
+				void* const fn = side == 0 ? (void*) (base + spec.rva) : spec.fn;
+				answer = nxRowCall(fn, Reloc::map(regions, regionCount, eax), Reloc::map(regions, regionCount, ecx), Reloc::map(regions, regionCount, edx), w, 16);
+				}
+			__except(nxRowFilter(GetExceptionInformation(), base, spec.id, side, c))
+				{
+				++faults;
+				}
+			nxFoundationSDKAllocator = savedAllocator;
+			NxDigest d;
+			nxDigestInit(&d);
+			// eax is compared only for rows that return something
+			const unsigned returned = spec.useEax ? canon.word(answer) : 0;
+			nxFoldInput(&d, &returned, 4);
+			if(spec.notifyAt)
+				{
+				nxFoldInput(&d, &gNotifyCalls, 4);
+				for(unsigned k = 0; k < gNotifyCalls && k < 4; ++k)
+					{
+					const unsigned objectWord = canon.word(gNotifyLog[4 * k]);
+					nxFoldInput(&d, &objectWord, 4);
+					nxFoldInput(&d, &gNotifyLog[4 * k + 1], 12);
+					}
+				}
+			// what the row asked the allocator for, and how many blocks it gave back
+			nxFoldInput(&d, &replayAllocator.count, 4);
+			nxFoldInput(&d, replayAllocator.sizes, 4 * (replayAllocator.count < 64 ? replayAllocator.count : 64));
+			nxFoldInput(&d, &replayAllocator.frees, 4);
+			for(unsigned i = 0; i < regionCount; ++i)
+				for(unsigned o = 0; o + 4 <= regions[i].size; o += 4)
+					{
+					const unsigned now = *(const unsigned*) (regions[i].copy + o);
+					unsigned word;
+					if(now == *(const unsigned*) (regions[i].before + o))
+						// untouched by the call: fold the fixture's own word, so a stale value that happens to equal a copy's
+						// address in this run, or a rebased pointer, cannot differ between sides or runs
+						word = *(const unsigned*) (regions[i].data + o);
+					else
+						{
+						// stored by the call: a pointer into a copy becomes an index, a name in the oracle's or Foundation's image an
+						// offset, and one of its own stack addresses (different every run) a marker
+						word = canon.word(now);
+						if(word == now && word - gReplayNewBase < gReplayImageSize) word = 0x7d000000u + (word - gReplayNewBase);
+						else if(word == now && gReplayNewFoundation && word - gReplayNewFoundation < gReplayFoundationSize) word = 0x7d800000u + (word - gReplayNewFoundation);
+						else if(word == now && now - (unsigned) &answer + 0x100000u < 0x200000u) word = 0xa11add00u;
+						// a block the row got from a heap of its own (the oracle's CRT or the host's): only that it is a pointer can be compared
+						else if(word == now && now - (unsigned) nxP7Tab108740 < sizeof(nxP7Tab108740)) word = 0x7d000000u + 0x108740u + (now - (unsigned) nxP7Tab108740);
+						else if(word == now && now - (unsigned) nxP7TabR1 < sizeof(nxP7TabR1)) word = 0x7d000000u + 0x10878cu + (now - (unsigned) nxP7TabR1);
+						else if(word == now && now - (unsigned) nxP7TabR2 < sizeof(nxP7TabR2)) word = 0x7d000000u + 0x108818u + (now - (unsigned) nxP7TabR2);
+						else if(word == now && nxWordIsAddress(now)) word = 0xa11add00u;
+						}
+					nxFoldInput(&d, &word, 4);
+					if(getenv("NX_ROW_TRACE") && word != *(const unsigned*) (regions[i].data + o) && gTraceCount[side] + 3 <= 60000) { gTrace[side][gTraceCount[side]++] = i; gTrace[side][gTraceCount[side]++] = o; gTrace[side][gTraceCount[side]++] = word; }
+					}
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			for(unsigned i = 0; i < regionCount; ++i) ::free(regions[i].before);
+			VirtualFree(arena, 0, MEM_RELEASE);
+			}
+		++cases;
+		if(results[0] != results[1])
+			{
+			++mismatches;
+			printf("collision mismatch name=phase7_row_%s call=%u\n", spec.id, c);
+			if(getenv("NX_ROW_TRACE"))
+				{
+				size_t i0 = 0, i1 = 0;
+				unsigned shown = 0;
+				while((i0 < gTraceCount[0] || i1 < gTraceCount[1]) && shown < 12)
+					{
+					const bool has0 = i0 < gTraceCount[0], has1 = i1 < gTraceCount[1];
+					const unsigned long long k0 = has0 ? ((unsigned long long) gTrace[0][i0] << 32) | gTrace[0][i0 + 1] : ~0ull, k1 = has1 ? ((unsigned long long) gTrace[1][i1] << 32) | gTrace[1][i1 + 1] : ~0ull;
+					if(k0 == k1) { if(gTrace[0][i0 + 2] != gTrace[1][i1 + 2]) { printf("  region %u +%x oracle=%08x candidate=%08x\n", gTrace[0][i0], gTrace[0][i0 + 1], gTrace[0][i0 + 2], gTrace[1][i1 + 2]); ++shown; } i0 += 3; i1 += 3; }
+					else if(k0 < k1) { printf("  region %u +%x oracle=%08x candidate=unchanged\n", gTrace[0][i0], gTrace[0][i0 + 1], gTrace[0][i0 + 2]); ++shown; i0 += 3; }
+					else { printf("  region %u +%x oracle=unchanged candidate=%08x\n", gTrace[1][i1], gTrace[1][i1 + 1], gTrace[1][i1 + 2]); ++shown; i1 += 3; }
+					}
+				}
+			}
+		}
+		nxFoldInput(&inputDigest, &c, 4);
+		nxFoldInput(&inputDigest, &stack[0], 4);
+		}
+	*oracleCache = savedOracleCache;
+	nxP7SweepCache = savedCandidateCache;
+	::free(image);
+	::free(zero);
+	printf("collision name=phase7_row_%s index=- rva=0x%08x owner=phys_fn_%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u faults=%u rows=%s\n",
+		spec.id, spec.rva, spec.id, cases, oracleDigest.state, candidateDigest.state, mismatches, faults, spec.id);
+	printf("collision coverage name=phase7_row_%s row=%s case=recorded_controller_calls_replayed\n", spec.id, spec.id);
+	char family[64];
+	snprintf(family, sizeof(family), "phase7_row_%s", spec.id);
+	nxPrintInput(family, &inputDigest);
+	// a call that faults on either side is not a comparison: it fails the family
+	return mismatches + (faults ? 1 : 0);
+	}
+
+static unsigned nxDrivePhase7RowReplay(unsigned char* base)
+	{
+	static const NxRowSpec rows[] = {
+		{ "002298", 0x00058830, (void*) &nxP72298, false, 0 },
+		{ "002300", 0x00058870, (void*) &nxP72300, true, 0 },
+		{ "002304", 0x00058ea0, (void*) &nxP72304, false, 0 },
+		{ "002306", 0x00059320, (void*) &nxP72306, false, 0 },
+		{ "002308", 0x00059710, (void*) &nxP72308, true, 0x24 },
+		{ "002310", 0x000597c0, (void*) &nxP72310, true, 0 },
+		{ "002332", 0x0005a520, (void*) &nxP72332, true, 0 },
+		{ "002336", 0x0005a880, (void*) &nxP72336, false, 0 },
+		// { "002400", 0x0005b9e0, (void*) &nxP72400, false, 0 },
+	};
+	unsigned mismatches = 0;
+	for(unsigned i = 0; i < sizeof(rows) / sizeof(rows[0]); ++i)
+		if(!getenv("NX_ROW_ONLY") || !strcmp(getenv("NX_ROW_ONLY"), rows[i].id))
+			mismatches += nxReplayOneRow(base, rows[i]);
+	return mismatches;
+	}
+
 // The box-pruning rows of the pruner support: phys_fn_004820 and 004822 (one function at 0x000b4790), the sweep over a list of
 // boxes that reports every overlapping pair. It is cdecl (box count, box list, pairs container, axes): boxes are six floats
 // (minimum, then maximum), the container is {capacity, count, entries, growth}, and the axes name the sort axis and the two
@@ -7556,7 +7881,7 @@ int wmain(int argc, wchar_t** argv)
 	// the replay of recorded oracle calls (see nxDrivePhase7Replay) on its own
 	if(phase7ReplayOnly)
 		{
-		return nxDrivePhase7Replay(base) ? 1 : 0;
+		return (nxDrivePhase7Replay(base) + nxDrivePhase7RowReplay(base)) ? 1 : 0;
 		}
 	if(phase6RowsOnly)
 		{
@@ -7567,6 +7892,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePhase7Sweep(base);
 		mismatches += nxDrivePhase7Replay(base);
 		mismatches += nxDrivePhase7StepReplay(base);
+		mismatches += nxDrivePhase7RowReplay(base);
 		mismatches += nxDrivePhase7Pruning(base);
 		mismatches += nxDrivePhase7Query(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
