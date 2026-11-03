@@ -31,5 +31,16 @@ class SurveyToDeferralsTest(unittest.TestCase):
         self.assertIn('no operator', e['note'])
 
 
+class BuildFailureTest(unittest.TestCase):
+    def test_a_row_whose_builds_failed_is_undecided_not_unfalsifiable(self):
+        closable, deferred = sd.classify(['SURVEY phys_fn_000009 NxG tried=0 caught=0 survived=0 rejected=4 nobuild=4'])
+        self.assertEqual(closable, [])
+        self.assertNotIn('phys_fn_000009', deferred)
+
+    def test_some_failed_builds_do_not_hide_the_other_rejections(self):
+        _, deferred = sd.classify(['SURVEY phys_fn_000009 NxG tried=0 caught=0 survived=0 rejected=4 nobuild=1'])
+        self.assertEqual(deferred['phys_fn_000009']['reason'], 'not_independently_falsifiable')
+
+
 if __name__ == '__main__':
     unittest.main()

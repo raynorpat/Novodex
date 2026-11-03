@@ -363,7 +363,7 @@ class SourceMutationTest(unittest.TestCase):
 
 class StaleLedgerEntryTest(unittest.TestCase):
     def test_a_row_reconstructed_since_the_ledger_was_written_closes_from_its_not_reconstructed_entry(self):
-        row = inv_row(1, state='reconstructed', phase='3', notes='', implementation='Physics/src/Foo.cpp')
+        row = inv_row(1, state='reconstructed', phase='3', notes='', implementation='Physics/src/core/RevoluteJoint.cpp')
         ledger = {'phase': 3, 'counts': {'deferred_not_reconstructed_in_phase': 1, 'differential_falsified': 0, 'oracle_differential_falsified': 0},
                   'closed': [], 'deferred': [{'id': row['id'], 'rva': '0x00001010', 'reason': 'not_reconstructed_in_phase', 'driving_phases': []}]}
         man = {'doc': 'd', 'rows': {row['id']: dict(SRCMAN['rows']['phys_fn_000001'], gate='NxPhysicsActorShapeMutationTests')}}
@@ -375,7 +375,7 @@ class StaleLedgerEntryTest(unittest.TestCase):
 
 class BlockedEntryTest(unittest.TestCase):
     def test_a_row_waiting_on_a_later_phase_closes_and_is_discharged_by_the_phase_that_runs_its_gate(self):
-        row = inv_row(1, state='reconstructed', phase='4', notes='', implementation='Physics/src/Foo.cpp')
+        row = inv_row(1, state='reconstructed', phase='4', notes='', implementation='Physics/src/core/RevoluteJoint.cpp')
         ledger = {'phase': 4, 'counts': {'deferred_blocked_on_later_phase': 1, 'differential_falsified': 0, 'oracle_differential_falsified': 0},
                   'closed': [], 'deferred': [{'id': row['id'], 'rva': '0x00001010', 'reason': 'blocked_on_later_phase', 'driving_phases': [7],
                                               'blocked_on_type': 'Pruner', 'note': 'waits for phase 7'}]}
@@ -386,3 +386,25 @@ class BlockedEntryTest(unittest.TestCase):
         self.assertEqual((e['discharged_by_phase'], e['driving_phases']), (7, [7]))
         self.assertEqual(clo[4]['counts']['deferred_blocked_on_later_phase'], 0)
         self.assertEqual(clo[4]['deferred'], [])
+
+
+class SourceMutationChecksTest(unittest.TestCase):
+    def run_one(self, mutation, implementation='Physics/src/core/RevoluteJoint.cpp', listing=False):
+        row = inv_row(1, state='reconstructed', phase='3', notes='', implementation=implementation)
+        spec = dict(SRCMAN['rows']['phys_fn_000001'], mutation=mutation)
+        if listing:
+            spec['listing'] = True
+        man = {'doc': 'd', 'rows': {row['id']: spec}}
+        clo = {3: fclosure(row['id'])}
+        close_static_rows.falsify(man, {'functions': [row]}, clo, ORACLE, STAGED)
+        return row
+
+    def test_the_mutated_file_must_be_the_rows_own(self):
+        with self.assertRaises(ValueError):
+            self.run_one('Physics/src/core/OtherJoint.cpp line 12: a  ->  b  (cmp)')
+        self.run_one('Physics/src/core/RevoluteJoint.cpp line 12: a  ->  b  (cmp)')
+
+    def test_a_listing_transcription_is_not_called_shipped_c_plus_plus(self):
+        row = self.run_one('Physics/src/core/RevoluteJoint.cpp line 12: a  ->  b  (cmp) [0x00001014]', listing=True)
+        self.assertIn('Listing transcription', row['notes'])
+        self.assertNotIn('Shipped C++', row['notes'])

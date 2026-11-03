@@ -406,5 +406,133 @@ class OracleOnlyTests(unittest.TestCase):
         self.assertEqual(mc.digest_difference(['a'], 'a', -1073741819, count_crash=True), 1)
 
 
+
+class RunGateFamilyTests(unittest.TestCase):
+    """The family a batch entry is keyed by (target:family) must not be what the gate output is searched for."""
+
+    class FakeMr:
+        TIMEOUT = 5
+        REPO = '.'
+        ORACLE_DIR = 'D:/x'
+        ORACLE_SHA = 'abc'
+
+        def __init__(self, stdout, rc=0):
+            self.out, self.rc = stdout, rc
+            import mutate_rows
+            self.detect_harness = mutate_rows.detect_harness
+            self.detect_staged = mutate_rows.detect_staged
+
+        def harness_command(self, target, extra):
+            return ['x.exe']
+
+        def run_tree(self, cmd, timeout, cwd):
+            import subprocess
+            return subprocess.CompletedProcess(cmd, self.rc, self.out, '')
+
+    def test_the_family_line_is_read_by_the_gate_family_not_the_batch_key(self):
+        mr = self.FakeMr('collision name=pruner_cluster index=- checks=3 mismatches=4' + chr(10))
+        spec = {'target': 'NxPhysicsCollisionTests', 'family': 'NxPhysicsCollisionTests:pruner_cluster', 'gate_family': 'pruner_cluster'}
+        self.assertEqual(mc.run_gate(mr, spec), 4)
+
+    def test_a_crash_after_a_clean_family_is_still_only_a_crash_catch(self):
+        mr = self.FakeMr('collision name=pruner_cluster index=- checks=3 mismatches=0' + chr(10), rc=-1073741819)
+        spec = {'target': 'T', 'family': 'T:pruner_cluster', 'gate_family': 'pruner_cluster', 'count_crash': False}
+        self.assertIsNone(mc.run_gate(mr, spec))
+
+
+
+ASM = """__declspec(naked) int __cdecl nxRow()
+ {
+ __asm
+ {
+  mov eax, dword ptr [esp + 4]		// 0x00001000
+  cmp eax, 3		// 0x00001004
+  je Lend		// 0x00001007
+  add eax, 5		// 0x00001009
+Lend:
+  ret		// 0x0000100c
+ }
+ }
+"""
+
+
+class OracleRangeTests(unittest.TestCase):
+    def test_line_address_reads_the_listing_comment(self):
+        off = ASM.index('cmp eax, 3')
+        self.assertEqual(mc.line_address(ASM, off), 0x1004)
+        self.assertIsNone(mc.line_address(ASM, ASM.index('Lend:')))
+        self.assertIsNone(mc.line_address(SRC, SRC.index('x + 2')))
+
+    def test_has_addresses(self):
+        span = mc.find_span_by_marker('// phys_fn_000009 (0x1, 1 B)' + chr(10) + ASM, 'phys_fn_000009')
+        self.assertTrue(mc.has_addresses('// phys_fn_000009 (0x1, 1 B)' + chr(10) + ASM, span))
+        self.assertFalse(mc.has_addresses(SRC, mc.find_function_span(SRC, 'A::f(int)')))
+
+    def test_describe_names_the_oracle_address(self):
+        off = ASM.index('cmp eax, 3')
+        m = (off + len('cmp eax, '), '3', '4', 'const')
+        self.assertTrue(mc.describe(ASM, m).endswith('[0x00001004]'))
+
+    def test_sweep_row_rejects_a_listing_line_outside_the_row(self):
+        d = Path(tempfile.mkdtemp())
+        path = d / 'a.cpp'
+        path.write_text('// phys_fn_000009 (0x1000, 8 B)' + chr(10) + ASM, encoding='utf-8')
+        text = path.read_bytes().decode('latin-1')
+        span = mc.find_span_by_marker(text, 'phys_fn_000009')
+        base = make_pe(bytes(256))
+        calls = []
+
+        def build():
+            calls.append(1)
+            body = bytearray(256)
+            body[8] = 0xff
+            return make_pe(bytes(body))
+        # the row owns 0x1000..0x1008: the add at 0x1009 and the ret at 0x100c belong to a neighbour
+        out = mc.sweep_row(str(path), 'nxRow', span, [(0x1000, '_nxRow')], 0x1100, base, lambda _t: 1, build, 8, survey=True, oracle=(0x1000, 8))
+        reasons = {r for _d, r in out['rejected']}
+        self.assertTrue(all('oracle range' in r for r in reasons), reasons)
+        self.assertTrue(all('[0x00001009]' in d or '[0x0000100c]' in d for d, _r in out['rejected']), out['rejected'])
+        self.assertTrue(out['rejected'])
+        self.assertGreaterEqual(len(out['caught']), 1)
+
+
+class SharedFunctionTests(unittest.TestCase):
+    def test_a_candidate_much_larger_than_the_row_is_shared(self):
+        self.assertTrue(mc.shared_function(409, 2468))
+        self.assertFalse(mc.shared_function(2170, 2816))
+        self.assertFalse(mc.shared_function(21, 32))
+        self.assertFalse(mc.shared_function(633, 752))
+
+
+class BuildFailureTests(unittest.TestCase):
+    def test_a_failed_build_is_not_a_missing_change(self):
+        d = Path(tempfile.mkdtemp())
+        path = d / 'f.cpp'
+        path.write_text(SRC, encoding='utf-8')
+        span = mc.find_function_span(SRC, 'A::f(int)')
+        entries = [{'id': 'x', 'path': str(path), 'qualified': 'A::f', 'span': span, 'family': 'fa', 'rva': 0x1000}]
+        out = mc.sweep_batch(entries, [(0x1000, '?f@A@@QAEHH@Z')], 0x1100, make_pe(bytes(256)), lambda fam: None, lambda: None, 3)
+        self.assertEqual(len(out['x']['rejected']), 3)
+        self.assertTrue(all(r[2] == 'build failed' for r in out['x']['rejected']))
+        self.assertEqual(path.read_text(encoding='utf-8'), SRC)
+
+
+class BaselineExitTests(unittest.TestCase):
+    def test_same_output_and_the_same_exit_code_is_nothing(self):
+        self.assertIsNone(mc.digest_difference(['a'], 'a', 3, count_crash=True, baseline_rc=3))
+        self.assertEqual(mc.digest_difference(['a'], 'a', -1073741819, count_crash=True, baseline_rc=3), 1)
+        self.assertIsNone(mc.digest_difference(['a'], 'a', 4, count_crash=False, baseline_rc=3))
+
+
+
+class ListingFlagTests(unittest.TestCase):
+    def test_a_mutation_on_a_listing_line_marks_the_manifest_row(self):
+        log = ['CAUGHT phys_fn_000001 NxPhysicsCollisionTests mismatches=3 line 12: 3  ->  4  (const) [0x00001004]',
+               'CAUGHT phys_fn_000002 NxPhysicsCollisionTests mismatches=3 line 12: a < b  ->  a <= b  (cmp)']
+        m = mc.write_manifest(log, 'd', {'phys_fn_000001': 'a.cpp', 'phys_fn_000002': 'b.cpp'}, {})
+        self.assertTrue(m['rows']['phys_fn_000001']['listing'])
+        self.assertNotIn('listing', m['rows']['phys_fn_000002'])
+
+
 if __name__ == '__main__':
     unittest.main()

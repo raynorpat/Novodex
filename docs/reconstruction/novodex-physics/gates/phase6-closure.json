@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 181,
+    "differential_falsified": 179,
     "oracle_differential_falsified": 28,
-    "deferred_reconstructed_not_falsified": 129,
+    "deferred_reconstructed_not_falsified": 131,
     "deferred_not_reconstructed_in_phase": 1,
     "deferred_not_independently_falsifiable": 94
   },
@@ -2154,26 +2154,6 @@
         "mutation": "Physics/src/core/JointSupport.cpp line 708: arg1 >= 0.0f -> !(arg1 >= 0.0f) (neg)",
         "detected": "stdout_delta=20"
       }
-    },
-    {
-      "id": "phys_fn_004037",
-      "rva": "0x00092060",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsCoreDumpTests",
-      "falsification": {
-        "mutation": "Physics/src/core/SceneDump.cpp line 825: desc.flags & NX_RJF_LIMIT_ENABLED -> !(desc.flags & NX_RJF_LIMIT_ENABLED) (neg)",
-        "detected": "stdout_delta=38"
-      }
-    },
-    {
-      "id": "phys_fn_004062",
-      "rva": "0x000950f0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsCoreDumpTests",
-      "falsification": {
-        "mutation": "Physics/src/core/SceneDump.cpp line 1778: 32 -> 33 (const)",
-        "detected": "stdout_delta=4241"
-      }
     }
   ],
   "deferred": [
@@ -4192,6 +4172,24 @@
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
       "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+    },
+    {
+      "id": "phys_fn_004037",
+      "rva": "0x00092060",
+      "size": 409,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_004062",
+      "rva": "0x000950f0",
+      "size": 1699,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     }
   ]
 }

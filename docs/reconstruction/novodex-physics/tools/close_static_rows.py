@@ -158,6 +158,9 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
                 raise ValueError('%s is %s, not a row awaiting a mutation' % (rid, r['state']))
             if not re.search(r'\bline \d+', spec['mutation']):
                 raise ValueError('%s: a source mutation must name its line: %r' % (rid, spec['mutation']))
+            home = (r.get('implementation') or r.get('source') or '').replace('\\', '/')
+            if not home or not spec['mutation'].replace('\\', '/').startswith(home + ' '):
+                raise ValueError('%s: the mutation %r does not name the row\'s own source file %s' % (rid, spec['mutation'], home))
         else:
             if r['state'] != 'reconstructed' or AWAITS not in (r.get('notes') or ''):
                 raise ValueError('%s is %s and does not await the testing pass' % (rid, r['state']))
@@ -171,7 +174,9 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
                               % (spec['gate'], spec['family'], spec['mutation'], spec['detected'], manifest['doc']))
         # a manifest says "wired": false for a row that is driven directly in the harness and not called by the product
         how = 'wired and driven' if spec.get('wired', True) else 'driven directly in the oracle-differential harness (not wired into the product by this closure)'
-        if source:
+        if source and spec.get('listing'):
+            r['notes'] = 'Listing transcription; falsified by the source mutation above (falsification pass).'
+        elif source:
             r['notes'] = 'Shipped C++ function; falsified by the source mutation above (falsification pass).'
         else:
             r['notes'] = 'Listing transcription, %s; falsified by the mutation above (testing pass).' % how

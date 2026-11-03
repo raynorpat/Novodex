@@ -385,13 +385,47 @@ class ControlNotExact(RuntimeError):
     """The unmutated source already reports a difference, so every mutant would look caught."""
 
 
+LISTING = re.compile(r'//\s*0x([0-9a-f]{8})\s*$')
+
+
+def line_address(text, offset):
+    """The oracle address in the `// 0x........` listing comment at the end of the line holding `offset`, or None."""
+    start = text.rfind('\n', 0, offset) + 1
+    end = text.find('\n', offset)
+    m = LISTING.search(text[start:end if end >= 0 else len(text)].rstrip())
+    return int(m.group(1), 16) if m else None
+
+
+def has_addresses(text, span):
+    """True when the function at span is a listing transcription (its lines carry oracle addresses)."""
+    return bool(re.search(r'//\s*0x[0-9a-f]{8}\s*$', text[span[0]:span[1]], re.M))
+
+
+def shared_function(row_size, candidate_size):
+    """True when the candidate function is far larger than the row: it implements other rows too, and an edit in it
+    cannot be credited to this one."""
+    return candidate_size > 2 * row_size + 64
+
+
+def outside_oracle(text, span, m, oracle):
+    """A reason when the mutated line of a listing transcription is not inside the row's oracle range, else None."""
+    if not oracle or not has_addresses(text, span):
+        return None
+    addr = line_address(text, m[0])
+    if addr is None or not oracle[0] <= addr < oracle[0] + oracle[1]:
+        return 'line is outside the row\'s oracle range'
+    return None
+
+
 def describe(text, m):
     line = text.count('\n', 0, m[0]) + 1
-    return 'line %d: %s  ->  %s  (%s)' % (line, ' '.join(m[1].split())[:60], ' '.join(m[2].split())[:60], m[3])
+    addr = line_address(text, m[0])
+    return 'line %d: %s  ->  %s  (%s)%s' % (line, ' '.join(m[1].split())[:60], ' '.join(m[2].split())[:60], m[3],
+                                            ' [0x%08x]' % addr if addr is not None else '')
 
 
 def sweep_row(path, qualified, span, syms, end, baseline, run, build_dll, limit, survey=False, control=None,
-              restore=None, write=None, mutations=None):
+              restore=None, write=None, mutations=None, oracle=None):
     """Try up to `limit` single-site mutations spread over the function at `span` in `path`.
 
     build_dll() rebuilds the candidate DLL from the (mutated) source on disk and returns its bytes; a mutation counts
@@ -412,6 +446,10 @@ def sweep_row(path, qualified, span, syms, end, baseline, run, build_dll, limit,
         for m in (mutations if mutations is not None else spread(cpp_mutations(text, span[0], span[1]), limit)):
             mutated = apply_mutation(text, m)
             desc = describe(text, m)
+            why = outside_oracle(text, span, m, oracle)
+            if why:
+                out['rejected'].append((desc, why))
+                continue
             write(path, mutated.encode('latin-1'))
             try:
                 changed = pe_changed_rvas(baseline, build_dll())
@@ -471,7 +509,18 @@ def sweep_batch(entries, syms, end, baseline, run_family, build_all, limit, writ
     out = {e['id']: {'candidates': [], 'survived': [], 'rejected': []} for e in entries}
     try:
         for r in range(max([len(v) for v in muts.values()] + [0])):
-            chosen = [(e, muts[e['id']][r]) for e in entries if r < len(muts[e['id']])]
+            chosen = []
+            for e in entries:
+                if r >= len(muts[e['id']]):
+                    continue
+                m = muts[e['id']][r]
+                why = outside_oracle(texts[e['path']], e['span'], m, e.get('oracle'))
+                if why:
+                    out[e['id']]['rejected'].append((m, describe(texts[e['path']], m), why))
+                else:
+                    chosen.append((e, m))
+            if not chosen:
+                continue
             by_file = {}
             for e, m in chosen:
                 by_file.setdefault(e['path'], []).append(m)
@@ -481,7 +530,12 @@ def sweep_batch(entries, syms, end, baseline, run_family, build_all, limit, writ
                     text = apply_mutation(text, m)
                 write(path, text.encode('latin-1'))
             try:
-                changed = pe_changed_rvas(baseline, build_all())
+                dll = build_all()
+                if dll is None:
+                    for e, m in chosen:
+                        out[e['id']]['rejected'].append((m, describe(texts[e['path']], m), 'build failed'))
+                    continue
+                changed = pe_changed_rvas(baseline, dll)
                 for e, m in chosen:
                     desc = describe(texts[e['path']], m)
                     sym = symbol_at(syms, e['rva'], end)
@@ -524,6 +578,8 @@ def write_manifest(lines, doc, sources, families=None):
         rid, gate, kind, n, desc = m.groups()
         rows[rid] = {'gate': gate, 'family': families.get(rid, gate), 'mutation': '%s %s' % (sources.get(rid, '?'), ' '.join(desc.split())),
                      'detected': '%s=%s' % (kind, n), 'source_mutation': True}
+        if re.search(r'\[0x[0-9a-f]{8}\]$', desc.strip()):
+            rows[rid]['listing'] = True
     return {'doc': doc, 'rows': rows}
 
 
@@ -636,12 +692,12 @@ def output_lines(stdout):
     return [l for l in stdout.splitlines() if not l.startswith(VOLATILE)]
 
 
-def digest_difference(baseline, stdout, returncode, count_crash=False):
-    """The number of output lines that differ from the unmutated run, or None when nothing differs. A fault with
-    unchanged output counts only under count_crash."""
+def digest_difference(baseline, stdout, returncode, count_crash=False, baseline_rc=0):
+    """The number of output lines that differ from the unmutated run, or None when nothing differs. A different exit
+    code with unchanged output counts only under count_crash."""
     now = output_lines(stdout)
     if now == baseline:
-        return 1 if (returncode != 0 and count_crash) else None
+        return 1 if (returncode != baseline_rc and count_crash) else None
     return max(1, len(set(now) ^ set(baseline)))
 
 
@@ -652,14 +708,14 @@ def run_gate(mr, spec):
         if spec.get('oracle_only'):
             cmd = [mr.harness_command(spec['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
             r = mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO)
-            return digest_difference(spec['baseline'], r.stdout, r.returncode, spec.get('count_crash', False))
+            return digest_difference(spec['baseline'], r.stdout, r.returncode, spec.get('count_crash', False), spec.get('baseline_rc', 0))
         if spec.get('staged'):
             r = mr.run_tree(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
                              'docs/reconstruction/novodex-physics/tools/run_differential.ps1', '-Targets', spec['target']],
                             timeout=mr.TIMEOUT, cwd=mr.REPO)
             return mr.detect_staged(r.stdout, spec.get('count_crash', False))
         r = mr.run_tree(mr.harness_command(spec['target'], spec.get('exe_args')), timeout=mr.TIMEOUT, cwd=mr.REPO)
-        return mr.detect_harness(r.stdout, r.returncode, spec['family'], spec.get('count_crash', False))
+        return mr.detect_harness(r.stdout, r.returncode, spec.get('gate_family') or spec['family'], spec.get('count_crash', False))
     except subprocess.TimeoutExpired:
         return None
 
@@ -696,46 +752,64 @@ def main_batch(argv=None):
     for p in plan:
         if p.get('oracle_only'):
             cmd = [mr.harness_command(p['target'], [])[0], mr.ORACLE_DIR.replace('/', chr(92)), mr.ORACLE_SHA]
-            first = output_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
-            again = output_lines(mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO).stdout)
-            if first != again or not first:
+            run1 = mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO)
+            run2 = mr.run_tree(cmd, timeout=mr.TIMEOUT, cwd=mr.REPO)
+            first, again = output_lines(run1.stdout), output_lines(run2.stdout)
+            p['baseline_rc'] = run1.returncode
+            if first != again or not first or run1.returncode != run2.returncode:
                 print('NOT DETERMINISTIC %s (%s); the plan is refused' % (p['id'], p['target']))
                 return 2
             p['baseline'] = first
     entries, skipped = [], []
     for p in plan:
-        path, text, span, qualified = locate(inv[p['id']], mr.REPO)
+        row = inv[p['id']]
+        path, text, span, qualified = locate(row, mr.REPO)
         rva = resolve_rva(syms, qualified) if span else None
         if span is None or rva is None:
             skipped.append((p['id'], qualified if span is None else 'no unique map symbol for %s' % qualified))
             continue
-        entries.append(dict(p, path=str(path), span=span, qualified=qualified, rva=rva, family=p['target'] + ':' + (p.get('family') or '')))
+        size = int(row['size'])
+        cand = symbol_at(syms, rva, end)
+        if not has_addresses(text, span) and shared_function(size, cand[2] - cand[1]):
+            skipped.append((p['id'], 'the candidate function %s (%d bytes) is far larger than the row (%d bytes): other rows share it' % (qualified, cand[2] - cand[1], size)))
+            continue
+        # key: what keeps two rows of one family out of a batch; gate_family: what the gate prints
+        entries.append(dict(p, path=str(path), span=span, qualified=qualified, rva=rva, oracle=(int(row['rva'], 16), size),
+                            gate_family=p.get('family') or '', family=p['target'] + ':' + (p.get('family') or '')))
+    kept = []
+    for e in entries:
+        if run_gate(mr, e):
+            skipped.append((e['id'], 'the unmutated run already reports a difference (control not exact)'))
+        else:
+            kept.append(e)
+    entries = kept
     specs = {e['family']: e for e in entries}
 
     def build_all():
+        mr.remove_stale_dll(mr.REPO)
         ok = mr._build('NxPhysics', False)
         for t in targets:
             ok = ok and mr._build(t, False)
-        return Path(a.dll).read_bytes() if ok else baseline
+        return Path(a.dll).read_bytes() if ok else None
 
     out = sweep_batch(entries, syms, end, baseline, lambda fam: run_gate(mr, specs[fam]), build_all, a.limit)
     lines = []
     for e in entries:
         res = out[e['id']]
-        confirmed, screened = [], 0
+        confirmed = []
         for m, desc, n in res['candidates']:
-            if confirmed:
-                # one confirmed catch shows the gate observes this row; later candidates are counted as caught without another build
-                screened += 1
-                continue
+            # every candidate is run alone: in a batch another row's mutation may be what the family saw
+            def rebuild(e=e):
+                mr.remove_stale_dll(mr.REPO)
+                return (mr._build('NxPhysics', False) and mr._build(e['target'], False) and Path(a.dll).read_bytes()) or b''
             single = sweep_row(e['path'], e['qualified'], e['span'], syms, end, baseline, lambda _t, e=e: run_gate(mr, e),
-                               lambda: (mr._build('NxPhysics', False) and mr._build(e['target'], False) and Path(a.dll).read_bytes()) or baseline,
-                               1, survey=True, mutations=[m])
+                               rebuild, 1, survey=True, mutations=[m], oracle=e.get('oracle'))
             confirmed += single['caught']
             if not single['caught']:
                 res['survived'].append((m, desc, None))
         lines.append('SURVEY %s %s tried=%d caught=%d survived=%d rejected=%d' % (
-            e['id'], e['target'], len(confirmed) + screened + len(res['survived']), len(confirmed) + screened, len(res['survived']), len(res['rejected'])))
+            e['id'], e['target'], len(confirmed) + len(res['survived']), len(confirmed), len(res['survived']), len(res['rejected'])) +
+                     ' nobuild=%d' % sum(1 for x in res['rejected'] if x[2] == 'build failed'))
         for desc, n in confirmed:
             lines.append('CAUGHT %s %s %s=%s %s' % (e['id'], e['target'], 'stdout_delta' if e.get('staged') else 'mismatches', n, desc))
         lines += ['  SURVIVED ' + d for _m, d, _n in res['survived']] + ['  rejected ' + d + '  [' + why + ']' for _m, d, why in res['rejected']]

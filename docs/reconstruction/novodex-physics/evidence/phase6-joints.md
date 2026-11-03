@@ -11505,5 +11505,3 @@ Phase 7 continuation 2026-10-19 — `phys_fn_004826`: the pairwise AABB helper m
 
 ## Testing pass
 
-- `phys_fn_004037`: Physics/src/core/SceneDump.cpp line 825: desc.flags & NX_RJF_LIMIT_ENABLED -> !(desc.flags & NX_RJF_LIMIT_ENABLED) (neg); `NxPhysicsCoreDumpTests` stdout_delta=38.
-- `phys_fn_004062`: Physics/src/core/SceneDump.cpp line 1778: 32 -> 33 (const); `NxPhysicsCoreDumpTests` stdout_delta=4241.

@@ -69,24 +69,24 @@
       },
       "3": {
         "phase": 3,
-        "closed_rows": 228,
-        "deferred_rows": 164,
+        "closed_rows": 217,
+        "deferred_rows": 175,
         "deferred_reasons": {
           "blocked_on_later_phase": 1,
           "not_independently_falsifiable": 8,
-          "not_reconstructed_in_phase": 67,
-          "reconstructed_not_falsified": 88
+          "not_reconstructed_in_phase": 70,
+          "reconstructed_not_falsified": 96
         }
       },
       "4": {
         "phase": 4,
-        "closed_rows": 189,
-        "deferred_rows": 864,
+        "closed_rows": 165,
+        "deferred_rows": 888,
         "deferred_reasons": {
-          "blocked_on_later_phase": 7,
+          "blocked_on_later_phase": 26,
           "not_independently_falsifiable": 25,
-          "not_reconstructed_in_phase": 15,
-          "reconstructed_not_falsified": 798,
+          "not_reconstructed_in_phase": 17,
+          "reconstructed_not_falsified": 801,
           "vendored_not_falsified": 19
         }
       },
@@ -98,12 +98,12 @@
       },
       "6": {
         "phase": 6,
-        "closed_rows": 209,
-        "deferred_rows": 224,
+        "closed_rows": 207,
+        "deferred_rows": 226,
         "deferred_reasons": {
           "not_independently_falsifiable": 94,
           "not_reconstructed_in_phase": 1,
-          "reconstructed_not_falsified": 129
+          "reconstructed_not_falsified": 131
         }
       },
       "7": {
@@ -137,8 +137,8 @@
         "rows_without_implementation_mapping": 98,
         "rows_with_unresolved_indirect_calls": 153,
         "by_state": {
-          "dynamically_gated": 228,
-          "reconstructed": 164
+          "dynamically_gated": 217,
+          "reconstructed": 175
         }
       },
       "4": {
@@ -149,8 +149,8 @@
         "rows_with_unresolved_indirect_calls": 313,
         "by_state": {
           "discovered": 19,
-          "dynamically_gated": 189,
-          "reconstructed": 845
+          "dynamically_gated": 165,
+          "reconstructed": 869
         }
       },
       "5": {
@@ -170,8 +170,8 @@
         "rows_without_implementation_mapping": 16,
         "rows_with_unresolved_indirect_calls": 247,
         "by_state": {
-          "dynamically_gated": 209,
-          "reconstructed": 224
+          "dynamically_gated": 207,
+          "reconstructed": 226
         }
       },
       "7": {
@@ -12595,7 +12595,7 @@
           {
             "id": "phys_fn_004062",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -40136,7 +40136,7 @@
       "size": 188,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_000933",
       "implementation": {
         "path": "Physics/src/ObjectModel.cpp",
@@ -40145,13 +40145,13 @@
         "file_exists": true,
         "oracle_source": "Physics/src/ObjectModel.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "dynamic_proof"
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsActorDynamicSetterTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -40186,25 +40186,23 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsActorDynamicSetterTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_000933",
         "rva": "0x000204e0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
-        "driving_phases": [
-          5
-        ],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
+        "driving_phases": [],
         "requires_dependency_review": true
       }
     },
@@ -42314,7 +42312,7 @@
       "size": 108,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_000993",
       "implementation": {
         "path": "Physics/src/NpActor.cpp",
@@ -42329,7 +42327,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsActorDynamicSetterTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -42370,25 +42368,23 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsActorDynamicSetterTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_000993",
         "rva": "0x00021b70",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
-        "driving_phases": [
-          5
-        ],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
+        "driving_phases": [],
         "requires_dependency_review": true
       }
     },
@@ -45689,7 +45685,7 @@
           {
             "id": "phys_fn_000933",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002362",
@@ -47572,7 +47568,7 @@
           {
             "id": "phys_fn_000993",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -54156,7 +54152,7 @@
       "size": 351,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "NxPlane debug-render dispatch (slot 3)",
       "implementation": {
         "path": "Physics/src/ObjectModel.cpp",
@@ -54171,7 +54167,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsShapeVtableTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -54221,25 +54217,23 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsShapeVtableTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "not_reconstructed_in_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001259",
         "rva": "0x000251f0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
-        "driving_phases": [
-          5
-        ],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "not_reconstructed_in_phase",
+        "driving_phases": [],
         "requires_dependency_review": true
       }
     },
@@ -58316,7 +58310,7 @@
       "size": 424,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "NxSphere debug-render dispatcher (slot 3)",
       "implementation": {
         "path": "Physics/src/ObjectModel.cpp",
@@ -58331,7 +58325,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsShapeVtableTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -58379,25 +58373,23 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsShapeVtableTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "not_reconstructed_in_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001369",
         "rva": "0x00027a30",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
-        "driving_phases": [
-          5
-        ],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "not_reconstructed_in_phase",
+        "driving_phases": [],
         "requires_dependency_review": true
       }
     },
@@ -59570,7 +59562,7 @@
       "size": 696,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001401",
       "implementation": {
         "path": "Physics/src/ObjectModel.cpp",
@@ -59585,7 +59577,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsShapeVtableTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -59625,25 +59617,23 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsShapeVtableTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "not_reconstructed_in_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001401",
         "rva": "0x00028ed0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
-        "driving_phases": [
-          5
-        ],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "not_reconstructed_in_phase",
+        "driving_phases": [],
         "requires_dependency_review": true
       }
     },
@@ -71498,7 +71488,7 @@
       "size": 195,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001680",
       "implementation": {
         "path": "Physics/src/Distance.cpp",
@@ -71513,7 +71503,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [],
@@ -71531,30 +71521,31 @@
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
-        "four_digit_hex_literals": [],
+        "four_digit_hex_literals": [
+          "027f",
+          "0f7f"
+        ],
         "simulation_mentioned": false,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_001680",
         "rva": "0x000338a0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
-        "driving_phases": [
-          7
-        ],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
+        "driving_phases": [],
         "requires_dependency_review": true
       }
     },
@@ -71740,7 +71731,7 @@
           {
             "id": "phys_fn_001680",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_001682",
@@ -74394,7 +74385,7 @@
           {
             "id": "phys_fn_001849",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -77407,7 +77398,7 @@
       "size": 235,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001828",
       "implementation": {
         "path": "Physics/src/ContactConvexHeightfield.cpp",
@@ -77422,7 +77413,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -77461,22 +77452,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001828",
         "rva": "0x00041840",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -77561,7 +77552,7 @@
       "size": 496,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001832",
       "implementation": {
         "path": "Physics/src/ContactConvexHeightfield.cpp",
@@ -77576,7 +77567,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -77594,7 +77585,7 @@
           {
             "id": "phys_fn_001828",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_001830",
@@ -77622,22 +77613,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001832",
         "rva": "0x000419b0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -77648,7 +77639,7 @@
       "size": 112,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001833",
       "implementation": {
         "path": "Physics/src/ContactConvexHeightfield.cpp",
@@ -77663,7 +77654,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -77696,22 +77687,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001833",
         "rva": "0x00041ba0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -77966,7 +77957,7 @@
       "size": 247,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001840",
       "implementation": {
         "path": "Physics/src/ContactConvexHeightfield.cpp",
@@ -77981,7 +77972,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -77996,7 +77987,7 @@
           {
             "id": "phys_fn_001833",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_001834",
@@ -78021,22 +78012,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001840",
         "rva": "0x00042460",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -78129,7 +78120,7 @@
       "size": 2170,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001844",
       "implementation": {
         "path": "Physics/src/ContactConvexHeightfield.cpp",
@@ -78144,7 +78135,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -78234,22 +78225,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001844",
         "rva": "0x000427d0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -78381,7 +78372,7 @@
           {
             "id": "phys_fn_001844",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_004886",
@@ -78442,7 +78433,7 @@
       "size": 2899,
       "phase": 3,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001849",
       "implementation": {
         "path": "Physics/src/ContactConvexHeightfield.cpp",
@@ -78457,7 +78448,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -78495,7 +78486,7 @@
           {
             "id": "phys_fn_001832",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_001836",
@@ -78505,7 +78496,7 @@
           {
             "id": "phys_fn_001840",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_001842",
@@ -78592,22 +78583,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 3,
         "row_id": "phys_fn_001849",
         "rva": "0x00043680",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -78654,7 +78645,7 @@
           {
             "id": "phys_fn_001849",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002266",
@@ -83563,7 +83554,7 @@
           {
             "id": "phys_fn_005313",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -84710,7 +84701,7 @@
       "size": 633,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_001990",
       "implementation": {
         "path": "Physics/src/PMap.cpp",
@@ -84725,7 +84716,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsTriangleMeshApiTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -84786,22 +84777,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsTriangleMeshApiTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "not_reconstructed_in_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_001990",
         "rva": "0x0004cc60",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "not_reconstructed_in_phase",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -85787,7 +85778,7 @@
       "size": 915,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_002017",
       "implementation": {
         "path": "Physics/src/PMap.cpp",
@@ -85802,7 +85793,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsTriangleMeshApiTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -85835,7 +85826,7 @@
           {
             "id": "phys_fn_001990",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_004770",
@@ -85931,22 +85922,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsTriangleMeshApiTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "not_reconstructed_in_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_002017",
         "rva": "0x0004e1a0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "not_reconstructed_in_phase",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -87209,7 +87200,7 @@
           {
             "id": "phys_fn_002017",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002021",
@@ -93089,7 +93080,7 @@
           {
             "id": "phys_fn_002017",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_004768",
@@ -93185,7 +93176,7 @@
           {
             "id": "phys_fn_002017",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_004768",
@@ -174085,7 +174076,7 @@
       "size": 409,
       "phase": 6,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_004037",
       "implementation": {
         "path": "Physics/src/core/SceneDump.cpp",
@@ -174094,13 +174085,13 @@
         "file_exists": true,
         "oracle_source": "Physics/src/core/SceneDump.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "dynamic_proof"
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCoreDumpTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -174171,22 +174162,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCoreDumpTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 6,
         "row_id": "phys_fn_004037",
         "rva": "0x00092060",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -174844,7 +174835,7 @@
           {
             "id": "phys_fn_004037",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005716",
@@ -175404,7 +175395,7 @@
       "size": 1699,
       "phase": 6,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_004062",
       "implementation": {
         "path": "Physics/src/core/SceneDump.cpp",
@@ -175413,13 +175404,13 @@
         "file_exists": true,
         "oracle_source": "Physics/src/core/SceneDump.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "dynamic_proof"
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCoreDumpTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -175502,22 +175493,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCoreDumpTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 6,
         "row_id": "phys_fn_004062",
         "rva": "0x000950f0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -222724,7 +222715,7 @@
       "size": 270,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005223",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -222745,7 +222736,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -222769,7 +222760,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -222778,22 +222771,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005223",
         "rva": "0x000e52d0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -223467,7 +223460,7 @@
       "size": 86,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005238",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -223488,7 +223481,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -223538,7 +223531,9 @@
           "0x000e5832",
           "0x000e585c"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -223547,22 +223542,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005238",
         "rva": "0x000e5810",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -223882,12 +223877,12 @@
           {
             "id": "phys_fn_005315",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005317",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -223939,7 +223934,7 @@
       "size": 40,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005248",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -223960,7 +223955,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -223975,7 +223970,7 @@
           {
             "id": "phys_fn_005317",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005483",
@@ -223991,7 +223986,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -224000,22 +223997,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005248",
         "rva": "0x000e5a00",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -224028,7 +224025,7 @@
       "size": 93,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005250",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -224049,7 +224046,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -224073,7 +224070,7 @@
           {
             "id": "phys_fn_005309",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005320",
@@ -224098,7 +224095,9 @@
         "indirect_call_sites": [
           "0x000e5a6f"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -224107,22 +224106,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005250",
         "rva": "0x000e5a30",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -224135,7 +224134,7 @@
       "size": 28,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005252",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -224156,7 +224155,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -224170,7 +224169,7 @@
           {
             "id": "phys_fn_005318",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -224180,7 +224179,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -224189,22 +224190,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005252",
         "rva": "0x000e5a90",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -224277,7 +224278,7 @@
           {
             "id": "phys_fn_005552",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005686",
@@ -224335,7 +224336,7 @@
       "size": 633,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005256",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -224356,7 +224357,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -224408,12 +224409,12 @@
           {
             "id": "phys_fn_005556",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005560",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005686",
@@ -224435,7 +224436,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -224444,22 +224447,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005256",
         "rva": "0x000e5de0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -224472,7 +224475,7 @@
       "size": 202,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005258",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -224493,7 +224496,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -224537,7 +224540,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -224546,22 +224551,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005258",
         "rva": "0x000e6060",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -226424,7 +226429,7 @@
       "size": 89,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005305",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -226445,7 +226450,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [],
@@ -226463,7 +226468,9 @@
         "indirect_call_sites": [
           "0x000e7595"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -226472,22 +226479,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005305",
         "rva": "0x000e7570",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -226500,7 +226507,7 @@
       "size": 21,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005307",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -226521,7 +226528,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -226545,7 +226552,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -226554,22 +226563,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005307",
         "rva": "0x000e75d0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -226582,7 +226591,7 @@
       "size": 117,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005309",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -226603,7 +226612,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [],
@@ -226617,7 +226626,9 @@
         "unclosed_direct_callees": [],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -226626,22 +226637,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005309",
         "rva": "0x000e75f0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -226726,7 +226737,7 @@
       "size": 33,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005313",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -226747,7 +226758,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -226761,7 +226772,7 @@
           {
             "id": "phys_fn_005305",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -226771,7 +226782,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -226780,22 +226793,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005313",
         "rva": "0x000e7690",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -226808,7 +226821,7 @@
       "size": 391,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005315",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -226829,7 +226842,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -226864,7 +226877,7 @@
           {
             "id": "phys_fn_005305",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -226880,7 +226893,9 @@
           "0x000e76df",
           "0x000e7751"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -226889,22 +226904,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005315",
         "rva": "0x000e76c0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -226917,7 +226932,7 @@
       "size": 816,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005317",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -226938,7 +226953,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -226979,7 +226994,9 @@
         "indirect_call_sites": [
           "0x000e78dd"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -226988,22 +227005,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005317",
         "rva": "0x000e7850",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -227016,7 +227033,7 @@
       "size": 136,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005318",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -227037,7 +227054,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -227066,12 +227083,12 @@
           {
             "id": "phys_fn_005309",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005317",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -227086,7 +227103,9 @@
         "indirect_call_sites": [
           "0x000e7ba4"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -227095,22 +227114,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005318",
         "rva": "0x000e7b80",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -230815,7 +230834,7 @@
       "size": 503,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005468",
       "implementation": {
         "path": "Physics/src/opcode/IcePruner.cpp",
@@ -230824,13 +230843,13 @@
         "file_exists": true,
         "oracle_source": "Physics/src/opcode/IcePruner.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "dynamic_proof"
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsSceneRaycastTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -230886,22 +230905,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsSceneRaycastTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005468",
         "rva": "0x000efa90",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -231418,7 +231437,7 @@
       "size": 252,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005481",
       "implementation": {
         "path": "Physics/src/opcode/IcePruner.cpp",
@@ -231427,13 +231446,13 @@
         "file_exists": true,
         "oracle_source": "Physics/src/opcode/IcePruner.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "dynamic_proof"
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsSceneRaycastTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -231478,22 +231497,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsSceneRaycastTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "reconstructed_not_falsified",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005481",
         "rva": "0x000effc0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -231539,7 +231558,7 @@
           {
             "id": "phys_fn_005481",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -232747,7 +232766,7 @@
       "size": 70,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005552",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -232768,7 +232787,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -232792,7 +232811,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -232801,22 +232822,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005552",
         "rva": "0x000f1c60",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -232829,7 +232850,7 @@
       "size": 93,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005554",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -232850,7 +232871,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -232881,7 +232902,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -232890,22 +232913,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005554",
         "rva": "0x000f1cb0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -232918,7 +232941,7 @@
       "size": 49,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005556",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -232939,7 +232962,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -232953,7 +232976,7 @@
           {
             "id": "phys_fn_005554",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -232963,7 +232986,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -232972,22 +232997,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005556",
         "rva": "0x000f1d10",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -233000,7 +233025,7 @@
       "size": 93,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005558",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -233021,7 +233046,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -233052,7 +233077,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -233061,22 +233088,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005558",
         "rva": "0x000f1d50",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -233089,7 +233116,7 @@
       "size": 49,
       "phase": 4,
       "kind": "code",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "label": "phys_fn_005560",
       "implementation": {
         "path": "Physics/src/opcode/PrunerOctree.cpp",
@@ -233110,7 +233137,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": "NxPhysicsCollisionTests"
+        "closure_gate": null
       },
       "dependencies": {
         "direct_rows": [
@@ -233124,7 +233151,7 @@
           {
             "id": "phys_fn_005558",
             "kind": "code",
-            "state": "dynamically_gated"
+            "state": "reconstructed"
           }
         ]
       },
@@ -233134,7 +233161,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -233143,22 +233172,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "row_specific_gate_falsification",
-        "inventory_state": "dynamically_gated",
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "closed",
-        "ledger_reason": null,
-        "gate": "NxPhysicsCollisionTests",
-        "falsification_recorded": true
+        "ledger_disposition": "deferred",
+        "ledger_reason": "blocked_on_later_phase",
+        "gate": null,
+        "falsification_recorded": false
       },
       "next_packet": {
-        "owner_phase": 8,
+        "owner_phase": 4,
         "row_id": "phys_fn_005560",
         "rva": "0x000f1db0",
-        "action": "full_census_reclosure",
-        "ledger_reason": null,
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
         "driving_phases": [
           7
         ],
@@ -234630,16 +234659,16 @@
     }
   ],
   "source": {
-    "inventory_sha256": "a00c210d6d4bb886f6fe891099d4f9a89e39b51d2130ff708bde598cd1198cf8",
+    "inventory_sha256": "879bcedfc34546b51485a8cefd4a662b9ab8452ee3ee438df903fbfba6e68732",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "d3a2c0d919beaec103ef30faf6c355c8f2e91f15ed66f7f17ef2d93704813717",
-      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "53fef84a768952f6cf6ccd4535f32a515ac3e88a2077e73a6422e4073c0402a4",
-      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "c9a8c9816af1377f34e44e28fbc69656754f46093fe1cb0773bcfe0faafa2769",
+      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "29bd8a454a7382a0e4da4dabc691bd643fdcd0f1c42b4938a672881eec03fb79",
+      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "815566c220b2d8594dc93c72cb45c7aba28b192dc33ef328bb47ea040f8c2765",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
-      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "c48cd01d759fdf6cc777bc757ba1fb47b0df5e8ed0f0ff830efc4b0149ff441e",
+      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "d50635499b082c0824a7b4c27377b499195aac04cad71e6f685e5166ffac222b",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "a00b92c5f52ad55af6ac1873288c21358549140044b019d10955717008de46cc"
     }
   }

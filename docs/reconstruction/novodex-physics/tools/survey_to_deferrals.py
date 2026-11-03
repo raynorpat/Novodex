@@ -15,13 +15,15 @@ import sys
 def classify(lines, limit=2):
     stats = {}
     for line in lines:
-        m = re.match(r'SURVEY (phys_fn_\d+) (\w+) tried=(\d+) caught=(\d+) survived=(\d+) rejected=(\d+)', line)
+        m = re.match(r'SURVEY (phys_fn_\d+) (\w+) tried=(\d+) caught=(\d+) survived=(\d+) rejected=(\d+)(?: nobuild=(\d+))?', line)
         if m:
-            stats[m.group(1)] = (m.group(2),) + tuple(int(x) for x in m.groups()[2:])
+            stats[m.group(1)] = (m.group(2),) + tuple(int(x) for x in m.groups()[2:6]) + (int(m.group(7) or 0),)
     closable, deferred = [], {}
-    for rid, (target, tried, caught, survived, rejected) in stats.items():
+    for rid, (target, tried, caught, survived, rejected, nobuild) in stats.items():
         if caught >= 1 and survived <= limit:
             closable.append(rid)
+        elif tried == 0 and nobuild >= rejected > 0:
+            continue    # every attempt failed to build: nothing was learned about the row
         elif tried == 0 and rejected == 0:
             deferred[rid] = {'reason': 'not_independently_falsifiable',
                              'note': 'The function body has no operator the mutation set can change (calls and assignments only), '
