@@ -7,6 +7,7 @@ NxPhysicsThirdPartyTests, whose output is one `thirdparty name=<family> ...` lin
 of one of its families differs from the unmutated run, which also lets rows with disjoint families share a build.
 """
 import hashlib
+import os
 import re
 from pathlib import Path
 
@@ -20,12 +21,17 @@ NAME = re.compile(r'\bname=([A-Za-z0-9_.]+)')
 VOLATILE = ('pair_directory=', 'modules pair=', 'loaded module=')
 
 
+def build_dir():
+    """The CMake build directory the merged trees live in (NX_BUILD_DIR, so several workers can each have their own)."""
+    return os.environ.get('NX_BUILD_DIR', 'build')
+
+
 def merged_path(rel):
     """The merged-tree copy of a vendored source path, or None when the path is not vendored source."""
     rel = (rel or '').replace(chr(92), '/')
     for src, dst in ROOTS:
         if rel.startswith(src):
-            return dst + rel[len(src):]
+            return build_dir() + dst[len('build'):] + rel[len(src):]
     return None
 
 

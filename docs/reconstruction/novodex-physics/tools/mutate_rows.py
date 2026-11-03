@@ -21,6 +21,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
 ORACLE_DIR = os.environ.get('NX_ORACLE_DIR', 'D:/FlamingEnt__/Unreal_3/Binaries')
+BUILD = os.environ.get('NX_BUILD_DIR', 'build')    # a worker with its own build tree sets this
 ORACLE_SHA = '4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c'
 TIMEOUT = 120
 CRASH = 0xC0000000
@@ -263,7 +264,7 @@ def run_tree(cmd, timeout, cwd):
 def remove_stale_dll(root):
     """Delete the built candidate DLL: MSBuild's tracker can call the link up to date after an object changed."""
     try:
-        (Path(root) / 'build' / 'Release' / 'NxPhysics.dll').unlink()
+        (Path(root) / BUILD / 'Release' / 'NxPhysics.dll').unlink()
     except FileNotFoundError:
         pass
 
@@ -273,7 +274,7 @@ def _build(target, staged):
     if staged:
         remove_stale_dll(REPO)
     for t in build_targets(target, staged):
-        build = subprocess.run('cmake --build build --config Release --target %s' % t, shell=True,
+        build = subprocess.run('cmake --build %s --config Release --target %s' % (BUILD, t), shell=True,
                                capture_output=True, text=True, cwd=REPO)
         if build.returncode != 0 or ': error' in build.stdout or 'LNK2' in build.stdout:
             return False
@@ -282,7 +283,7 @@ def _build(target, staged):
 
 def harness_command(target, extra_args):
     """The command line of an oracle-differential harness, with any extra arguments after the oracle directory and hash."""
-    return [str(REPO / 'build' / 'Release' / ('%s.exe' % target)), ORACLE_DIR, ORACLE_SHA] + list(extra_args or [])
+    return [str(REPO / BUILD / 'Release' / ('%s.exe' % target)), ORACLE_DIR, ORACLE_SHA] + list(extra_args or [])
 
 
 def _real_run(target, family, staged, count_crash=False, extra_args=None):

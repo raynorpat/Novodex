@@ -17,6 +17,14 @@ class PathTests(unittest.TestCase):
         self.assertEqual(vg.merged_path('External/opcode/novodex/OPC_RayCollider.cpp'), 'build/External/opcode-tree/OPC_RayCollider.cpp')
         self.assertEqual(vg.merged_path('External/opcode/novodex/Ice/IceOBB.cpp'), 'build/External/opcode-tree/Ice/IceOBB.cpp')
 
+    def test_a_worker_with_its_own_build_tree_gets_its_own_merged_tree(self):
+        import os
+        os.environ['NX_BUILD_DIR'] = 'build_w2'
+        try:
+            self.assertEqual(vg.merged_path('External/qhull/novodex/io.c'), 'build_w2/External/qhull-tree/io.c')
+        finally:
+            del os.environ['NX_BUILD_DIR']
+
     def test_other_paths_are_not_vendor_paths(self):
         self.assertIsNone(vg.merged_path('Physics/src/Scene.cpp'))
         self.assertIsNone(vg.merged_path(''))
