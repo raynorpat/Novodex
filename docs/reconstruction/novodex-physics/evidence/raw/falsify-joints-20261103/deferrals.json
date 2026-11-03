@@ -59,7 +59,7 @@
   },
   "phys_fn_004473": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004206": {
    "reason": "reconstructed_not_falsified",
@@ -67,7 +67,7 @@
   },
   "phys_fn_004509": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004207": {
    "reason": "reconstructed_not_falsified",
@@ -75,7 +75,7 @@
   },
   "phys_fn_004535": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004219": {
    "reason": "reconstructed_not_falsified",
@@ -83,7 +83,7 @@
   },
   "phys_fn_004565": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004221": {
    "reason": "reconstructed_not_falsified",
@@ -91,7 +91,7 @@
   },
   "phys_fn_004595": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004228": {
    "reason": "reconstructed_not_falsified",
@@ -99,7 +99,7 @@
   },
   "phys_fn_004621": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004232": {
    "reason": "not_independently_falsifiable",
@@ -107,7 +107,7 @@
   },
   "phys_fn_004653": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004240": {
    "reason": "reconstructed_not_falsified",
@@ -115,7 +115,7 @@
   },
   "phys_fn_004679": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004246": {
    "reason": "reconstructed_not_falsified",
@@ -123,7 +123,7 @@
   },
   "phys_fn_004757": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004308": {
    "reason": "reconstructed_not_falsified",
@@ -175,67 +175,207 @@
   },
   "phys_fn_004485": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004487": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004517": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004519": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004547": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004549": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004575": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004579": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004603": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004605": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004629": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004631": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004661": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004663": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004737": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   },
   "phys_fn_004739": {
    "reason": "not_independently_falsifiable",
-   "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004182": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_004210": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004216": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_004218": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004222": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004230": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_004234": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004244": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsJointTests caught 0 of 12 mutations tried (12 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_004250": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004262": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004276": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004284": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004286": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_004300": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004320": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004366": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004378": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsJointTests caught 0 of 12 mutations tried (12 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_004380": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004503": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004505": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004529": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004531": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004559": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004561": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004589": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004591": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004615": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004617": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004643": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004649": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004673": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004675": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004725": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004751": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_004753": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
   }
  }
 }

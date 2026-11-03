@@ -81596,7 +81596,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13897",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both D6 cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 9 wired to core/D6Joint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 83/83 coverage); trace excerpt committed as evidence/joint-families-trace-d6.txt (joint-families Task 3i)",
-      "notes": "previous source: Physics/src/D6Joint.cpp",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -81633,7 +81633,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13900",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": "previous source: Physics/src/D6Joint.cpp",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/D6Joint.cpp",
       "implementation_symbol": "phys_fn_004184 (harness dispatch table)"
     },
@@ -82121,7 +82121,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14024",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both D6 cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 9 wired to core/D6Joint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 83/83 coverage); trace excerpt committed as evidence/joint-families-trace-d6.txt (joint-families Task 3i)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
     {
@@ -82195,7 +82195,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14042",
       "static_proof": "mov dword ptr [ecx+0x1cc],0; ret; transcribed from units/core__PulleyJoint.cpp.md (capstone disassembly) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via tinygetters drive (3z48): failures=0",
-      "notes": "previous source: zero this+0x1cc (0x9e3c0)",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
@@ -82232,7 +82232,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14043",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
@@ -82269,7 +82269,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14045",
       "static_proof": "copies [arg+0x6c..0x90] to [this+0x16c..0x190]; ret 4; transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via builder4 drive (3z71): failures=0; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
-      "notes": "previous source: copy 10 dwords to [this+0x16c..0x190] (0x9e470, ret 4)",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
@@ -82344,7 +82344,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14065",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
@@ -82492,7 +82492,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14107",
       "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both distance cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 6 wired to core/DistanceJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 59/59 coverage); trace excerpt committed as evidence/joint-families-trace-distance.txt (joint-families Task 3f)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
@@ -82566,7 +82566,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14120",
       "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both distance cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 6 wired to core/DistanceJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 59/59 coverage); trace excerpt committed as evidence/joint-families-trace-distance.txt (joint-families Task 3f)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
@@ -82751,7 +82751,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14177",
       "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 12 mutations tried (12 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
@@ -82861,7 +82861,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14244",
       "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
@@ -83083,7 +83083,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14297",
       "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-in-plane cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 5 wired to core/PointInPlaneJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 51/51 coverage); trace excerpt committed as evidence/joint-families-trace-point-in-plane.txt (joint-families Task 3e)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
@@ -83342,7 +83342,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14365",
       "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-on-line cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 4 wired to core/PointOnLineJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 43/43 coverage); trace excerpt committed as evidence/joint-families-trace-point-on-line.txt (joint-families Task 3d)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
@@ -83453,7 +83453,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14385",
       "static_proof": "xor eax,eax; mov [ecx+0x1f8],eax; [ecx+0x1f4],eax; [ecx+0x1f0],eax; ret; transcribed from the Capstone listing (units/core__SphericalJoint.cpp.md); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": "previous source: zero [this+0x1f0/1f4/1f8] (0xa2bf0)",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -83490,7 +83490,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14386",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -83527,7 +83527,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14387",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -83564,7 +83564,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14390",
       "static_proof": "transcribed from the Capstone listing (units/core__SphericalJoint.cpp.md); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp",
       "implementation_symbol": "phys_fn_004288 (harness dispatch table)"
     },
@@ -83639,7 +83639,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14394",
       "static_proof": "transcribed from the Capstone listing (units/core__SphericalJoint.cpp.md); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp",
       "implementation_symbol": "phys_fn_004292 (harness dispatch table)"
     },
@@ -83788,7 +83788,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14466",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
@@ -84158,7 +84158,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14630",
       "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both cylindrical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 2 wired to core/CylindricalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 27/27 coverage); trace excerpt committed as evidence/joint-families-trace-cylindrical.txt (joint-families Task 3b)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
@@ -84306,7 +84306,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14705",
       "static_proof": "xor eax,eax; mov [ecx+0x1b4],eax; [ecx+0x1b0],eax; [ecx+0x1ac],eax; ret; transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via zmix2 drive (3z55): failures=0",
-      "notes": "previous source: zero [this+0x1ac/1b0/1b4] (0xa8d20)",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -85011,7 +85011,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14894",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -85233,7 +85233,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14939",
       "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 12 mutations tried (12 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
     {
@@ -85270,7 +85270,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14943",
       "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
     {
@@ -85623,7 +85623,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15084",
       "static_proof": "The Capstone listing for 0x000afc10 is transcribed into supportSolveJoint004399 and wired into both iterative and final-record dispatch for kind 5. The bit-5/kind-6 callback uses joint slot 0; the bounded impulse path uses the shared 004395 application; pass 1 reports the accumulated impulse, axis and timestep through joint slot 3.",
       "dynamic_proof": "Direct oracle/candidate internal Scene differential in tests/PhysicsJointSupportTests.cpp: the pinned 0x0009b120 wrapper and linked nxSolveJointSupportRecords each execute kind-5 unconstrained and force-clamped fixtures, comparing row flags, bias/effective mass, accumulated impulse, body velocities and slot-3 callback. Both oracle digests match; disabling kind-5 dispatch produces 11 mismatches. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-kind5-support.md.",
-      "notes": "Internal kind-5 row semantics are differentially verified. No public joint-record producer for kind 5 has been found; public-path reachability remains open.",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 14 mutations tried (14 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/JointSupport.cpp",
       "implementation_symbol": "supportSolveJoint004399"
     },
@@ -86613,7 +86613,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15157",
       "static_proof": "transcribed from units/core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpD6Joint.cpp"
     },
     {
@@ -86687,7 +86687,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15163",
       "static_proof": "transcribed from units/core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpD6Joint.cpp",
       "implementation_symbol": "phys_fn_004455 (harness dispatch table)"
     },
@@ -87021,7 +87021,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15186",
       "static_proof": "transcribed from units/gap__core__NpD6Joint.cpp__to__core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpD6Joint.cpp"
     },
     {
@@ -87243,7 +87243,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15199",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87280,7 +87280,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15202",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87317,7 +87317,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15205",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87428,7 +87428,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15212",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp",
       "implementation_symbol": "phys_fn_004495 (harness dispatch table)"
     },
@@ -87540,7 +87540,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15217",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87577,7 +87577,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15220",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87614,7 +87614,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15223",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87688,7 +87688,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15225",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
@@ -87836,7 +87836,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15236",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -87873,7 +87873,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15239",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -87910,7 +87910,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15242",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -87984,7 +87984,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15248",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp",
       "implementation_symbol": "phys_fn_004525 (harness dispatch table)"
     },
@@ -88022,7 +88022,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15251",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -88059,7 +88059,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15254",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both distance cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 6 wired to core/DistanceJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 59/59 coverage); trace excerpt committed as evidence/joint-families-trace-distance.txt (joint-families Task 3f)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -88096,7 +88096,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15257",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both distance cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 6 wired to core/DistanceJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 59/59 coverage); trace excerpt committed as evidence/joint-families-trace-distance.txt (joint-families Task 3f)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -88170,7 +88170,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15259",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
@@ -88399,7 +88399,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15276",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88436,7 +88436,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15279",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88473,7 +88473,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15282",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88547,7 +88547,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15288",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp",
       "implementation_symbol": "phys_fn_004555 (harness dispatch table)"
     },
@@ -88585,7 +88585,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15291",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88622,7 +88622,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15294",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88659,7 +88659,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15297",
       "static_proof": "transcribed from units/gap__core__NpFixedJoint.cpp__to__core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88733,7 +88733,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15299",
       "static_proof": "transcribed from units/gap__core__NpFixedJoint.cpp__to__core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
@@ -88918,7 +88918,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15311",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -88992,7 +88992,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15315",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -89029,7 +89029,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15318",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -89103,7 +89103,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15324",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "implementation_symbol": "phys_fn_004585 (harness dispatch table)"
     },
@@ -89141,7 +89141,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15327",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -89178,7 +89178,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15330",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-in-plane cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 5 wired to core/PointInPlaneJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 51/51 coverage); trace excerpt committed as evidence/joint-families-trace-point-in-plane.txt (joint-families Task 3e)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -89215,7 +89215,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15333",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-in-plane cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 5 wired to core/PointInPlaneJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 51/51 coverage); trace excerpt committed as evidence/joint-families-trace-point-in-plane.txt (joint-families Task 3e)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -89289,7 +89289,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15335",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
@@ -89437,7 +89437,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15346",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89474,7 +89474,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15349",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89511,7 +89511,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15352",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89585,7 +89585,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15358",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp",
       "implementation_symbol": "phys_fn_004611 (harness dispatch table)"
     },
@@ -89623,7 +89623,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15361",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89660,7 +89660,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15364",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-on-line cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 4 wired to core/PointOnLineJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 43/43 coverage); trace excerpt committed as evidence/joint-families-trace-point-on-line.txt (joint-families Task 3d)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89697,7 +89697,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15367",
       "static_proof": "transcribed from units/gap__core__NpPointOnLineJoint.cpp__to__core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; the gap row is the point-on-line Np unit's constructor/destructor tail (units/joint-families-contract.md ## PointOnLine ### Row assignment); layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-on-line cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 4 wired to core/PointOnLineJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 43/43 coverage); trace excerpt committed as evidence/joint-families-trace-point-on-line.txt (joint-families Task 3d)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89771,7 +89771,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15369",
       "static_proof": "transcribed from units/gap__core__NpPointOnLineJoint.cpp__to__core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; the gap row is the point-on-line Np unit's constructor/destructor tail (units/joint-families-contract.md ## PointOnLine ### Row assignment); layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
@@ -89919,7 +89919,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15380",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -89956,7 +89956,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15383",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -89993,7 +89993,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15386",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90104,7 +90104,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15393",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp",
       "implementation_symbol": "phys_fn_004639 (harness dispatch table)"
     },
@@ -90142,7 +90142,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15396",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90179,7 +90179,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15399",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90216,7 +90216,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15402",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 1 mutations tried (1 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90253,7 +90253,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15405",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 1 mutations tried (1 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90290,7 +90290,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15408",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90364,7 +90364,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15410",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
@@ -90512,7 +90512,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15421",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -90549,7 +90549,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15424",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -90586,7 +90586,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15427",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -90660,7 +90660,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15433",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp",
       "implementation_symbol": "phys_fn_004669 (harness dispatch table)"
     },
@@ -90698,7 +90698,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15436",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -90735,7 +90735,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15439",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both cylindrical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 2 wired to core/CylindricalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 27/27 coverage); trace excerpt committed as evidence/joint-families-trace-cylindrical.txt (joint-families Task 3b)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -90772,7 +90772,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15442",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both cylindrical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 2 wired to core/CylindricalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 27/27 coverage); trace excerpt committed as evidence/joint-families-trace-cylindrical.txt (joint-families Task 3b)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -90846,7 +90846,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15444",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
@@ -91254,7 +91254,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15476",
       "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (reconstructed_not_falsified): NxPhysicsJointTests caught 0 of 1 mutations tried (1 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
@@ -91698,7 +91698,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15496",
       "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
@@ -91920,7 +91920,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15509",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
@@ -91957,7 +91957,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15512",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
@@ -91994,7 +91994,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15515",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
@@ -92105,7 +92105,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15522",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp",
       "implementation_symbol": "phys_fn_004747 (harness dispatch table)"
     },
@@ -92143,7 +92143,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15525",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey-untargeted.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
@@ -92180,7 +92180,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15528",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
@@ -92217,7 +92217,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15531",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
-      "notes": "",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
@@ -92291,7 +92291,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15533",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (NxScene::releaseJoint through Scene::releaseJoint, and the scene release of the two joints the cycle leaves), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Deferred (not_independently_falsifiable): None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own). See evidence/raw/falsify-joints-20261103/survey.log.",
+      "notes": "Deferred (not_independently_falsifiable): The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it. See evidence/raw/falsify-joints-20261103/survey.log.",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {

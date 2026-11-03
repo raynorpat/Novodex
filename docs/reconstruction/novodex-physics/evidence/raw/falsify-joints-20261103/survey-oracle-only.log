@@ -1,0 +1,75 @@
+SURVEY phys_fn_004182 NxPhysicsJointTests tried=2 caught=0 survived=2 rejected=0
+  SURVIVED line 320: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+  SURVIVED line 320: ==  ->  !=  (cmp)
+SURVEY phys_fn_004210 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004216 NxPhysicsJointTests tried=2 caught=0 survived=2 rejected=0
+  SURVIVED line 161: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+  SURVIVED line 161: ==  ->  !=  (cmp)
+SURVEY phys_fn_004218 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004222 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004230 NxPhysicsJointTests tried=2 caught=0 survived=2 rejected=0
+  SURVIVED line 180: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+  SURVIVED line 180: ==  ->  !=  (cmp)
+SURVEY phys_fn_004234 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004244 NxPhysicsJointTests tried=12 caught=0 survived=12 rejected=4
+  SURVIVED line 121: !body0  ->  !(!body0)  (neg)
+  SURVIVED line 137: -  ->  +  (arith)
+  SURVIVED line 144: 5  ->  6  (const)
+  SURVIVED line 145: +  ->  -  (arith)
+  SURVIVED line 175: body1  ->  !(body1)  (neg)
+  SURVIVED line 178: -  ->  +  (arith)
+  SURVIVED line 179: 3  ->  4  (const)
+  SURVIVED line 179: 3  ->  4  (const)
+  SURVIVED line 180: +  ->  -  (arith)
+  SURVIVED line 180: -  ->  +  (arith)
+  SURVIVED line 181: +  ->  -  (arith)
+  SURVIVED line 181: -  ->  +  (arith)
+  rejected line 143: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 161: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 168: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 190: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004250 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004262 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004276 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004284 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004286 NxPhysicsJointTests tried=2 caught=0 survived=2 rejected=0
+  SURVIVED line 347: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+  SURVIVED line 347: ==  ->  !=  (cmp)
+SURVEY phys_fn_004300 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004320 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004366 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004378 NxPhysicsJointTests tried=12 caught=0 survived=12 rejected=4
+  SURVIVED line 601: body0  ->  !(body0)  (neg)
+  SURVIVED line 606: 3  ->  4  (const)
+  SURVIVED line 617: 2  ->  3  (const)
+  SURVIVED line 623: 3  ->  4  (const)
+  SURVIVED line 623: -  ->  +  (arith)
+  SURVIVED line 623: 2  ->  3  (const)
+  SURVIVED line 624: -  ->  +  (arith)
+  SURVIVED line 625: +  ->  -  (arith)
+  SURVIVED line 625: +  ->  -  (arith)
+  SURVIVED line 625: 2  ->  3  (const)
+  SURVIVED line 626: 2  ->  3  (const)
+  SURVIVED line 626: 3  ->  4  (const)
+  rejected line 612: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 624: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 628: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 635: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_004380 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004503 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004505 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004529 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004531 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004559 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004561 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004589 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004591 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004615 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004617 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004643 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004649 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004673 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004675 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004725 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004751 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004753 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0

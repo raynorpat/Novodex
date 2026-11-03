@@ -22,6 +22,10 @@ def classify(lines, limit=2):
     for rid, (target, tried, caught, survived, rejected) in stats.items():
         if caught >= 1 and survived <= limit:
             closable.append(rid)
+        elif tried == 0 and rejected == 0:
+            deferred[rid] = {'reason': 'not_independently_falsifiable',
+                             'note': 'The function body has no operator the mutation set can change (calls and assignments only), '
+                                     'so no source mutation can be aimed at it.'}
         elif tried == 0:
             deferred[rid] = {'reason': 'not_independently_falsifiable',
                              'note': 'None of the %d source mutations tried changed this row\'s compiled function in NxPhysics.dll '

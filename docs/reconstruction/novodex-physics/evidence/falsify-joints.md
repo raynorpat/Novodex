@@ -22,5 +22,13 @@ per CRLF line (mutations landed in other functions; fixed, with a test); several
 shifted the rest of the DLL (the operator set is now size-preserving); a manifest row could not close a C++ row because the
 closer insisted on the testing-pass note and an oracle address (`source_mutation` rows skip both).
 
-**Not yet worked (71 joint rows):** 35 rows gated by the oracle-only digest target `NxPhysicsJointTests` (detection = output
-differs from the unmutated run; added to `mutate_cpp.py`), and 36 rows whose dynamic proof names no gated target.
+**The other 71 joint rows (now worked).**
+* 35 gated by the oracle-only digest target `NxPhysicsJointTests` (detection = the output differs from the unmutated run;
+  `survey-oracle-only.log`): none closable. 21 have no operator the mutation set can change (calls and assignments only),
+  and in the 14 with operators the gate caught nothing (for example `(mFlags & 0x18) == 0x10` can be negated unseen).
+* 36 whose proof names no gated target (old "mutexfamily", "tailjmp", "guardedstore" drives): surveyed under
+  `NxPhysicsJointTests` (`survey-untargeted.log`): nothing caught; deferred.
+
+**Joint totals (148 rows):** 18 closed; 130 deferred with the survey in the ledger note (19 caught but more than 2
+survivors, the rest nothing caught or nothing to mutate). The closing threshold is not the limit here: the gates that exist for
+most joint rows simply do not observe their bodies, which is a gap in drivers, not in the tool.

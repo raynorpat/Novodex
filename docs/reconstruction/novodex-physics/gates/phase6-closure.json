@@ -66,9 +66,9 @@
   "counts": {
     "differential_falsified": 179,
     "oracle_differential_falsified": 28,
-    "deferred_reconstructed_not_falsified": 188,
-    "deferred_not_reconstructed_in_phase": 2,
-    "deferred_not_independently_falsifiable": 36
+    "deferred_reconstructed_not_falsified": 131,
+    "deferred_not_reconstructed_in_phase": 1,
+    "deferred_not_independently_falsifiable": 94
   },
   "closed": [
     {
@@ -2460,7 +2460,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004184",
@@ -2469,7 +2469,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004186",
@@ -2538,10 +2538,10 @@
       "id": "phys_fn_004210",
       "rva": "0x0009e1a0",
       "size": 331,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004212",
@@ -2556,10 +2556,10 @@
       "id": "phys_fn_004214",
       "rva": "0x0009e3c0",
       "size": 11,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004216",
@@ -2568,16 +2568,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004218",
       "rva": "0x0009e470",
       "size": 112,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004219",
@@ -2601,10 +2601,10 @@
       "id": "phys_fn_004222",
       "rva": "0x0009ea60",
       "size": 81,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004224",
@@ -2640,7 +2640,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004232",
@@ -2655,10 +2655,10 @@
       "id": "phys_fn_004234",
       "rva": "0x0009f470",
       "size": 162,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004236",
@@ -2694,7 +2694,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 12 mutations tried (12 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004246",
@@ -2718,10 +2718,10 @@
       "id": "phys_fn_004250",
       "rva": "0x000a0f70",
       "size": 81,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004252",
@@ -2745,10 +2745,10 @@
       "id": "phys_fn_004262",
       "rva": "0x000a1b50",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004264",
@@ -2781,10 +2781,10 @@
       "id": "phys_fn_004276",
       "rva": "0x000a2a80",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004278",
@@ -2808,19 +2808,19 @@
       "id": "phys_fn_004282",
       "rva": "0x000a2bf0",
       "size": 21,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004284",
       "rva": "0x000a2c10",
       "size": 427,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004286",
@@ -2829,7 +2829,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004288",
@@ -2838,7 +2838,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004292",
@@ -2847,16 +2847,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004300",
       "rva": "0x000a48f0",
       "size": 194,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004302",
@@ -2925,10 +2925,10 @@
       "id": "phys_fn_004320",
       "rva": "0x000a76a0",
       "size": 87,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004322",
@@ -2961,10 +2961,10 @@
       "id": "phys_fn_004328",
       "rva": "0x000a8d20",
       "size": 21,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004352",
@@ -3015,10 +3015,10 @@
       "id": "phys_fn_004366",
       "rva": "0x000ac540",
       "size": 162,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004368",
@@ -3054,16 +3054,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 12 mutations tried (12 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004380",
       "rva": "0x000ad6e0",
       "size": 81,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004384",
@@ -3096,9 +3096,10 @@
       "id": "phys_fn_004399",
       "rva": "0x000afc10",
       "size": 173,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "NxPhysicsJointTests caught 0 of 14 mutations tried (14 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004407",
@@ -3140,19 +3141,19 @@
       "id": "phys_fn_004451",
       "rva": "0x000b0890",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004455",
       "rva": "0x000b0940",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004471",
@@ -3170,7 +3171,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004475",
@@ -3206,7 +3207,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004487",
@@ -3215,16 +3216,16 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004489",
       "rva": "0x000b0ec0",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004493",
@@ -3239,37 +3240,37 @@
       "id": "phys_fn_004495",
       "rva": "0x000b0fa0",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004501",
       "rva": "0x000b1050",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004503",
       "rva": "0x000b10b0",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004505",
       "rva": "0x000b1110",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004507",
@@ -3287,7 +3288,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004511",
@@ -3323,7 +3324,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004519",
@@ -3332,16 +3333,16 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004521",
       "rva": "0x000b1390",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004523",
@@ -3356,37 +3357,37 @@
       "id": "phys_fn_004525",
       "rva": "0x000b1440",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004527",
       "rva": "0x000b1490",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004529",
       "rva": "0x000b14f0",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004531",
       "rva": "0x000b1550",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004533",
@@ -3404,7 +3405,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004541",
@@ -3440,7 +3441,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004549",
@@ -3449,16 +3450,16 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004551",
       "rva": "0x000b1860",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004553",
@@ -3473,37 +3474,37 @@
       "id": "phys_fn_004555",
       "rva": "0x000b1910",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004557",
       "rva": "0x000b1960",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004559",
       "rva": "0x000b19c0",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004561",
       "rva": "0x000b1a20",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004563",
@@ -3521,7 +3522,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004567",
@@ -3557,7 +3558,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004579",
@@ -3566,16 +3567,16 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004581",
       "rva": "0x000b1d00",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004583",
@@ -3590,37 +3591,37 @@
       "id": "phys_fn_004585",
       "rva": "0x000b1db0",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004587",
       "rva": "0x000b1e00",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004589",
       "rva": "0x000b1e60",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004591",
       "rva": "0x000b1ec0",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004593",
@@ -3638,7 +3639,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004597",
@@ -3674,7 +3675,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004605",
@@ -3683,16 +3684,16 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004607",
       "rva": "0x000b2140",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004609",
@@ -3707,37 +3708,37 @@
       "id": "phys_fn_004611",
       "rva": "0x000b21f0",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004613",
       "rva": "0x000b2240",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004615",
       "rva": "0x000b22a0",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004617",
       "rva": "0x000b2300",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004619",
@@ -3755,7 +3756,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004623",
@@ -3791,7 +3792,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004631",
@@ -3800,16 +3801,16 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004633",
       "rva": "0x000b2580",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004637",
@@ -3824,28 +3825,28 @@
       "id": "phys_fn_004639",
       "rva": "0x000b2670",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004641",
       "rva": "0x000b26c0",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004643",
       "rva": "0x000b2720",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004645",
@@ -3854,7 +3855,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 1 mutations tried (1 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004647",
@@ -3863,16 +3864,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 1 mutations tried (1 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004649",
       "rva": "0x000b2840",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004651",
@@ -3890,7 +3891,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004655",
@@ -3926,7 +3927,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004663",
@@ -3935,16 +3936,16 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004665",
       "rva": "0x000b2ac0",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004667",
@@ -3959,37 +3960,37 @@
       "id": "phys_fn_004669",
       "rva": "0x000b2b70",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004671",
       "rva": "0x000b2bc0",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004673",
       "rva": "0x000b2c20",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004675",
       "rva": "0x000b2c80",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004677",
@@ -4007,7 +4008,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004701",
@@ -4016,16 +4017,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsJointTests caught 0 of 1 mutations tried (1 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_004725",
       "rva": "0x000b33a0",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004727",
@@ -4070,7 +4071,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004739",
@@ -4079,16 +4080,16 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004741",
       "rva": "0x000b3620",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004745",
@@ -4103,37 +4104,37 @@
       "id": "phys_fn_004747",
       "rva": "0x000b3700",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004749",
       "rva": "0x000b3750",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004751",
       "rva": "0x000b37b0",
       "size": 84,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004753",
       "rva": "0x000b3810",
       "size": 57,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004755",
@@ -4151,7 +4152,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "None of the 0 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004763",

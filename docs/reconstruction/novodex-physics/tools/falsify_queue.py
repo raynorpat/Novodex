@@ -109,10 +109,19 @@ def main(argv=None):
     ap.add_argument('--summary', action='store_true')
     ap.add_argument('--plan-dir', help='write plan-<k>.json (staged-pair rows, no two sharing a target) and unplanned.json')
     ap.add_argument('--batch-size', type=int, default=3)
+    ap.add_argument('--force-target', help='the gated target to try for rows whose proof names none')
+    ap.add_argument('--exclude-log', action='append', default=[], help='skip rows that already have a SURVEY line in this mutate_cpp log')
     a = ap.parse_args(argv)
     queue = build_queue(json.load(open(a.inventory, encoding='utf-8')))
     if a.group:
         queue = [r for r in queue if r['group'] == a.group]
+    if a.force_target:
+        queue = [dict(r, target=r['target'] or a.force_target) for r in queue]
+    if a.exclude_log:
+        done = set()
+        for log in a.exclude_log:
+            done |= set(re.findall(r'^SURVEY (phys_fn_\d+) ', open(log, encoding='utf-8').read(), re.M))
+        queue = [r for r in queue if r['id'] not in done]
     if a.summary or not a.out:
         counts = collections.Counter(r['group'] for r in queue)
         sizes = collections.Counter()

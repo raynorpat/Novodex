@@ -1,0 +1,59 @@
+SURVEY phys_fn_004184 NxPhysicsJointTests tried=2 caught=0 survived=2 rejected=0
+  SURVIVED line 335: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+  SURVIVED line 335: ==  ->  !=  (cmp)
+SURVEY phys_fn_004214 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004282 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004288 NxPhysicsJointTests tried=2 caught=0 survived=2 rejected=0
+  SURVIVED line 370: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+  SURVIVED line 370: ==  ->  !=  (cmp)
+SURVEY phys_fn_004292 NxPhysicsJointTests tried=2 caught=0 survived=2 rejected=0
+  SURVIVED line 388: (mFlags & 0x18) == 0x10  ->  !((mFlags & 0x18) == 0x10)  (neg)
+  SURVIVED line 388: ==  ->  !=  (cmp)
+SURVEY phys_fn_004328 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004399 NxPhysicsJointTests tried=14 caught=0 survived=14 rejected=0
+  SURVIVED line 309: record->mFlags & 0x20  ->  !(record->mFlags & 0x20)  (neg)
+  SURVIVED line 311: (record->mFlags & 0x1f) == 6  ->  !((record->mFlags & 0x1f) == 6)  (neg)
+  SURVIVED line 311: ==  ->  !=  (cmp)
+  SURVIVED line 311: 6  ->  7  (const)
+  SURVIVED line 322: +  ->  -  (arith)
+  SURVIVED line 324: +  ->  -  (arith)
+  SURVIVED line 326: fabs(accumulated) > record->mUnknown048  ->  !(fabs(accumulated) > record->mUnknown048)  (neg)
+  SURVIVED line 326: >  ->  >=  (cmp)
+  SURVIVED line 330: -  ->  +  (arith)
+  SURVIVED line 339: applied != 0.0f  ->  !(applied != 0.0f)  (neg)
+  SURVIVED line 339: !=  ->  ==  (cmp)
+  SURVIVED line 341: pass == 1 && record->mUnknown030  ->  !(pass == 1 && record->mUnknown030)  (neg)
+  SURVIVED line 341: ==  ->  !=  (cmp)
+  SURVIVED line 345: 3  ->  4  (const)
+SURVEY phys_fn_004451 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004455 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004489 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004495 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004501 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004521 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004525 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004527 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004551 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004555 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004557 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004581 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004585 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004587 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004607 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004611 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004613 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004633 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004639 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004641 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004645 NxPhysicsJointTests tried=1 caught=0 survived=1 rejected=0
+  SURVIVED line 117: !nxNpSceneGuardWriteTry(link)  ->  !(!nxNpSceneGuardWriteTry(link))  (neg)
+SURVEY phys_fn_004647 NxPhysicsJointTests tried=1 caught=0 survived=1 rejected=0
+  SURVIVED line 145: !nxNpSceneGuardWriteTry(link)  ->  !(!nxNpSceneGuardWriteTry(link))  (neg)
+SURVEY phys_fn_004665 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004669 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004671 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004701 NxPhysicsJointTests tried=1 caught=0 survived=1 rejected=0
+  SURVIVED line 240: !nxNpSceneGuardWriteTry(link)  ->  !(!nxNpSceneGuardWriteTry(link))  (neg)
+SURVEY phys_fn_004741 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004747 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_004749 NxPhysicsJointTests tried=0 caught=0 survived=0 rejected=0
