@@ -402,7 +402,7 @@ def sweep_row(path, qualified, span, syms, end, baseline, run, build_dll, limit,
     """
     path = Path(path)
     original = path.read_bytes()
-    text = original.decode('utf-8')
+    text = original.decode('latin-1')
     if write is None:
         from mutate_rows import write_atomic as write
     out = {'caught': [], 'survived': [], 'rejected': []}
@@ -412,7 +412,7 @@ def sweep_row(path, qualified, span, syms, end, baseline, run, build_dll, limit,
         for m in (mutations if mutations is not None else spread(cpp_mutations(text, span[0], span[1]), limit)):
             mutated = apply_mutation(text, m)
             desc = describe(text, m)
-            write(path, mutated.encode('utf-8'))
+            write(path, mutated.encode('latin-1'))
             try:
                 changed = pe_changed_rvas(baseline, build_dll())
                 if not changed:
@@ -466,7 +466,7 @@ def sweep_batch(entries, syms, end, baseline, run_family, build_all, limit, writ
     originals = {}
     for e in entries:
         originals.setdefault(e['path'], Path(e['path']).read_bytes())
-    texts = {p: b.decode('utf-8') for p, b in originals.items()}
+    texts = {p: b.decode('latin-1') for p, b in originals.items()}
     muts = {e['id']: spread(cpp_mutations(texts[e['path']], e['span'][0], e['span'][1]), limit) for e in entries}
     out = {e['id']: {'candidates': [], 'survived': [], 'rejected': []} for e in entries}
     try:
@@ -479,7 +479,7 @@ def sweep_batch(entries, syms, end, baseline, run_family, build_all, limit, writ
                 text = texts[path]
                 for m in sorted(ms, key=lambda m: -m[0]):
                     text = apply_mutation(text, m)
-                write(path, text.encode('utf-8'))
+                write(path, text.encode('latin-1'))
             try:
                 changed = pe_changed_rvas(baseline, build_all())
                 for e, m in chosen:
@@ -557,7 +557,7 @@ def locate(row, repo):
     path = Path(repo) / rel
     if not path.is_file():
         return path, None, None, 'source file missing'
-    text = path.read_text(encoding='utf-8', errors='replace')
+    text = path.read_bytes().decode('latin-1')   # byte offsets, CRLF kept: a span must index the bytes that are rewritten
     span = (find_function_span(text, row['implementation_symbol']) if row.get('implementation_symbol') else None) \
         or find_span_by_marker(text, row['id'])
     if span is None:

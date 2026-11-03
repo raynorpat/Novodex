@@ -366,5 +366,28 @@ class ManifestTests(unittest.TestCase):
         self.assertNotIn('phys_fn_000003', m['rows'])
 
 
+
+class CrlfTests(unittest.TestCase):
+    def test_spans_index_the_bytes_that_are_rewritten(self):
+        crlf = SRC.replace(chr(10), chr(13) + chr(10))
+        d = Path(tempfile.mkdtemp())
+        path = d / 'c.cpp'
+        path.write_bytes(crlf.encode('latin-1'))
+        text = path.read_bytes().decode('latin-1')
+        span = mc.find_function_span(text, 'A::f(int)')
+        seen = []
+
+        def build():
+            seen.append(path.read_bytes().decode('latin-1'))
+            return make_pe(bytes(256))
+        mc.sweep_row(str(path), 'A::f', span, [(0x1000, '?f@A@@QAEHH@Z')], 0x1100, make_pe(bytes(256)), lambda _t: None, build, 3, survey=True)
+        self.assertEqual(len(seen), 3)
+        for t in seen:
+            self.assertEqual(t[:span[0]], text[:span[0]])
+            self.assertTrue(t.endswith(text[span[1]:]))
+            self.assertIn(chr(13) + chr(10), t)
+        self.assertEqual(path.read_bytes(), crlf.encode('latin-1'))
+
+
 if __name__ == '__main__':
     unittest.main()
