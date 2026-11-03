@@ -205,11 +205,10 @@ def cpp_mutations(text, lo, hi):
     for m in re.finditer(r'(?<=[\w\)\]])\s(\+|-)\s(?=[\w\(])', seg):
         k = m.start(1)
         out.append((lo + k, seg[k], '-' if seg[k] == '+' else '+', 'arith'))
-    for m in re.finditer(r'(?<=[\w\)\]])\s(\*)\s(?=[\w\(])', seg):
-        out.append((lo + m.start(1), '*', '+', 'arith'))
     for m in re.finditer(r'(?<![\w.])(\d+)(?![\w.])', seg):
         v = m.group(1)
-        if len(v) > 1 and v.startswith('0'):
+        # 0 and 1 compile to xor/inc forms of another length, which shifts the code after them; octal-looking literals are skipped too
+        if v in ('0', '1') or (len(v) > 1 and v.startswith('0')):
             continue
         out.append((lo + m.start(1), v, str(int(v) + 1), 'const'))
     for m in re.finditer(r'\bif\s*\(', seg):
