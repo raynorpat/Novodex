@@ -391,7 +391,7 @@ def describe(text, m):
 
 
 def sweep_row(path, qualified, span, syms, end, baseline, run, build_dll, limit, survey=False, control=None,
-              restore=None, write=None):
+              restore=None, write=None, mutations=None):
     """Try up to `limit` single-site mutations spread over the function at `span` in `path`.
 
     build_dll() rebuilds the candidate DLL from the (mutated) source on disk and returns its bytes; a mutation counts
@@ -409,7 +409,7 @@ def sweep_row(path, qualified, span, syms, end, baseline, run, build_dll, limit,
     try:
         if control is not None and control():
             raise ControlNotExact('the unmutated source already reports a difference')
-        for m in spread(cpp_mutations(text, span[0], span[1]), limit):
+        for m in (mutations if mutations is not None else spread(cpp_mutations(text, span[0], span[1]), limit)):
             mutated = apply_mutation(text, m)
             desc = describe(text, m)
             write(path, mutated.encode('utf-8'))
@@ -436,6 +436,75 @@ def sweep_row(path, qualified, span, syms, end, baseline, run, build_dll, limit,
             restore()
     if path.read_bytes() != original:
         raise RuntimeError('%s was not restored' % path)
+    return out
+
+
+# ---- a batch of rows ----------------------------------------------------------------------------------------------
+
+def resolve_rva(syms, qualified):
+    """The rva of the one linker-map function named `qualified`, or None when there is none or several."""
+    hits = [a for a, name in syms if symbol_matches(name, qualified)]
+    return hits[0] if len(hits) == 1 else None
+
+
+def sweep_batch(entries, syms, end, baseline, run_family, build_all, limit, write=None):
+    """One mutation per row in a single build and run, to screen many rows at once.
+
+    entries: dicts with id, path, qualified, span, family, rva (the row's function in the linker map). Rows must have
+    distinct families (ValueError). Round r applies every row's r-th mutation (mutations of the same file from the last
+    offset to the first, so earlier offsets stay valid), build_all() rebuilds everything and returns the DLL bytes, and
+    each row whose function changed (and nothing else of its own) has its family run: run_family(family) -> n or None.
+    A detection is a *candidate*: another row's mutation in the same build may be what the family saw, so the caller
+    confirms each candidate alone. A survivor is trustworthy, since extra mutations can only add detections.
+    Returns {id: {'candidates': [(mutation, description, n)], 'survived': [...], 'rejected': [(mutation, description, reason)]}}.
+    """
+    fams = [e['family'] for e in entries]
+    if len(fams) != len(set(fams)):
+        raise ValueError('rows in one batch must have distinct families')
+    if write is None:
+        from mutate_rows import write_atomic as write
+    originals = {}
+    for e in entries:
+        originals.setdefault(e['path'], Path(e['path']).read_bytes())
+    texts = {p: b.decode('utf-8') for p, b in originals.items()}
+    muts = {e['id']: spread(cpp_mutations(texts[e['path']], e['span'][0], e['span'][1]), limit) for e in entries}
+    out = {e['id']: {'candidates': [], 'survived': [], 'rejected': []} for e in entries}
+    try:
+        for r in range(max([len(v) for v in muts.values()] + [0])):
+            chosen = [(e, muts[e['id']][r]) for e in entries if r < len(muts[e['id']])]
+            by_file = {}
+            for e, m in chosen:
+                by_file.setdefault(e['path'], []).append(m)
+            for path, ms in by_file.items():
+                text = texts[path]
+                for m in sorted(ms, key=lambda m: -m[0]):
+                    text = apply_mutation(text, m)
+                write(path, text.encode('utf-8'))
+            try:
+                changed = pe_changed_rvas(baseline, build_all())
+                for e, m in chosen:
+                    desc = describe(texts[e['path']], m)
+                    sym = symbol_at(syms, e['rva'], end)
+                    mine = [c for c in changed if sym and sym[1] <= c[0] < sym[2]]
+                    if not mine:
+                        out[e['id']]['rejected'].append((m, desc, 'no change in the DLL'))
+                    elif not symbol_matches(sym[0], e['qualified']) or any(c[1] > sym[2] for c in mine):
+                        out[e['id']]['rejected'].append((m, desc, 'changed bytes outside %s' % e['qualified']))
+                    else:
+                        n = run_family(e['family'])
+                        if n:
+                            out[e['id']]['candidates'].append((m, desc, n))
+                        else:
+                            out[e['id']]['survived'].append((m, desc, None))
+            finally:
+                for path, b in originals.items():
+                    write(path, b)
+    finally:
+        for path, b in originals.items():
+            write(path, b)
+    for path, b in originals.items():
+        if Path(path).read_bytes() != b:
+            raise RuntimeError('%s was not restored' % path)
     return out
 
 
@@ -520,6 +589,93 @@ def main(argv=None):
     return 0 if out['caught'] else 1
 
 
+def run_gate(mr, spec):
+    """Run an already built gate once; the detection count or None."""
+    import subprocess
+    try:
+        if spec.get('staged'):
+            r = mr.run_tree(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
+                             'docs/reconstruction/novodex-physics/tools/run_differential.ps1', '-Targets', spec['target']],
+                            timeout=mr.TIMEOUT, cwd=mr.REPO)
+            return mr.detect_staged(r.stdout, spec.get('count_crash', False))
+        r = mr.run_tree(mr.harness_command(spec['target'], spec.get('exe_args')), timeout=mr.TIMEOUT, cwd=mr.REPO)
+        return mr.detect_harness(r.stdout, r.returncode, spec['family'], spec.get('count_crash', False))
+    except subprocess.TimeoutExpired:
+        return None
+
+
+def main_batch(argv=None):
+    """--plan FILE: screen many rows per build, then confirm each candidate alone. Plan: {"rows": [{"id", "target",
+    "family", "staged", "exe_args", "count_crash"}]}; the rows must have distinct (target, family)."""
+    import argparse
+    import json
+    import mutate_rows as mr
+    here = Path(__file__).resolve().parent
+    ap = argparse.ArgumentParser(description=main_batch.__doc__.splitlines()[0])
+    ap.add_argument('--plan', required=True)
+    ap.add_argument('--inventory', default=str(here.parent / 'inventory.json'))
+    ap.add_argument('--limit', type=int, default=16)
+    ap.add_argument('--map', default=str(mr.REPO / 'build' / 'Release' / 'NxPhysics.map'))
+    ap.add_argument('--dll', default=str(mr.REPO / 'build' / 'Release' / 'NxPhysics.dll'))
+    ap.add_argument('--log', required=True)
+    a = ap.parse_args(argv)
+    plan = json.load(open(a.plan, encoding='utf-8'))['rows']
+    inv = {r['id']: r for r in json.load(open(a.inventory, encoding='utf-8'))['functions']}
+    targets = sorted({p['target'] for p in plan if not p.get('staged')})
+    if not mr._build('NxPhysics', False):
+        print('BUILD FAILED (baseline)')
+        return 2
+    for t in targets:
+        if not mr._build(t, False):
+            print('BUILD FAILED (baseline %s)' % t)
+            return 2
+    baseline = Path(a.dll).read_bytes()
+    syms = read_text_symbols(a.map)
+    sections, _ = _pe_layout(baseline)
+    end = sections[0][0] + sections[0][1]
+    entries, skipped = [], []
+    for p in plan:
+        path, text, span, qualified = locate(inv[p['id']], mr.REPO)
+        rva = resolve_rva(syms, qualified) if span else None
+        if span is None or rva is None:
+            skipped.append((p['id'], qualified if span is None else 'no unique map symbol for %s' % qualified))
+            continue
+        entries.append(dict(p, path=str(path), span=span, qualified=qualified, rva=rva, family=p['target'] + ':' + (p.get('family') or '')))
+    specs = {e['family']: e for e in entries}
+
+    def build_all():
+        ok = mr._build('NxPhysics', False)
+        for t in targets:
+            ok = ok and mr._build(t, False)
+        return Path(a.dll).read_bytes() if ok else baseline
+
+    out = sweep_batch(entries, syms, end, baseline, lambda fam: run_gate(mr, specs[fam]), build_all, a.limit)
+    lines = []
+    for e in entries:
+        res = out[e['id']]
+        confirmed = []
+        for m, desc, n in res['candidates']:
+            single = sweep_row(e['path'], e['qualified'], e['span'], syms, end, baseline, lambda _t, e=e: run_gate(mr, e),
+                               lambda: (mr._build('NxPhysics', False) and mr._build(e['target'], False) and Path(a.dll).read_bytes()) or baseline,
+                               1, survey=True, mutations=[m])
+            confirmed += single['caught']
+            if not single['caught']:
+                res['survived'].append((m, desc, None))
+        lines.append('SURVEY %s %s tried=%d caught=%d survived=%d rejected=%d' % (
+            e['id'], e['target'], len(confirmed) + len(res['survived']), len(confirmed), len(res['survived']), len(res['rejected'])))
+        for desc, n in confirmed:
+            lines.append('CAUGHT %s %s %s=%s %s' % (e['id'], e['target'], 'stdout_delta' if e.get('staged') else 'mismatches', n, desc))
+        lines += ['  SURVIVED ' + d for _m, d, _n in res['survived']] + ['  rejected ' + d + '  [' + why + ']' for _m, d, why in res['rejected']]
+    for rid, why in skipped:
+        lines.append('SKIPPED %s %s' % (rid, why))
+    for t in targets + ['NxPhysics']:
+        mr._build(t, False)
+    print(chr(10).join(lines))
+    with open(a.log, 'a', encoding='utf-8') as f:
+        f.write(chr(10).join(lines) + chr(10))
+    return 0
+
+
 if __name__ == '__main__':
     import sys
-    sys.exit(main())
+    sys.exit(main_batch() if '--plan' in sys.argv else main())

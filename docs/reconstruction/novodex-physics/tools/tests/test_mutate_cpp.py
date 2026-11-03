@@ -250,5 +250,94 @@ class SweepTests(unittest.TestCase):
         self.assertEqual(self.path.read_text(encoding='utf-8'), SRC)
 
 
+
+TWO = """int A::f(int x)
+{
+	if(x < 3) return x + 2;
+	return 5;
+}
+
+int A::g(int y)
+{
+	if(y > 4) return y - 3;
+	return 6;
+}
+"""
+
+
+class BatchTests(unittest.TestCase):
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp())
+        self.files = {}
+        self.entries = []
+        for k, (name, fam) in enumerate((('a', 'fa'), ('b', 'fb'), ('c', 'fc'))):
+            p = self.dir / (name + '.cpp')
+            p.write_text(SRC, encoding='utf-8')
+            span = mc.find_function_span(SRC, 'A::f(int)')
+            self.entries.append({'id': 'phys_fn_%06d' % k, 'path': str(p), 'qualified': 'A::f', 'span': span, 'family': fam,
+                                 'rva': 0x1000 + 0x40 * k})
+        self.syms = [(0x1000, '?f@A@@QAEHH@Z'), (0x1040, '?f@A@@QAEHH@Z'), (0x1080, '?f@A@@QAEHH@Z')]
+        self.base = make_pe(bytes(256))
+        self.seen = []
+
+    def build_all(self):
+        self.seen.append({e['id']: Path(e['path']).read_text(encoding='utf-8') for e in self.entries})
+        body = bytearray(256)
+        for e in self.entries:
+            if Path(e['path']).read_text(encoding='utf-8') != SRC and not e.get('nochange'):
+                body[e['rva'] - 0x1000 + 4] = 0xff
+        return make_pe(bytes(body))
+
+    def batch(self, run_family, entries=None, limit=3):
+        return mc.sweep_batch(entries or self.entries, self.syms, 0x1100, self.base, run_family, self.build_all, limit)
+
+    def test_batch_attributes_by_family(self):
+        out = self.batch(lambda fam: 7 if fam == 'fb' else None)
+        caught = {i: len(v['candidates']) for i, v in out.items()}
+        self.assertEqual(caught, {'phys_fn_000000': 0, 'phys_fn_000001': 3, 'phys_fn_000002': 0})
+        self.assertEqual(len(out['phys_fn_000000']['survived']), 3)
+
+    def test_batch_refuses_shared_family(self):
+        self.entries[1]['family'] = 'fa'
+        with self.assertRaises(ValueError):
+            self.batch(lambda fam: None)
+
+    def test_batch_restores_every_file_even_when_run_raises(self):
+        def run(fam):
+            raise RuntimeError('boom')
+        with self.assertRaises(RuntimeError):
+            self.batch(run)
+        for e in self.entries:
+            self.assertEqual(Path(e['path']).read_text(encoding='utf-8'), SRC)
+
+    def test_batch_applies_every_row_before_one_build(self):
+        self.batch(lambda fam: None, limit=2)
+        self.assertEqual(len(self.seen), 2)
+        self.assertTrue(all(t != SRC for t in self.seen[0].values()))
+
+    def test_batch_rejects_a_row_whose_function_did_not_change(self):
+        self.entries[2]['nochange'] = True
+        out = self.batch(lambda fam: None)
+        self.assertEqual(len(out['phys_fn_000002']['rejected']), 3)
+
+    def test_same_file_rows_get_all_their_mutations(self):
+        p = self.dir / 'two.cpp'
+        p.write_text(TWO, encoding='utf-8')
+        f = mc.find_function_span(TWO, 'A::f(int)')
+        g = mc.find_function_span(TWO, 'A::g(int)')
+        entries = [{'id': 'f', 'path': str(p), 'qualified': 'A::f', 'span': f, 'family': 'x', 'rva': 0x1000},
+                   {'id': 'g', 'path': str(p), 'qualified': 'A::g', 'span': g, 'family': 'y', 'rva': 0x1040}]
+        seen = []
+        def build():
+            seen.append(p.read_text(encoding='utf-8'))
+            return self.base
+        mc.sweep_batch(entries, self.syms, 0x1100, self.base, lambda fam: None, build, 1)
+        mf = TWO[f[0]:f[1]]
+        mg = TWO[g[0]:g[1]]
+        self.assertNotIn(mf, seen[0])
+        self.assertNotIn(mg, seen[0])
+        self.assertEqual(p.read_text(encoding='utf-8'), TWO)
+
+
 if __name__ == '__main__':
     unittest.main()
