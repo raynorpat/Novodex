@@ -1,0 +1,666 @@
+SURVEY phys_fn_002444 NxPhysicsThirdPartyTests tried=8 caught=0 survived=8 rejected=0 nobuild=0
+  SURVIVED line 525: +  ->  -  (arith) [0x0005d56b]
+  SURVIVED line 536: +  ->  -  (arith) [0x0005d584]
+  SURVIVED line 548: 4  ->  5  (const) [0x0005d59f]
+  SURVIVED line 566: +  ->  -  (arith) [0x0005d5cc]
+  SURVIVED line 579: +  ->  -  (arith) [0x0005d5f0]
+  SURVIVED line 587: +  ->  -  (arith) [0x0005d609]
+  SURVIVED line 609: +  ->  -  (arith) [0x0005d639]
+  SURVIVED line 622: +  ->  -  (arith) [0x0005d65d]
+SURVEY phys_fn_002483 NxPhysicsThirdPartyTests tried=7 caught=0 survived=7 rejected=1 nobuild=0
+  SURVIVED line 571: <  ->  <=  (cmp)
+  SURVIVED line 558: vertex == notvertex  ->  !(vertex == notvertex)  (neg)
+  SURVIVED line 558: ==  ->  !=  (cmp)
+  SURVIVED line 571: dist < -qh WIDEfacet  ->  !(dist < -qh WIDEfacet)  (neg)
+  SURVIVED line 581: i != dim-1  ->  !(i != dim-1)  (neg)
+  SURVIVED line 581: !=  ->  ==  (cmp)
+  SURVIVED line 600: toporient  ->  !(toporient)  (neg)
+  rejected line 588: <  ->  <=  (cmp)  [changed bytes outside qh_facetarea_simplex]
+SURVEY phys_fn_002501 NxPhysicsThirdPartyTests tried=2 caught=2 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002501 NxPhysicsThirdPartyTests mismatches=3 line 1280: dist > 0  ->  !(dist > 0)  (neg)
+CAUGHT phys_fn_002501 NxPhysicsThirdPartyTests mismatches=3 line 1280: >  ->  >=  (cmp)
+SURVEY phys_fn_002530 NxPhysicsThirdPartyTests tried=6 caught=5 survived=1 rejected=1 nobuild=0
+CAUGHT phys_fn_002530 NxPhysicsThirdPartyTests mismatches=27 line 2091: facet == qh newfacet_list  ->  !(facet == qh newfacet_list)  (neg)
+CAUGHT phys_fn_002530 NxPhysicsThirdPartyTests mismatches=27 line 2091: ==  ->  !=  (cmp)
+  SURVIVED line 2093: >  ->  >=  (cmp)
+  rejected line 2102: issharp  ->  !(issharp)  (neg)  [no change in the DLL]
+SURVEY phys_fn_002558 NxPhysicsThirdPartyTests tried=8 caught=3 survived=5 rejected=0 nobuild=0
+CAUGHT phys_fn_002558 NxPhysicsThirdPartyTests mismatches=1 line 1812: +  ->  -  (arith) [0x00061cd0]
+CAUGHT phys_fn_002558 NxPhysicsThirdPartyTests mismatches=3 line 1815: +  ->  -  (arith) [0x00061cd9]
+  SURVIVED line 1817: +  ->  -  (arith) [0x00061ce4]
+  SURVIVED line 1826: +  ->  -  (arith) [0x00061d04]
+  SURVIVED line 1826: 4  ->  5  (const) [0x00061d04]
+  SURVIVED line 1828: +  ->  -  (arith) [0x00061d0e]
+  SURVIVED line 1830: +  ->  -  (arith) [0x00061d15]
+SURVEY phys_fn_002678 NxPhysicsThirdPartyTests tried=7 caught=5 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_002678 NxPhysicsThirdPartyTests mismatches=51 line 461: qhmem.LASTsize == 0  ->  !(qhmem.LASTsize == 0)  (neg)
+CAUGHT phys_fn_002678 NxPhysicsThirdPartyTests mismatches=51 line 461: ==  ->  !=  (cmp)
+  SURVIVED line 466: qh PROJECTinput || (qh DELAUNAY && qh PROJECTdelaunay)  ->  !(qh PROJECTinput || (qh DELAUNAY && qh PROJECTdelaunay))  (neg)
+  SURVIVED line 470: >=  ->  >  (cmp)
+  rejected line 474: <  ->  <=  (cmp)  [changed bytes outside qh_init_B]
+SURVEY phys_fn_002719 NxPhysicsThirdPartyTests tried=7 caught=5 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_002719 NxPhysicsThirdPartyTests mismatches=14 line 1572: !=  ->  ==  (cmp)
+CAUGHT phys_fn_002719 NxPhysicsThirdPartyTests mismatches=18 line 1576: ==  ->  !=  (cmp)
+  SURVIVED line 1579: !facet->center  ->  !(!facet->center)  (neg)
+  SURVIVED line 1591: !facet->center  ->  !(!facet->center)  (neg)
+  rejected line 1572: qh CENTERtype != qh_ASvoronoi && qh CENTERtype != qh_AScentr  ->  !(qh CENTERtype != qh_ASvoronoi && qh CENTERtype != qh_AScen  (neg)  [no change in the DLL]
+SURVEY phys_fn_002753 NxPhysicsThirdPartyTests tried=1 caught=1 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002753 NxPhysicsThirdPartyTests mismatches=2 line 3662: 2  ->  3  (const)
+SURVEY phys_fn_002819 NxPhysicsThirdPartyTests tried=7 caught=6 survived=1 rejected=1 nobuild=0
+CAUGHT phys_fn_002819 NxPhysicsThirdPartyTests mismatches=19 line 1680: !qh printoutnum  ->  !(!qh printoutnum)  (neg)
+CAUGHT phys_fn_002819 NxPhysicsThirdPartyTests mismatches=6 line 1684: 4  ->  5  (const)
+  SURVIVED line 1684: <  ->  <=  (cmp)
+  rejected line 1684: qh hull_dim == 4 && qh DROPdim < 0 && !qh PRINTnoplanes  ->  !(qh hull_dim == 4 && qh DROPdim < 0 && !qh PRINTnoplanes)  (neg)  [changed bytes outside qh_printend]
+SURVEY phys_fn_002834 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002834 NxPhysicsThirdPartyTests mismatches=4 line 2334: qh PRINTnoplanes || (facet->visible && qh NEWfacets)  ->  !(qh PRINTnoplanes || (facet->visible && qh NEWfacets))  (neg)
+CAUGHT phys_fn_002834 NxPhysicsThirdPartyTests mismatches=4 line 2337: ==  ->  !=  (cmp)
+  SURVIVED line 2361: 2  ->  3  (const)
+SURVEY phys_fn_002906 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002906 NxPhysicsThirdPartyTests mismatches=14 line 768: (size= qh_setsize (facet->neighbors)) < qh hull_dim  ->  !((size= qh_setsize (facet->neighbors)) < qh hull_dim)  (neg)
+CAUGHT phys_fn_002906 NxPhysicsThirdPartyTests mismatches=6 line 779: neighbor == facet  ->  !(neighbor == facet)  (neg)
+  SURVIVED line 772: !delfacet  ->  !(!delfacet)  (neg)
+SURVEY phys_fn_002951 NxPhysicsThirdPartyTests tried=1 caught=0 survived=1 rejected=7 nobuild=0
+  SURVIVED line 5945: +  ->  -  (arith) [0x00070271]
+  rejected line 5966: +  ->  -  (arith) [0x000702a0]  [line is outside the row's oracle range]
+  rejected line 5972: +  ->  -  (arith) [0x000702b2]  [line is outside the row's oracle range]
+  rejected line 6004: +  ->  -  (arith) [0x000702f6]  [line is outside the row's oracle range]
+  rejected line 6022: +  ->  -  (arith) [0x00070323]  [line is outside the row's oracle range]
+  rejected line 6032: 4  ->  5  (const) [0x0007033e]  [line is outside the row's oracle range]
+  rejected line 6040: +  ->  -  (arith) [0x00070353]  [line is outside the row's oracle range]
+  rejected line 6066: 4  ->  5  (const) [0x0007039b]  [line is outside the row's oracle range]
+SURVEY phys_fn_002979 NxPhysicsThirdPartyTests tried=7 caught=7 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002979 NxPhysicsThirdPartyTests mismatches=27 line 1297: neighbor->visitid != qh visit_id  ->  !(neighbor->visitid != qh visit_id)  (neg)
+CAUGHT phys_fn_002979 NxPhysicsThirdPartyTests mismatches=27 line 1297: !=  ->  ==  (cmp)
+SURVEY phys_fn_003051 NxPhysicsThirdPartyTests tried=6 caught=3 survived=3 rejected=2 nobuild=2
+CAUGHT phys_fn_003051 NxPhysicsThirdPartyTests mismatches=51 line 6918: +  ->  -  (arith) [0x000744b0]
+CAUGHT phys_fn_003051 NxPhysicsThirdPartyTests mismatches=16 line 6940: +  ->  -  (arith) [0x000744e0]
+  SURVIVED line 6911: +  ->  -  (arith) [0x000744a0]
+  SURVIVED line 6948: +  ->  -  (arith) [0x000744f1]
+  SURVIVED line 6970: +  ->  -  (arith) [0x0007452e]
+  rejected line 6921: +  ->  -  (arith) [0x000744ba]  [build failed]
+  rejected line 6922: 4  ->  5  (const) [0x000744be]  [build failed]
+SURVEY phys_fn_003127 NxPhysicsThirdPartyTests tried=3 caught=2 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_003127 NxPhysicsThirdPartyTests mismatches=38 line 2500: vertex->visitid != qh vertex_visit  ->  !(vertex->visitid != qh vertex_visit)  (neg)
+CAUGHT phys_fn_003127 NxPhysicsThirdPartyTests mismatches=38 line 2500: !=  ->  ==  (cmp)
+  SURVIVED line 2489: +  ->  -  (arith)
+SURVEY phys_fn_003164 NxPhysicsThirdPartyTests tried=5 caught=1 survived=4 rejected=3 nobuild=0
+CAUGHT phys_fn_003164 NxPhysicsThirdPartyTests mismatches=12 line 7789: +  ->  -  (arith) [0x00078973]
+  SURVIVED line 7805: +  ->  -  (arith) [0x000789b0]
+  SURVIVED line 7816: 4  ->  5  (const) [0x000789db]
+  SURVIVED line 7841: +  ->  -  (arith) [0x00078a1e]
+  SURVIVED line 7855: +  ->  -  (arith) [0x00078a4e]
+  rejected line 7886: +  ->  -  (arith) [0x00078a90]  [line is outside the row's oracle range]
+  rejected line 7898: +  ->  -  (arith) [0x00078aaa]  [line is outside the row's oracle range]
+  rejected line 7921: 8  ->  9  (const) [0x00078aec]  [line is outside the row's oracle range]
+SURVEY phys_fn_003186 NxPhysicsThirdPartyTests tried=8 caught=6 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_003186 NxPhysicsThirdPartyTests mismatches=51 line 2024: visible->simplicial  ->  !(visible->simplicial)  (neg)
+CAUGHT phys_fn_003186 NxPhysicsThirdPartyTests mismatches=50 line 2026: !qh ONLYgood  ->  !(!qh ONLYgood)  (neg)
+  SURVIVED line 2015: !qh ONLYgood  ->  !(!qh ONLYgood)  (neg)
+  SURVIVED line 2020: visible->ridges  ->  !(visible->ridges)  (neg)
+SURVEY phys_fn_003222 NxPhysicsThirdPartyTests tried=7 caught=5 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_003222 NxPhysicsThirdPartyTests mismatches=10 line 917: qh KEEPnearinside  ->  !(qh KEEPnearinside)  (neg)
+CAUGHT phys_fn_003222 NxPhysicsThirdPartyTests mismatches=9 line 935: >  ->  >=  (cmp)
+  SURVIVED line 924: bestdist < -qh MAXcoplanar  ->  !(bestdist < -qh MAXcoplanar)  (neg)
+  SURVIVED line 953: >  ->  >=  (cmp)
+  rejected line 908: !dist  ->  !(!dist)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003287 NxPhysicsThirdPartyTests tried=3 caught=3 survived=0 rejected=1 nobuild=0
+CAUGHT phys_fn_003287 NxPhysicsThirdPartyTests mismatches=3 line 574: sizeA != sizeB  ->  !(sizeA != sizeB)  (neg)
+CAUGHT phys_fn_003287 NxPhysicsThirdPartyTests mismatches=3 line 574: !=  ->  ==  (cmp)
+  rejected line 576: !sizeA  ->  !(!sizeA)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003320 NxPhysicsThirdPartyTests tried=4 caught=0 survived=4 rejected=1 nobuild=0
+  SURVIVED line 282: +  ->  -  (arith)
+  SURVIVED line 284: !(*destp++ = *elemp++)  ->  !(!(*destp++ = *elemp++))  (neg)
+  SURVIVED line 286: elemp > endp  ->  !(elemp > endp)  (neg)
+  SURVIVED line 286: >  ->  >=  (cmp)
+  rejected line 278: !set  ->  !(!set)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003336 NxPhysicsThirdPartyTests tried=6 caught=4 survived=2 rejected=2 nobuild=0
+CAUGHT phys_fn_003336 NxPhysicsThirdPartyTests mismatches=45 line 171: !*setp  ->  !(!*setp)  (neg)
+CAUGHT phys_fn_003336 NxPhysicsThirdPartyTests mismatches=3 line 178: size + sizeA > (*setp)->maxsize  ->  !(size + sizeA > (*setp)->maxsize)  (neg)
+  SURVIVED line 174: !(size= *sizep)  ->  !(!(size= *sizep))  (neg)
+  SURVIVED line 185: >  ->  >=  (cmp)
+  rejected line 168: !setA  ->  !(!setA)  (neg)  [no change in the DLL]
+  rejected line 178: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_005069 NxPhysicsThirdPartyTests tried=8 caught=5 survived=3 rejected=0 nobuild=0
+CAUGHT phys_fn_005069 NxPhysicsThirdPartyTests mismatches=3 line 124: +  ->  -  (arith) [0x000de240]
+CAUGHT phys_fn_005069 NxPhysicsThirdPartyTests mismatches=3 line 175: +  ->  -  (arith) [0x000de2ce]
+  SURVIVED line 325: +  ->  -  (arith) [0x000de4a5]
+  SURVIVED line 414: 8  ->  9  (const) [0x000de5c5]
+  SURVIVED line 511: +  ->  -  (arith) [0x000de6e7]
+SURVEY phys_fn_005368 NxPhysicsThirdPartyTests tried=8 caught=2 survived=6 rejected=0 nobuild=0
+CAUGHT phys_fn_005368 NxPhysicsThirdPartyTests mismatches=4 line 1482: +  ->  -  (arith) [0x000e91df]
+CAUGHT phys_fn_005368 NxPhysicsThirdPartyTests mismatches=2 line 1490: +  ->  -  (arith) [0x000e91f9]
+  SURVIVED line 1392: +  ->  -  (arith) [0x000e9105]
+  SURVIVED line 1421: 4  ->  5  (const) [0x000e915e]
+  SURVIVED line 1439: 8  ->  9  (const) [0x000e9182]
+  SURVIVED line 1476: 8  ->  9  (const) [0x000e91cc]
+  SURVIVED line 1509: +  ->  -  (arith) [0x000e922a]
+  SURVIVED line 1537: 4  ->  5  (const) [0x000e9274]
+SURVEY phys_fn_002446 NxPhysicsThirdPartyTests tried=3 caught=0 survived=3 rejected=5 nobuild=0
+  SURVIVED line 870: +  ->  -  (arith)
+  SURVIVED line 915: >=  ->  >  (cmp)
+  SURVIVED line 883: norm > qh MINdenom  ->  !(norm > qh MINdenom)  (neg)
+  rejected line 860: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 864: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 866: 4  ->  5  (const)  [changed bytes outside qh_normalize2]
+  rejected line 891: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 896: 4  ->  5  (const)  [changed bytes outside qh_normalize2]
+SURVEY phys_fn_002487 NxPhysicsThirdPartyTests tried=7 caught=3 survived=4 rejected=1 nobuild=1
+CAUGHT phys_fn_002487 NxPhysicsThirdPartyTests mismatches=3 line 881: 8  ->  9  (const) [0x0005f406]
+CAUGHT phys_fn_002487 NxPhysicsThirdPartyTests mismatches=3 line 883: 8  ->  9  (const) [0x0005f40c]
+  SURVIVED line 817: +  ->  -  (arith) [0x0005f363]
+  SURVIVED line 828: +  ->  -  (arith) [0x0005f388]
+  SURVIVED line 843: +  ->  -  (arith) [0x0005f3a4]
+  SURVIVED line 903: +  ->  -  (arith) [0x0005f42e]
+  rejected line 876: +  ->  -  (arith) [0x0005f3fc]  [build failed]
+SURVEY phys_fn_002503 NxPhysicsThirdPartyTests tried=5 caught=3 survived=2 rejected=3 nobuild=0
+CAUGHT phys_fn_002503 NxPhysicsThirdPartyTests mismatches=4 line 1317: +  ->  -  (arith)
+CAUGHT phys_fn_002503 NxPhysicsThirdPartyTests mismatches=38 line 1321: qh JOGGLEmax < REALmax/2  ->  !(qh JOGGLEmax < REALmax/2)  (neg)
+  SURVIVED line 1312: outerplane  ->  !(outerplane)  (neg)
+  SURVIVED line 1325: facet  ->  !(facet)  (neg)
+  rejected line 1321: 2  ->  3  (const)  [changed bytes outside qh_outerinner]
+  rejected line 1334: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 1335: 2  ->  3  (const)  [changed bytes outside qh_outerinner]
+SURVEY phys_fn_002532 NxPhysicsThirdPartyTests tried=1 caught=1 survived=0 rejected=7 nobuild=0
+CAUGHT phys_fn_002532 NxPhysicsThirdPartyTests mismatches=6 line 1177: +  ->  -  (arith) [0x000605f9]
+  rejected line 1239: 4  ->  5  (const) [0x000606a1]  [line is outside the row's oracle range]
+  rejected line 1285: 4  ->  5  (const) [0x0006071b]  [line is outside the row's oracle range]
+  rejected line 1349: +  ->  -  (arith) [0x000607b5]  [line is outside the row's oracle range]
+  rejected line 1410: 8  ->  9  (const) [0x00060876]  [line is outside the row's oracle range]
+  rejected line 1450: +  ->  -  (arith) [0x000608d3]  [line is outside the row's oracle range]
+  rejected line 1495: +  ->  -  (arith) [0x00060971]  [line is outside the row's oracle range]
+  rejected line 1569: 4  ->  5  (const) [0x00060a31]  [line is outside the row's oracle range]
+SURVEY phys_fn_002560 NxPhysicsThirdPartyTests tried=1 caught=1 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002560 NxPhysicsThirdPartyTests mismatches=1 line 1769: !qh POINTSmalloc  ->  !(!qh POINTSmalloc)  (neg)
+SURVEY phys_fn_002680 NxPhysicsThirdPartyTests tried=7 caught=5 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_002680 NxPhysicsThirdPartyTests mismatches=61 line 461: qhmem.LASTsize == 0  ->  !(qhmem.LASTsize == 0)  (neg)
+CAUGHT phys_fn_002680 NxPhysicsThirdPartyTests mismatches=61 line 461: ==  ->  !=  (cmp)
+  SURVIVED line 466: qh PROJECTinput || (qh DELAUNAY && qh PROJECTdelaunay)  ->  !(qh PROJECTinput || (qh DELAUNAY && qh PROJECTdelaunay))  (neg)
+  SURVIVED line 470: >=  ->  >  (cmp)
+  rejected line 474: <  ->  <=  (cmp)  [changed bytes outside qh_init_B]
+SURVEY phys_fn_002721 NxPhysicsThirdPartyTests tried=5 caught=3 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_002721 NxPhysicsThirdPartyTests mismatches=3 line 1978: offset != 0.0  ->  !(offset != 0.0)  (neg)
+CAUGHT phys_fn_002721 NxPhysicsThirdPartyTests mismatches=3 line 1978: !=  ->  ==  (cmp)
+  SURVIVED line 1984: offset != 0.0  ->  !(offset != 0.0)  (neg)
+  SURVIVED line 1984: !=  ->  ==  (cmp)
+SURVEY phys_fn_002755 NxPhysicsThirdPartyTests tried=1 caught=1 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002755 NxPhysicsThirdPartyTests mismatches=3 line 3685: 2  ->  3  (const)
+SURVEY phys_fn_002822 NxPhysicsThirdPartyTests tried=7 caught=4 survived=3 rejected=1 nobuild=0
+CAUGHT phys_fn_002822 NxPhysicsThirdPartyTests mismatches=4 line 2054: -  ->  +  (arith)
+CAUGHT phys_fn_002822 NxPhysicsThirdPartyTests mismatches=4 line 2063: (qh DOintersections || qh PRINTridges) && (!facet->visible |  ->  !((qh DOintersections || qh PRINTridges) && (!facet->visible  (neg)
+CAUGHT phys_fn_002822 NxPhysicsThirdPartyTests mismatches=4 line 2068: !=  ->  ==  (cmp)
+CAUGHT phys_fn_002822 NxPhysicsThirdPartyTests mismatches=4 line 2071: qh PRINTridges  ->  !(qh PRINTridges)  (neg)
+  SURVIVED line 2054: 2  ->  3  (const)
+  SURVIVED line 2055: 3  ->  4  (const)
+  SURVIVED line 2051: qh PRINTouter || (!qh PRINTnoplanes && !qh PRINTinner)  ->  !(qh PRINTouter || (!qh PRINTnoplanes && !qh PRINTinner))  (neg)
+  rejected line 2039: 3  ->  4  (const)  [changed bytes outside qh_printfacet3geom_nonsimplicial]
+SURVEY phys_fn_002836 NxPhysicsThirdPartyTests tried=7 caught=5 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_002836 NxPhysicsThirdPartyTests mismatches=8 line 2459: facet->upperdelaunay  ->  !(facet->upperdelaunay)  (neg)
+CAUGHT phys_fn_002836 NxPhysicsThirdPartyTests mismatches=8 line 2475: facet->keepcentrum  ->  !(facet->keepcentrum)  (neg)
+  SURVIVED line 2502: facet->f.triowner  ->  !(facet->f.triowner)  (neg)
+  SURVIVED line 2534: <  ->  <=  (cmp)
+  rejected line 2437: facet == qh_MERGEridge  ->  !(facet == qh_MERGEridge)  (neg)  [no change in the DLL]
+SURVEY phys_fn_002910 NxPhysicsThirdPartyTests tried=8 caught=5 survived=3 rejected=0 nobuild=0
+CAUGHT phys_fn_002910 NxPhysicsThirdPartyTests mismatches=12 line 981: size > qh_BESTcentrum2 * qh hull_dim + qh_BESTcentrum  ->  !(size > qh_BESTcentrum2 * qh hull_dim + qh_BESTcentrum)  (neg)
+CAUGHT phys_fn_002910 NxPhysicsThirdPartyTests mismatches=9 line 987: size > qh hull_dim + qh_BESTnonconvex  ->  !(size > qh hull_dim + qh_BESTnonconvex)  (neg)
+  SURVIVED line 981: >  ->  >=  (cmp)
+  SURVIVED line 984: !facet->center  ->  !(!facet->center)  (neg)
+  SURVIVED line 989: ridge->nonconvex  ->  !(ridge->nonconvex)  (neg)
+SURVEY phys_fn_002957 NxPhysicsThirdPartyTests tried=2 caught=0 survived=2 rejected=0 nobuild=0
+  SURVIVED line 3142: !vertex->seen  ->  !(!vertex->seen)  (neg)
+  SURVIVED line 3147: !qh_setsize (vertex->neighbors)  ->  !(!qh_setsize (vertex->neighbors))  (neg)
+SURVEY phys_fn_002983 NxPhysicsThirdPartyTests tried=6 caught=1 survived=5 rejected=2 nobuild=0
+CAUGHT phys_fn_002983 NxPhysicsThirdPartyTests mismatches=29 line 2784: otherfacet->simplicial  ->  !(otherfacet->simplicial)  (neg)
+  SURVIVED line 2709: mergeapex  ->  !(mergeapex)  (neg)
+  SURVIVED line 2722: otherfacet_(ridge, facet1) == facet2  ->  !(otherfacet_(ridge, facet1) == facet2)  (neg)
+  SURVIVED line 2757: vertex == apex && !issubset  ->  !(vertex == apex && !issubset)  (neg)
+  SURVIVED line 2772: ==  ->  !=  (cmp)
+  SURVIVED line 2793: ==  ->  !=  (cmp)
+  rejected line 2738: vertex->id < apex->id  ->  !(vertex->id < apex->id)  (neg)  [no change in the DLL]
+  rejected line 2745: !issubset  ->  !(!issubset)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003067 NxPhysicsThirdPartyTests tried=5 caught=1 survived=4 rejected=1 nobuild=0
+CAUGHT phys_fn_003067 NxPhysicsThirdPartyTests mismatches=10 line 1161: !neighbor->visible  ->  !(!neighbor->visible)  (neg)
+  SURVIVED line 1145: qh VERTEXneighbors  ->  !(qh VERTEXneighbors)  (neg)
+  SURVIVED line 1148: neighbor->visible  ->  !(neighbor->visible)  (neg)
+  SURVIVED line 1159: !vertex->newlist && !vertex->deleted  ->  !(!vertex->newlist && !vertex->deleted)  (neg)
+  SURVIVED line 1178: !vertex->newlist && !vertex->deleted  ->  !(!vertex->newlist && !vertex->deleted)  (neg)
+  rejected line 1164: neighbor  ->  !(neighbor)  (neg)  [changed bytes outside qh_updatevertices]
+SURVEY phys_fn_003146 NxPhysicsThirdPartyTests tried=7 caught=1 survived=6 rejected=1 nobuild=1
+CAUGHT phys_fn_003146 NxPhysicsThirdPartyTests mismatches=2 line 7749: +  ->  -  (arith) [0x000775d0]
+  SURVIVED line 7718: +  ->  -  (arith) [0x00077580]
+  SURVIVED line 7720: 8  ->  9  (const) [0x00077588]
+  SURVIVED line 7726: +  ->  -  (arith) [0x00077599]
+  SURVIVED line 7739: 4  ->  5  (const) [0x000775b8]
+  SURVIVED line 7750: +  ->  -  (arith) [0x000775d3]
+  SURVIVED line 7762: 8  ->  9  (const) [0x000775ee]
+  rejected line 7762: +  ->  -  (arith) [0x000775ee]  [build failed]
+SURVEY phys_fn_003168 NxPhysicsThirdPartyTests tried=8 caught=6 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_003168 NxPhysicsThirdPartyTests mismatches=23 line 1170: cntvertices != 3  ->  !(cntvertices != 3)  (neg)
+CAUGHT phys_fn_003168 NxPhysicsThirdPartyTests mismatches=23 line 1170: 3  ->  4  (const)
+  SURVIVED line 1169: facet->simplicial  ->  !(facet->simplicial)  (neg)
+  SURVIVED line 1185: >  ->  >=  (cmp)
+SURVEY phys_fn_003198 NxPhysicsThirdPartyTests tried=3 caught=3 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_003198 NxPhysicsThirdPartyTests mismatches=11 line 289: qh STOPcone  ->  !(qh STOPcone)  (neg)
+CAUGHT phys_fn_003198 NxPhysicsThirdPartyTests mismatches=25 line 291: qh VERIFYoutput | qh IStracing | qh CHECKfrequently  ->  !(qh VERIFYoutput | qh IStracing | qh CHECKfrequently)  (neg)
+SURVEY phys_fn_003224 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_003224 NxPhysicsThirdPartyTests mismatches=4 line 1128: qh ONLYmax  ->  !(qh ONLYmax)  (neg)
+CAUGHT phys_fn_003224 NxPhysicsThirdPartyTests mismatches=49 line 1138: count++ > qh facet_id  ->  !(count++ > qh facet_id)  (neg)
+  SURVIVED line 1141: !newfacet  ->  !(!newfacet)  (neg)
+SURVEY phys_fn_003291 NxPhysicsThirdPartyTests tried=8 caught=8 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_003291 NxPhysicsThirdPartyTests mismatches=51 line 662: elemA == skipAp  ->  !(elemA == skipAp)  (neg)
+CAUGHT phys_fn_003291 NxPhysicsThirdPartyTests mismatches=51 line 662: ==  ->  !=  (cmp)
+SURVEY phys_fn_003324 NxPhysicsThirdPartyTests tried=4 caught=2 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_003324 NxPhysicsThirdPartyTests mismatches=11 line 430: nth < 0 || nth >= *sizep  ->  !(nth < 0 || nth >= *sizep)  (neg)
+CAUGHT phys_fn_003324 NxPhysicsThirdPartyTests mismatches=9 line 430: <  ->  <=  (cmp)
+  SURVIVED line 428: !(*sizep)--  ->  !(!(*sizep)--)  (neg)
+  SURVIVED line 430: >=  ->  >  (cmp)
+SURVEY phys_fn_003338 NxPhysicsThirdPartyTests tried=1 caught=0 survived=1 rejected=0 nobuild=0
+  SURVIVED line 210: !*setp || !*(sizep= SETsizeaddr_(*setp))  ->  !(!*setp || !*(sizep= SETsizeaddr_(*setp)))  (neg)
+SURVEY phys_fn_005111 NxPhysicsThirdPartyTests tried=3 caught=2 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_005111 NxPhysicsThirdPartyTests mismatches=1 line 607: +  ->  -  (arith) [0x000e1530]
+CAUGHT phys_fn_005111 NxPhysicsThirdPartyTests mismatches=1 line 607: 4  ->  5  (const) [0x000e1530]
+  SURVIVED line 608: 2  ->  3  (const) [0x000e1533]
+SURVEY phys_fn_002450 NxPhysicsThirdPartyTests tried=5 caught=1 survived=4 rejected=3 nobuild=0
+CAUGHT phys_fn_002450 NxPhysicsThirdPartyTests mismatches=11 line 1211: +  ->  -  (arith)
+  SURVIVED line 1174: 2  ->  3  (const)
+  SURVIVED line 1194: 3  ->  4  (const)
+  SURVIVED line 1203: 3  ->  4  (const)
+  SURVIVED line 1183: 2  ->  3  (const)
+  rejected line 1163: dim == 2  ->  !(dim == 2)  (neg)  [no change in the DLL]
+  rejected line 1198: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1220: *nearzero  ->  !(*nearzero)  (neg)  [changed bytes outside qh_sethyperplane_det]
+SURVEY phys_fn_002493 NxPhysicsThirdPartyTests tried=2 caught=1 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002493 NxPhysicsThirdPartyTests mismatches=1 line 976: absval > maxval  ->  !(absval > maxval)  (neg)
+  SURVIVED line 976: >  ->  >=  (cmp)
+SURVEY phys_fn_002505 NxPhysicsThirdPartyTests tried=2 caught=1 survived=1 rejected=1 nobuild=0
+CAUGHT phys_fn_002505 NxPhysicsThirdPartyTests mismatches=3 line 1358: dim > 0  ->  !(dim > 0)  (neg)
+  SURVIVED line 1358: >  ->  >=  (cmp)
+  rejected line 1354: >  ->  >=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_002540 NxPhysicsThirdPartyTests tried=4 caught=3 survived=1 rejected=2 nobuild=0
+CAUGHT phys_fn_002540 NxPhysicsThirdPartyTests mismatches=1 line 166: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002540 NxPhysicsThirdPartyTests mismatches=3 line 168: qh DELAUNAY && k == dimension-1  ->  !(qh DELAUNAY && k == dimension-1)  (neg)
+CAUGHT phys_fn_002540 NxPhysicsThirdPartyTests mismatches=3 line 168: ==  ->  !=  (cmp)
+  SURVIVED line 165: <  ->  <=  (cmp)
+  rejected line 166: qh SCALElast && k == dimension-1  ->  !(qh SCALElast && k == dimension-1)  (neg)  [no change in the DLL]
+  rejected line 169: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_002566 NxPhysicsThirdPartyTests tried=2 caught=0 survived=2 rejected=6 nobuild=1
+  SURVIVED line 1847: +  ->  -  (arith) [0x00062072]
+  SURVIVED line 1890: 8  ->  9  (const) [0x000620df]
+  rejected line 1865: +  ->  -  (arith) [0x000620a2]  [build failed]
+  rejected line 1912: 4  ->  5  (const) [0x00062113]  [line is outside the row's oracle range]
+  rejected line 1924: +  ->  -  (arith) [0x00062135]  [line is outside the row's oracle range]
+  rejected line 1942: +  ->  -  (arith) [0x0006215f]  [line is outside the row's oracle range]
+  rejected line 1957: 3  ->  4  (const) [0x00062185]  [line is outside the row's oracle range]
+  rejected line 1981: 3  ->  4  (const) [0x000621bf]  [line is outside the row's oracle range]
+SURVEY phys_fn_002697 NxPhysicsThirdPartyTests tried=8 caught=0 survived=8 rejected=0 nobuild=0
+  SURVIVED line 3126: 8  ->  9  (const) [0x00066b20]
+  SURVIVED line 3135: +  ->  -  (arith) [0x00066b3f]
+  SURVIVED line 3143: 4  ->  5  (const) [0x00066b57]
+  SURVIVED line 3150: 4  ->  5  (const) [0x00066b65]
+  SURVIVED line 3160: +  ->  -  (arith) [0x00066b7d]
+  SURVIVED line 3180: 8  ->  9  (const) [0x00066ba7]
+  SURVIVED line 3195: 4  ->  5  (const) [0x00066bc7]
+  SURVIVED line 3206: 8  ->  9  (const) [0x00066be6]
+SURVEY phys_fn_002725 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002725 NxPhysicsThirdPartyTests mismatches=3 line 2095: offset != 0.0  ->  !(offset != 0.0)  (neg)
+CAUGHT phys_fn_002725 NxPhysicsThirdPartyTests mismatches=3 line 2095: !=  ->  ==  (cmp)
+  SURVIVED line 2108: !=  ->  ==  (cmp)
+SURVEY phys_fn_002773 NxPhysicsThirdPartyTests tried=7 caught=6 survived=1 rejected=1 nobuild=0
+CAUGHT phys_fn_002773 NxPhysicsThirdPartyTests mismatches=2 line 995: qh ATinfinity  ->  !(qh ATinfinity)  (neg)
+CAUGHT phys_fn_002773 NxPhysicsThirdPartyTests mismatches=4 line 1000: printall || !qh_skipfacet (facet)  ->  !(printall || !qh_skipfacet (facet))  (neg)
+  SURVIVED line 1008: printall || !qh_skipfacet (facet)  ->  !(printall || !qh_skipfacet (facet))  (neg)
+  rejected line 1029: printall || !qh_skipfacet (facet)  ->  !(printall || !qh_skipfacet (facet))  (neg)  [no change in the DLL]
+SURVEY phys_fn_002826 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002826 NxPhysicsThirdPartyTests mismatches=4 line 2282: qh PRINTnoplanes || (facet->visible && qh NEWfacets)  ->  !(qh PRINTnoplanes || (facet->visible && qh NEWfacets))  (neg)
+CAUGHT phys_fn_002826 NxPhysicsThirdPartyTests mismatches=4 line 2286: ==  ->  !=  (cmp)
+  SURVIVED line 2311: 2  ->  3  (const)
+SURVEY phys_fn_002862 NxPhysicsThirdPartyTests tried=4 caught=2 survived=2 rejected=4 nobuild=0
+CAUGHT phys_fn_002862 NxPhysicsThirdPartyTests mismatches=3 line 2652: qh DELAUNAY  ->  !(qh DELAUNAY)  (neg)
+CAUGHT phys_fn_002862 NxPhysicsThirdPartyTests mismatches=6 line 2688: ==  ->  !=  (cmp)
+  SURVIVED line 2674: -  ->  +  (arith)
+  SURVIVED line 2640: qh CDDoutput && (format == qh_PRINTcentrums || format == qh_  ->  !(qh CDDoutput && (format == qh_PRINTcentrums || format == q  (neg)
+  rejected line 2642: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 2658: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 2664: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 2683: qh VORONOI && format == qh_PRINTgeom  ->  !(qh VORONOI && format == qh_PRINTgeom)  (neg)  [no change in the DLL]
+SURVEY phys_fn_002937 NxPhysicsThirdPartyTests tried=8 caught=1 survived=7 rejected=0 nobuild=0
+CAUGHT phys_fn_002937 NxPhysicsThirdPartyTests mismatches=3 line 5525: 4  ->  5  (const) [0x0006fe33]
+  SURVIVED line 5463: +  ->  -  (arith) [0x0006fd90]
+  SURVIVED line 5471: +  ->  -  (arith) [0x0006fda7]
+  SURVIVED line 5484: +  ->  -  (arith) [0x0006fdce]
+  SURVIVED line 5494: +  ->  -  (arith) [0x0006fde9]
+  SURVIVED line 5505: +  ->  -  (arith) [0x0006fdff]
+  SURVIVED line 5514: 4  ->  5  (const) [0x0006fe18]
+  SURVIVED line 5565: +  ->  -  (arith) [0x0006fe7e]
+SURVEY phys_fn_002970 NxPhysicsThirdPartyTests tried=8 caught=4 survived=4 rejected=0 nobuild=0
+CAUGHT phys_fn_002970 NxPhysicsThirdPartyTests mismatches=2 line 6082: +  ->  -  (arith) [0x00070e93]
+CAUGHT phys_fn_002970 NxPhysicsThirdPartyTests mismatches=2 line 6088: +  ->  -  (arith) [0x00070ea0]
+  SURVIVED line 6097: +  ->  -  (arith) [0x00070ec1]
+  SURVIVED line 6121: +  ->  -  (arith) [0x00070f1d]
+  SURVIVED line 6123: 8  ->  9  (const) [0x00070f21]
+  SURVIVED line 6135: +  ->  -  (arith) [0x00070f41]
+SURVEY phys_fn_002987 NxPhysicsThirdPartyTests tried=2 caught=1 survived=1 rejected=6 nobuild=0
+CAUGHT phys_fn_002987 NxPhysicsThirdPartyTests mismatches=18 line 6242: +  ->  -  (arith) [0x00071961]
+  SURVIVED line 6251: 8  ->  9  (const) [0x0007197c]
+  rejected line 6265: 4  ->  5  (const) [0x000719a6]  [line is outside the row's oracle range]
+  rejected line 6279: +  ->  -  (arith) [0x000719c2]  [line is outside the row's oracle range]
+  rejected line 6294: +  ->  -  (arith) [0x000719e1]  [line is outside the row's oracle range]
+  rejected line 6305: +  ->  -  (arith) [0x00071a03]  [line is outside the row's oracle range]
+  rejected line 6316: +  ->  -  (arith) [0x00071a2a]  [line is outside the row's oracle range]
+  rejected line 6328: 8  ->  9  (const) [0x00071a52]  [line is outside the row's oracle range]
+SURVEY phys_fn_003081 NxPhysicsThirdPartyTests tried=4 caught=2 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_003081 NxPhysicsThirdPartyTests mismatches=61 line 658: !neighbor->seen && !neighbor->visible  ->  !(!neighbor->seen && !neighbor->visible)  (neg)
+CAUGHT phys_fn_003081 NxPhysicsThirdPartyTests mismatches=61 line 662: neighbor->toporient  ->  !(neighbor->toporient)  (neg)
+  SURVIVED line 668: neighbor->coplanar && (qh PREmerge || qh MERGEexact)  ->  !(neighbor->coplanar && (qh PREmerge || qh MERGEexact))  (neg)
+  SURVIVED line 674: !qh ONLYgood  ->  !(!qh ONLYgood)  (neg)
+SURVEY phys_fn_003148 NxPhysicsThirdPartyTests tried=5 caught=2 survived=3 rejected=0 nobuild=0
+CAUGHT phys_fn_003148 NxPhysicsThirdPartyTests mismatches=3 line 3105: -  ->  +  (arith)
+CAUGHT phys_fn_003148 NxPhysicsThirdPartyTests mismatches=29 line 3114: (*vertexA)->id > (*vertexB)->id  ->  !((*vertexA)->id > (*vertexB)->id)  (neg)
+  SURVIVED line 3110: *vertexA == *vertexB  ->  !(*vertexA == *vertexB)  (neg)
+  SURVIVED line 3110: ==  ->  !=  (cmp)
+  SURVIVED line 3114: >  ->  >=  (cmp)
+SURVEY phys_fn_003169 NxPhysicsThirdPartyTests tried=6 caught=2 survived=4 rejected=2 nobuild=0
+CAUGHT phys_fn_003169 NxPhysicsThirdPartyTests mismatches=1 line 1278: neighbor->upperdelaunay || neighbor->flipped  ->  !(neighbor->upperdelaunay || neighbor->flipped)  (neg)
+CAUGHT phys_fn_003169 NxPhysicsThirdPartyTests mismatches=1 line 1282: dist > bestdist  ->  !(dist > bestdist)  (neg)
+  SURVIVED line 1282: >  ->  >=  (cmp)
+  SURVIVED line 1293: neighbor->upperdelaunay || neighbor->flipped  ->  !(neighbor->upperdelaunay || neighbor->flipped)  (neg)
+  SURVIVED line 1297: dist > bestdist  ->  !(dist > bestdist)  (neg)
+  SURVIVED line 1297: >  ->  >=  (cmp)
+  rejected line 1272: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1303: !bestfacet  ->  !(!bestfacet)  (neg)  [changed bytes outside qh_findbestlower]
+SURVEY phys_fn_003200 NxPhysicsThirdPartyTests tried=5 caught=1 survived=4 rejected=3 nobuild=0
+CAUGHT phys_fn_003200 NxPhysicsThirdPartyTests mismatches=4 line 1744: >  ->  >=  (cmp)
+  SURVIVED line 1695: >  ->  >=  (cmp)
+  SURVIVED line 1708: >  ->  >=  (cmp)
+  SURVIVED line 1711: <  ->  <=  (cmp)
+  SURVIVED line 1764: !qh_addpoint (qh GOODvertexp, facet, False)  ->  !(!qh_addpoint (qh GOODvertexp, facet, False))  (neg)
+  rejected line 1685: qh GOODpoint > 0  ->  !(qh GOODpoint > 0)  (neg)  [no change in the DLL]
+  rejected line 1689: >  ->  >=  (cmp)  [changed bytes outside qh_initbuild]
+  rejected line 1730: qh PRINToptions1st || qh TRACElevel || qh IStracing  ->  !(qh PRINToptions1st || qh TRACElevel || qh IStracing)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003230 NxPhysicsThirdPartyTests tried=7 caught=7 survived=0 rejected=1 nobuild=0
+CAUGHT phys_fn_003230 NxPhysicsThirdPartyTests mismatches=51 line 377: facet->visible || facet->newfacet  ->  !(facet->visible || facet->newfacet)  (neg)
+CAUGHT phys_fn_003230 NxPhysicsThirdPartyTests mismatches=51 line 384: vertex->newlist  ->  !(vertex->newlist)  (neg)
+  rejected line 391: (qh STOPpoint>0 && id == qh STOPpoint-1) || (qh STOPpoint<0   ->  !((qh STOPpoint>0 && id == qh STOPpoint-1) || (qh STOPpoint<  (neg)  [no change in the DLL]
+SURVEY phys_fn_003298 NxPhysicsThirdPartyTests tried=3 caught=2 survived=1 rejected=2 nobuild=0
+CAUGHT phys_fn_003298 NxPhysicsThirdPartyTests mismatches=51 line 806: *elem++ == atelem  ->  !(*elem++ == atelem)  (neg)
+CAUGHT phys_fn_003298 NxPhysicsThirdPartyTests mismatches=51 line 806: ==  ->  !=  (cmp)
+  SURVIVED line 805: <  ->  <=  (cmp)
+  rejected line 802: size > set->maxsize  ->  !(size > set->maxsize)  (neg)  [no change in the DLL]
+  rejected line 802: >  ->  >=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_003326 NxPhysicsThirdPartyTests tried=5 caught=3 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_003326 NxPhysicsThirdPartyTests mismatches=18 line 467: nth < 0 || (*sizep && nth >= *sizep-1) || nth >= set->maxsiz  ->  !(nth < 0 || (*sizep && nth >= *sizep-1) || nth >= set->maxs  (neg)
+CAUGHT phys_fn_003326 NxPhysicsThirdPartyTests mismatches=18 line 467: <  ->  <=  (cmp)
+  SURVIVED line 467: >=  ->  >  (cmp)
+  SURVIVED line 467: >=  ->  >  (cmp)
+SURVEY phys_fn_003340 NxPhysicsThirdPartyTests tried=3 caught=3 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_003340 NxPhysicsThirdPartyTests mismatches=29 line 1125: qhmem.IStracing >= 5  ->  !(qhmem.IStracing >= 5)  (neg)
+CAUGHT phys_fn_003340 NxPhysicsThirdPartyTests mismatches=1 line 1125: >=  ->  >  (cmp)
+SURVEY phys_fn_002425 NxPhysicsThirdPartyTests tried=8 caught=0 survived=8 rejected=0 nobuild=0
+  SURVIVED line 340: +  ->  -  (arith) [0x0005c662]
+  SURVIVED line 360: +  ->  -  (arith) [0x0005c695]
+  SURVIVED line 384: +  ->  -  (arith) [0x0005c6cc]
+  SURVIVED line 451: +  ->  -  (arith) [0x0005c7a0]
+  SURVIVED line 270: +  ->  -  (arith) [0x0005c5c0]
+  SURVIVED line 295: 8  ->  9  (const) [0x0005c5ea]
+  SURVIVED line 320: +  ->  -  (arith) [0x0005c62e]
+  SURVIVED line 414: +  ->  -  (arith) [0x0005c72c]
+SURVEY phys_fn_002462 NxPhysicsThirdPartyTests tried=6 caught=0 survived=6 rejected=2 nobuild=1
+  SURVIVED line 990: !facet->normal  ->  !(!facet->normal)  (neg)
+  SURVIVED line 1059: qh UPPERdelaunay  ->  !(qh UPPERdelaunay)  (neg)
+  SURVIVED line 1067: qh PRINTstatistics || qh IStracing || qh TRACElevel || qh JO  ->  !(qh PRINTstatistics || qh IStracing || qh TRACElevel || qh   (neg)
+  SURVIVED line 1084: rounded_dist > qh max_outside  ->  !(rounded_dist > qh max_outside)  (neg)
+  SURVIVED line 1091: istrace  ->  !(istrace)  (neg)
+  SURVIVED line 1107: ==  ->  !=  (cmp)
+  rejected line 1002: <=  ->  <  (cmp)  [no change in the DLL]
+  rejected line 1023: vertex->point != point0  ->  !(vertex->point != point0)  (neg)  [build failed]
+SURVEY phys_fn_002497 NxPhysicsThirdPartyTests tried=8 caught=0 survived=8 rejected=0 nobuild=0
+  SURVIVED line 1137: 2  ->  3  (const)
+  SURVIVED line 1136: sizinit < 2  ->  !(sizinit < 2)  (neg)
+  SURVIVED line 1150: point == qh GOODpointp  ->  !(point == qh GOODpointp)  (neg)
+  SURVIVED line 1156: >  ->  >=  (cmp)
+  SURVIVED line 1166: <  ->  <=  (cmp)
+  SURVIVED line 1182: !qh_setin (*simplex, point)  ->  !(!qh_setin (*simplex, point))  (neg)
+  SURVIVED line 1200: point == qh GOODpointp  ->  !(point == qh GOODpointp)  (neg)
+  SURVIVED line 1212: !maxpoint  ->  !(!maxpoint)  (neg)
+SURVEY phys_fn_002518 NxPhysicsThirdPartyTests tried=8 caught=2 survived=6 rejected=0 nobuild=0
+CAUGHT phys_fn_002518 NxPhysicsThirdPartyTests mismatches=3 line 960: +  ->  -  (arith) [0x0005ff05]
+CAUGHT phys_fn_002518 NxPhysicsThirdPartyTests mismatches=3 line 967: -  ->  +  (arith) [0x0005ff23]
+  SURVIVED line 933: +  ->  -  (arith) [0x0005fec0]
+  SURVIVED line 935: +  ->  -  (arith) [0x0005fec5]
+  SURVIVED line 938: +  ->  -  (arith) [0x0005fecc]
+  SURVIVED line 945: 4  ->  5  (const) [0x0005feda]
+  SURVIVED line 963: 8  ->  9  (const) [0x0005ff13]
+  SURVIVED line 969: +  ->  -  (arith) [0x0005ff28]
+SURVEY phys_fn_002552 NxPhysicsThirdPartyTests tried=7 caught=5 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_002552 NxPhysicsThirdPartyTests mismatches=5 line 1023: qh ZEROcentrum  ->  !(qh ZEROcentrum)  (neg)
+CAUGHT phys_fn_002552 NxPhysicsThirdPartyTests mismatches=51 line 1043: maximum[k] < point[k]  ->  !(maximum[k] < point[k])  (neg)
+CAUGHT phys_fn_002552 NxPhysicsThirdPartyTests mismatches=7 line 1048: k == dimension-1  ->  !(k == dimension-1)  (neg)
+CAUGHT phys_fn_002552 NxPhysicsThirdPartyTests mismatches=8 line 1052: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002552 NxPhysicsThirdPartyTests mismatches=29 line 1072: qh IStracing >=1  ->  !(qh IStracing >=1)  (neg)
+  SURVIVED line 1034: 2  ->  3  (const)
+  SURVIVED line 1037: +  ->  -  (arith)
+  rejected line 1025: >  ->  >=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_002571 NxPhysicsThirdPartyTests tried=5 caught=2 survived=3 rejected=3 nobuild=0
+CAUGHT phys_fn_002571 NxPhysicsThirdPartyTests mismatches=51 line 2005: +  ->  -  (arith) [0x000621ee]
+CAUGHT phys_fn_002571 NxPhysicsThirdPartyTests mismatches=2 line 2018: 8  ->  9  (const) [0x00062228]
+  SURVIVED line 1990: +  ->  -  (arith) [0x000621c0]
+  SURVIVED line 2028: +  ->  -  (arith) [0x00062257]
+  SURVIVED line 2037: +  ->  -  (arith) [0x00062281]
+  rejected line 2052: +  ->  -  (arith) [0x000622bd]  [line is outside the row's oracle range]
+  rejected line 2062: +  ->  -  (arith) [0x000622e5]  [line is outside the row's oracle range]
+  rejected line 2073: +  ->  -  (arith) [0x0006230f]  [line is outside the row's oracle range]
+SURVEY phys_fn_002703 NxPhysicsThirdPartyTests tried=7 caught=2 survived=5 rejected=1 nobuild=0
+CAUGHT phys_fn_002703 NxPhysicsThirdPartyTests mismatches=6 line 3420: +  ->  -  (arith) [0x00066de3]
+CAUGHT phys_fn_002703 NxPhysicsThirdPartyTests mismatches=4 line 3556: +  ->  -  (arith) [0x00066f5d]
+  SURVIVED line 3449: +  ->  -  (arith) [0x00066e46]
+  SURVIVED line 3485: +  ->  -  (arith) [0x00066e99]
+  SURVIVED line 3511: +  ->  -  (arith) [0x00066ef6]
+  SURVIVED line 3582: +  ->  -  (arith) [0x00066faa]
+  SURVIVED line 3619: +  ->  -  (arith) [0x00067008]
+  rejected line 3659: 4  ->  5  (const) [0x0006706f]  [line is outside the row's oracle range]
+SURVEY phys_fn_002727 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002727 NxPhysicsThirdPartyTests mismatches=3 line 2095: offset != 0.0  ->  !(offset != 0.0)  (neg)
+CAUGHT phys_fn_002727 NxPhysicsThirdPartyTests mismatches=3 line 2095: !=  ->  ==  (cmp)
+  SURVIVED line 2108: !=  ->  ==  (cmp)
+SURVEY phys_fn_002777 NxPhysicsThirdPartyTests tried=4 caught=2 survived=2 rejected=4 nobuild=0
+CAUGHT phys_fn_002777 NxPhysicsThirdPartyTests mismatches=6 line 1755: facet->simplicial  ->  !(facet->simplicial)  (neg)
+CAUGHT phys_fn_002777 NxPhysicsThirdPartyTests mismatches=4 line 1768: neighbor->visitid != qh visit_id  ->  !(neighbor->visitid != qh visit_id)  (neg)
+  SURVIVED line 1745: !facet->normal  ->  !(!facet->normal)  (neg)
+  SURVIVED line 1758: fp  ->  !(fp)  (neg)
+  rejected line 1736: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 1760: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 1771: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 1771: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_002828 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002828 NxPhysicsThirdPartyTests mismatches=4 line 2282: qh PRINTnoplanes || (facet->visible && qh NEWfacets)  ->  !(qh PRINTnoplanes || (facet->visible && qh NEWfacets))  (neg)
+CAUGHT phys_fn_002828 NxPhysicsThirdPartyTests mismatches=4 line 2286: ==  ->  !=  (cmp)
+  SURVIVED line 2311: 2  ->  3  (const)
+SURVEY phys_fn_002864 NxPhysicsThirdPartyTests tried=6 caught=5 survived=1 rejected=2 nobuild=0
+CAUGHT phys_fn_002864 NxPhysicsThirdPartyTests mismatches=3 line 2970: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002864 NxPhysicsThirdPartyTests mismatches=3 line 2975: facet->visitid != qh visit_id  ->  !(facet->visitid != qh visit_id)  (neg)
+  SURVIVED line 2972: 2  ->  3  (const)
+  rejected line 2967: format == qh_PRINTnone  ->  !(format == qh_PRINTnone)  (neg)  [no change in the DLL]
+  rejected line 2967: ==  ->  !=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_002939 NxPhysicsThirdPartyTests tried=8 caught=0 survived=8 rejected=0 nobuild=0
+  SURVIVED line 5583: +  ->  -  (arith) [0x0006fea0]
+  SURVIVED line 5591: +  ->  -  (arith) [0x0006feb5]
+  SURVIVED line 5605: 4  ->  5  (const) [0x0006fedb]
+  SURVIVED line 5613: 4  ->  5  (const) [0x0006fef3]
+  SURVIVED line 5629: +  ->  -  (arith) [0x0006ff13]
+  SURVIVED line 5642: +  ->  -  (arith) [0x0006ff2f]
+  SURVIVED line 5653: 4  ->  5  (const) [0x0006ff46]
+  SURVIVED line 5665: 8  ->  9  (const) [0x0006ff5e]
+SURVEY phys_fn_002972 NxPhysicsThirdPartyTests tried=8 caught=3 survived=5 rejected=0 nobuild=0
+CAUGHT phys_fn_002972 NxPhysicsThirdPartyTests mismatches=27 line 6173: +  ->  -  (arith) [0x00070f88]
+CAUGHT phys_fn_002972 NxPhysicsThirdPartyTests mismatches=13 line 6184: 5  ->  6  (const) [0x00070fb0]
+  SURVIVED line 6150: +  ->  -  (arith) [0x00070f50]
+  SURVIVED line 6160: +  ->  -  (arith) [0x00070f6e]
+  SURVIVED line 6207: +  ->  -  (arith) [0x00070ff3]
+  SURVIVED line 6216: 4  ->  5  (const) [0x0007100e]
+  SURVIVED line 6224: +  ->  -  (arith) [0x00071020]
+SURVEY phys_fn_002997 NxPhysicsThirdPartyTests tried=7 caught=3 survived=4 rejected=1 nobuild=0
+CAUGHT phys_fn_002997 NxPhysicsThirdPartyTests mismatches=49 line 2403: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002997 NxPhysicsThirdPartyTests mismatches=21 line 2436: +  ->  -  (arith)
+  SURVIVED line 2376: >=  ->  >  (cmp)
+  SURVIVED line 2385: 4  ->  5  (const)
+  SURVIVED line 2413: 5  ->  6  (const)
+  SURVIVED line 2444: ==  ->  !=  (cmp)
+  rejected line 2360: facet1->tricoplanar || facet2->tricoplanar  ->  !(facet1->tricoplanar || facet2->tricoplanar)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003115 NxPhysicsThirdPartyTests tried=2 caught=1 survived=1 rejected=2 nobuild=0
+CAUGHT phys_fn_003115 NxPhysicsThirdPartyTests mismatches=10 line 2293: 5  ->  6  (const)
+  SURVIVED line 2295: 2  ->  3  (const)
+  rejected line 2293: (size%3) && (size%5)  ->  !((size%3) && (size%5))  (neg)  [changed bytes outside qh_newhashtable]
+  rejected line 2293: 3  ->  4  (const)  [changed bytes outside qh_newhashtable]
+SURVEY phys_fn_003150 NxPhysicsThirdPartyTests tried=5 caught=2 survived=3 rejected=0 nobuild=0
+CAUGHT phys_fn_003150 NxPhysicsThirdPartyTests mismatches=3 line 3105: -  ->  +  (arith)
+CAUGHT phys_fn_003150 NxPhysicsThirdPartyTests mismatches=32 line 3114: (*vertexA)->id > (*vertexB)->id  ->  !((*vertexA)->id > (*vertexB)->id)  (neg)
+  SURVIVED line 3110: *vertexA == *vertexB  ->  !(*vertexA == *vertexB)  (neg)
+  SURVIVED line 3110: ==  ->  !=  (cmp)
+  SURVIVED line 3114: >  ->  >=  (cmp)
+SURVEY phys_fn_003173 NxPhysicsThirdPartyTests tried=6 caught=1 survived=5 rejected=2 nobuild=0
+CAUGHT phys_fn_003173 NxPhysicsThirdPartyTests mismatches=8 line 1400: facet->good  ->  !(facet->good)  (neg)
+  SURVIVED line 1411: qh GOODpoint && numgood  ->  !(qh GOODpoint && numgood)  (neg)
+  SURVIVED line 1416: >  ->  >=  (cmp)
+  SURVIVED line 1442: angle < bestangle  ->  !(angle < bestangle)  (neg)
+  SURVIVED line 1446: !=  ->  ==  (cmp)
+  SURVIVED line 1425: facet->good && facet->normal  ->  !(facet->good && facet->normal)  (neg)
+  rejected line 1436: !numgood && (!goodhorizon || qh GOODclosest)  ->  !(!numgood && (!goodhorizon || qh GOODclosest))  (neg)  [changed bytes outside qh_findgood]
+  rejected line 1464: !numgood && qh GOODvertex>0 && !qh MERGING  ->  !(!numgood && qh GOODvertex>0 && !qh MERGING)  (neg)  [changed bytes outside qh_findgood]
+SURVEY phys_fn_003214 NxPhysicsThirdPartyTests tried=8 caught=3 survived=5 rejected=0 nobuild=0
+CAUGHT phys_fn_003214 NxPhysicsThirdPartyTests mismatches=46 line 1018: qh findbestnew  ->  !(qh findbestnew)  (neg)
+CAUGHT phys_fn_003214 NxPhysicsThirdPartyTests mismatches=46 line 1055: bestfacet->furthestdist < bestdist  ->  !(bestfacet->furthestdist < bestdist)  (neg)
+CAUGHT phys_fn_003214 NxPhysicsThirdPartyTests mismatches=32 line 1082: qh KEEPinside  ->  !(qh KEEPinside)  (neg)
+  SURVIVED line 1026: >=  ->  >  (cmp)
+  SURVIVED line 1031: bestdist >= -qh MAXcoplanar  ->  !(bestdist >= -qh MAXcoplanar)  (neg)
+  SURVIVED line 1065: >=  ->  >  (cmp)
+  SURVIVED line 1069: >  ->  >=  (cmp)
+  SURVIVED line 1036: !bestfacet->outsideset || !qh_setlast (bestfacet->outsideset  ->  !(!bestfacet->outsideset || !qh_setlast (bestfacet->outsides  (neg)
+SURVEY phys_fn_003281 NxPhysicsThirdPartyTests tried=3 caught=0 survived=3 rejected=1 nobuild=0
+  SURVIVED line 349: !=  ->  ==  (cmp)
+  SURVIVED line 351: *elemp  ->  !(*elemp)  (neg)
+  SURVIVED line 353: !(*sizep)--  ->  !(!(*sizep)--)  (neg)
+  rejected line 346: !set  ->  !(!set)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003306 NxPhysicsThirdPartyTests tried=2 caught=1 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_003306 NxPhysicsThirdPartyTests mismatches=49 line 1062: *elemp  ->  !(*elemp)  (neg)
+  SURVIVED line 1060: !=  ->  ==  (cmp)
+SURVEY phys_fn_003328 NxPhysicsThirdPartyTests tried=4 caught=1 survived=3 rejected=1 nobuild=0
+CAUGHT phys_fn_003328 NxPhysicsThirdPartyTests mismatches=8 line 839: 2  ->  3  (const)
+  SURVIVED line 846: set == oldset  ->  !(set == oldset)  (neg)
+  SURVIVED line 846: ==  ->  !=  (cmp)
+  SURVIVED line 851: 3  ->  4  (const)
+  rejected line 834: *oldsetp  ->  !(*oldsetp)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003344 NxPhysicsThirdPartyTests tried=1 caught=1 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_003344 NxPhysicsThirdPartyTests mismatches=51 line 1272: !qh_setin (*set, elem)  ->  !(!qh_setin (*set, elem))  (neg)
+SURVEY phys_fn_002428 NxPhysicsThirdPartyTests tried=7 caught=0 survived=7 rejected=1 nobuild=0
+  SURVIVED line 376: nextfacet  ->  !(nextfacet)  (neg)
+  SURVIVED line 391: !--coplanarset_size  ->  !(!--coplanarset_size)  (neg)
+  SURVIVED line 329: !ischeckmax  ->  !(!ischeckmax)  (neg)
+  SURVIVED line 339: ischeckmax  ->  !(ischeckmax)  (neg)
+  SURVIVED line 356: dist > *bestdist  ->  !(dist > *bestdist)  (neg)
+  SURVIVED line 369: dist < minsearch  ->  !(dist < minsearch)  (neg)
+  SURVIVED line 400: newbest  ->  !(newbest)  (neg)
+  rejected line 361: !ischeckmax  ->  !(!ischeckmax)  (neg)  [changed bytes outside qh_findbesthorizon]
+SURVEY phys_fn_002477 NxPhysicsThirdPartyTests tried=1 caught=1 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002477 NxPhysicsThirdPartyTests mismatches=20 line 410: +  ->  -  (arith)
+SURVEY phys_fn_002499 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002499 NxPhysicsThirdPartyTests mismatches=61 line 1136: sizinit < 2  ->  !(sizinit < 2)  (neg)
+CAUGHT phys_fn_002499 NxPhysicsThirdPartyTests mismatches=2 line 1150: point == qh GOODpointp  ->  !(point == qh GOODpointp)  (neg)
+  SURVIVED line 1137: 2  ->  3  (const)
+SURVEY phys_fn_002520 NxPhysicsThirdPartyTests tried=2 caught=1 survived=1 rejected=1 nobuild=0
+CAUGHT phys_fn_002520 NxPhysicsThirdPartyTests mismatches=5 line 1735: qh IStracing >= 1  ->  !(qh IStracing >= 1)  (neg)
+  SURVIVED line 1735: >=  ->  >  (cmp)
+  rejected line 1739: <  ->  <=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_002554 NxPhysicsThirdPartyTests tried=7 caught=6 survived=1 rejected=1 nobuild=0
+CAUGHT phys_fn_002554 NxPhysicsThirdPartyTests mismatches=19 line 1463: <  ->  <=  (cmp)
+CAUGHT phys_fn_002554 NxPhysicsThirdPartyTests mismatches=2 line 1464: ==  ->  !=  (cmp)
+  SURVIVED line 1500: qh POINTSmalloc  ->  !(qh POINTSmalloc)  (neg)
+  rejected line 1506: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_002670 NxPhysicsThirdPartyTests tried=4 caught=4 survived=0 rejected=4 nobuild=1
+CAUGHT phys_fn_002670 NxPhysicsThirdPartyTests mismatches=5 line 2224: +  ->  -  (arith) [0x00065116]
+CAUGHT phys_fn_002670 NxPhysicsThirdPartyTests mismatches=45 line 2325: +  ->  -  (arith) [0x0006527c]
+  rejected line 2576: 8  ->  9  (const) [0x000655a1]  [build failed]
+  rejected line 2825: -  ->  +  (arith) [0x000658b5]  [line is outside the row's oracle range]
+  rejected line 3004: +  ->  -  (arith) [0x00065ad0]  [line is outside the row's oracle range]
+  rejected line 3113: +  ->  -  (arith) [0x00065c2e]  [line is outside the row's oracle range]
+SURVEY phys_fn_002707 NxPhysicsThirdPartyTests tried=2 caught=2 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002707 NxPhysicsThirdPartyTests mismatches=3 line 785: facet->toporient ^ qh_ORIENTclock  ->  !(facet->toporient ^ qh_ORIENTclock)  (neg)
+CAUGHT phys_fn_002707 NxPhysicsThirdPartyTests mismatches=2 line 792: 2  ->  3  (const)
+SURVEY phys_fn_002731 NxPhysicsThirdPartyTests tried=5 caught=5 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002731 NxPhysicsThirdPartyTests mismatches=3 line 2197: notfirst  ->  !(notfirst)  (neg)
+CAUGHT phys_fn_002731 NxPhysicsThirdPartyTests mismatches=3 line 2207: format == qh_PRINTmaple  ->  !(format == qh_PRINTmaple)  (neg)
+SURVEY phys_fn_002803 NxPhysicsThirdPartyTests tried=3 caught=3 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_002803 NxPhysicsThirdPartyTests mismatches=7 line 3168: ridge->tested  ->  !(ridge->tested)  (neg)
+CAUGHT phys_fn_002803 NxPhysicsThirdPartyTests mismatches=7 line 3170: ridge->nonconvex  ->  !(ridge->nonconvex)  (neg)
+SURVEY phys_fn_002832 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002832 NxPhysicsThirdPartyTests mismatches=4 line 2334: qh PRINTnoplanes || (facet->visible && qh NEWfacets)  ->  !(qh PRINTnoplanes || (facet->visible && qh NEWfacets))  (neg)
+CAUGHT phys_fn_002832 NxPhysicsThirdPartyTests mismatches=4 line 2337: ==  ->  !=  (cmp)
+  SURVIVED line 2361: 2  ->  3  (const)
+SURVEY phys_fn_002884 NxPhysicsThirdPartyTests tried=8 caught=0 survived=8 rejected=0 nobuild=0
+  SURVIVED line 4234: +  ->  -  (arith) [0x0006e0b1]
+  SURVIVED line 4247: +  ->  -  (arith) [0x0006e0dd]
+  SURVIVED line 4268: 8  ->  9  (const) [0x0006e112]
+  SURVIVED line 4291: +  ->  -  (arith) [0x0006e145]
+  SURVIVED line 4313: +  ->  -  (arith) [0x0006e186]
+  SURVIVED line 4337: +  ->  -  (arith) [0x0006e1c1]
+  SURVIVED line 4362: +  ->  -  (arith) [0x0006e200]
+  SURVIVED line 4381: 8  ->  9  (const) [0x0006e231]
+SURVEY phys_fn_002947 NxPhysicsThirdPartyTests tried=5 caught=1 survived=4 rejected=3 nobuild=0
+CAUGHT phys_fn_002947 NxPhysicsThirdPartyTests mismatches=9 line 5839: +  ->  -  (arith) [0x00070177]
+  SURVIVED line 5798: +  ->  -  (arith) [0x00070102]
+  SURVIVED line 5822: +  ->  -  (arith) [0x00070148]
+  SURVIVED line 5850: 8  ->  9  (const) [0x0007019b]
+  SURVIVED line 5872: 8  ->  9  (const) [0x000701d1]
+  rejected line 5896: +  ->  -  (arith) [0x00070201]  [line is outside the row's oracle range]
+  rejected line 5908: 4  ->  5  (const) [0x00070222]  [line is outside the row's oracle range]
+  rejected line 5927: 4  ->  5  (const) [0x00070258]  [line is outside the row's oracle range]
+SURVEY phys_fn_002978 NxPhysicsThirdPartyTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002978 NxPhysicsThirdPartyTests mismatches=12 line 1230: ridge->tested && !ridge->nonconvex  ->  !(ridge->tested && !ridge->nonconvex)  (neg)
+CAUGHT phys_fn_002978 NxPhysicsThirdPartyTests mismatches=12 line 1234: neighbor->seen  ->  !(neighbor->seen)  (neg)
+  SURVIVED line 1223: facet->tested  ->  !(facet->tested)  (neg)
+SURVEY phys_fn_002999 NxPhysicsThirdPartyTests tried=1 caught=1 survived=0 rejected=1 nobuild=0
+CAUGHT phys_fn_002999 NxPhysicsThirdPartyTests mismatches=2 line 3101: (vertices= qh_neighbor_intersections (vertex))  ->  !((vertices= qh_neighbor_intersections (vertex)))  (neg)
+  rejected line 3103: (newvertex= qh_find_newvertex (vertex, vertices, ridges))  ->  !((newvertex= qh_find_newvertex (vertex, vertices, ridges)))  (neg)  [changed bytes outside qh_redundant_vertex]
+SURVEY phys_fn_003117 NxPhysicsThirdPartyTests tried=2 caught=2 survived=0 rejected=2 nobuild=0
+CAUGHT phys_fn_003117 NxPhysicsThirdPartyTests mismatches=47 line 2322: qh vertex_id == qh tracevertex_id  ->  !(qh vertex_id == qh tracevertex_id)  (neg)
+CAUGHT phys_fn_003117 NxPhysicsThirdPartyTests mismatches=47 line 2322: ==  ->  !=  (cmp)
+  rejected line 2317: qh vertex_id == 0xFFFFFF  ->  !(qh vertex_id == 0xFFFFFF)  (neg)  [changed bytes outside qh_newvertex]
+  rejected line 2317: ==  ->  !=  (cmp)  [changed bytes outside qh_newvertex]
+SURVEY phys_fn_003161 NxPhysicsThirdPartyTests tried=7 caught=6 survived=1 rejected=1 nobuild=0
+CAUGHT phys_fn_003161 NxPhysicsThirdPartyTests mismatches=4 line 881: ==  ->  !=  (cmp)
+CAUGHT phys_fn_003161 NxPhysicsThirdPartyTests mismatches=11 line 904: ==  ->  !=  (cmp)
+  SURVIVED line 959: -  ->  +  (arith)
+  rejected line 874: facetlist != qh facet_list || qh ONLYgood  ->  !(facetlist != qh facet_list || qh ONLYgood)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003180 NxPhysicsThirdPartyTests tried=7 caught=5 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_003180 NxPhysicsThirdPartyTests mismatches=28 line 1806: dist > 0  ->  !(dist > 0)  (neg)
+CAUGHT phys_fn_003180 NxPhysicsThirdPartyTests mismatches=51 line 1813: !qh_checkflipped (facet, NULL, qh_ALL)  ->  !(!qh_checkflipped (facet, NULL, qh_ALL))  (neg)
+  SURVIVED line 1835: <  ->  <=  (cmp)
+  SURVIVED line 1840: <  ->  <=  (cmp)
+  rejected line 1836: +  ->  -  (arith)  [changed bytes outside qh_initialhull]
+SURVEY phys_fn_003220 NxPhysicsThirdPartyTests tried=8 caught=6 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_003220 NxPhysicsThirdPartyTests mismatches=53 line 797: (id= qh_pointid(vertex->point)) >= 0  ->  !((id= qh_pointid(vertex->point)) >= 0)  (neg)
+CAUGHT phys_fn_003220 NxPhysicsThirdPartyTests mismatches=8 line 801: !=  ->  ==  (cmp)
+  SURVIVED line 804: >=  ->  >  (cmp)
+  SURVIVED line 851: point  ->  !(point)  (neg)
+SURVEY phys_fn_003285 NxPhysicsThirdPartyTests tried=3 caught=1 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_003285 NxPhysicsThirdPartyTests mismatches=20 line 514: !(*sizep)--  ->  !(!(*sizep)--)  (neg)
+  SURVIVED line 507: !=  ->  ==  (cmp)
+  SURVIVED line 509: *newp  ->  !(*newp)  (neg)
+  rejected line 504: !set  ->  !(!set)  (neg)  [no change in the DLL]
+SURVEY phys_fn_003312 NxPhysicsThirdPartyTests tried=4 caught=3 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_003312 NxPhysicsThirdPartyTests mismatches=29 line 1203: qhmem.IStracing >= 5  ->  !(qhmem.IStracing >= 5)  (neg)
+CAUGHT phys_fn_003312 NxPhysicsThirdPartyTests mismatches=1 line 1203: >=  ->  >  (cmp)
+CAUGHT phys_fn_003312 NxPhysicsThirdPartyTests mismatches=1 line 1203: 5  ->  6  (const)
+  SURVIVED line 1199: !stackedset  ->  !(!stackedset)  (neg)
+SURVEY phys_fn_003330 NxPhysicsThirdPartyTests tried=3 caught=1 survived=2 rejected=5 nobuild=2
+CAUGHT phys_fn_003330 NxPhysicsThirdPartyTests mismatches=51 line 945: tailsize < 0  ->  !(tailsize < 0)  (neg)
+  SURVIVED line 970: 4  ->  5  (const)
+  SURVIVED line 998: 4  ->  5  (const)
+  rejected line 943: -  ->  +  (arith)  [changed bytes outside qh_setnew_delnthsorted]
+  rejected line 950: +  ->  -  (arith)  [changed bytes outside qh_setnew_delnthsorted]
+  rejected line 954: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 965: 3  ->  4  (const)  [build failed]
+  rejected line 993: 3  ->  4  (const)  [build failed]
+SURVEY phys_fn_003412 NxPhysicsThirdPartyTests tried=4 caught=3 survived=1 rejected=1 nobuild=1
+CAUGHT phys_fn_003412 NxPhysicsThirdPartyTests mismatches=1 line 8701: +  ->  -  (arith) [0x000847e6]
+CAUGHT phys_fn_003412 NxPhysicsThirdPartyTests mismatches=1 line 8702: +  ->  -  (arith) [0x000847ea]
+  SURVIVED line 8697: +  ->  -  (arith) [0x000847d8]
+  rejected line 8697: +  ->  -  (arith) [0x000847d8]  [build failed]

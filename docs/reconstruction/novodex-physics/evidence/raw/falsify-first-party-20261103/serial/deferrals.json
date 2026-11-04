@@ -1,0 +1,133 @@
+{
+ "doc": "evidence/raw/falsify-first-party-20261103/serial/survey.log",
+ "rows": {
+  "phys_fn_001259": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsShapeVtableTests caught 2 of 4 mutations tried (2 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001369": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsShapeVtableTests caught 4 of 6 mutations tried (2 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001670": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 5 of 7 mutations tried (2 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001688": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 5 of 8 mutations tried (3 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001708": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 3 of 7 mutations tried (4 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001832": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 5 of 8 mutations tried (3 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001833": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001834": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 5 of 7 mutations tried (2 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001840": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 4 of 8 mutations tried (4 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001844": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 4 of 6 mutations tried (2 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001846": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 1 of 2 mutations tried (1 survived, 6 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001849": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 2 of 6 mutations tried (4 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005223": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 4 of 8 mutations tried (4 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005238": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 2 of 7 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005248": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 0 of 6 mutations tried (6 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005250": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 0 of 8 mutations tried (8 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005252": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 1 of 5 mutations tried (4 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005254": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 5 of 8 mutations tried (3 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005256": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 2 of 7 mutations tried (5 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005258": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 1 of 3 mutations tried (2 survived, 5 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005305": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 2 of 7 mutations tried (5 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005307": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 0 of 2 mutations tried (2 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005309": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 3 of 7 mutations tried (4 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005313": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 2 of 6 mutations tried (4 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005315": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005317": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 2 of 8 mutations tried (6 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005318": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 4 of 8 mutations tried (4 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005552": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005554": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 3 of 6 mutations tried (3 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005556": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005558": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 3 of 6 mutations tried (3 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_005560": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  }
+ }
+}

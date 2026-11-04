@@ -54,9 +54,9 @@
   },
   "counts": {
     "differential_falsified": 117,
-    "oracle_differential_falsified": 119,
+    "oracle_differential_falsified": 109,
     "deferred_not_reconstructed_in_phase": 67,
-    "deferred_reconstructed_not_falsified": 80,
+    "deferred_reconstructed_not_falsified": 90,
     "deferred_blocked_on_later_phase": 1,
     "deferred_not_independently_falsifiable": 8
   },
@@ -2924,116 +2924,6 @@
       ]
     },
     {
-      "id": "phys_fn_001828",
-      "rva": "0x00041840",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 569: + -> - (arith) [0x00041849]",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001833",
-      "rva": "0x00041ba0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 939: + -> - (arith) [0x00041ba2]",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001844",
-      "rva": "0x000427d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 2190: - -> + (arith) [0x000427d1]",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001849",
-      "rva": "0x00043680",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 3451: - -> + (arith) [0x00043681]",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001692",
-      "rva": "0x000345b0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/Distance.cpp line 1102: - -> + (arith)",
-        "detected": "mismatches=167231"
-      }
-    },
-    {
-      "id": "phys_fn_001830",
-      "rva": "0x00041930",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 679: + -> - (arith) [0x0004193f]",
-        "detected": "mismatches=30483"
-      }
-    },
-    {
-      "id": "phys_fn_001834",
-      "rva": "0x00041c10",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 1054: + -> - (arith) [0x00041c9b]",
-        "detected": "mismatches=5242"
-      }
-    },
-    {
-      "id": "phys_fn_001846",
-      "rva": "0x00043050",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 2988: - -> + (arith) [0x000430f3]",
-        "detected": "mismatches=42368"
-      }
-    },
-    {
-      "id": "phys_fn_001851",
-      "rva": "0x000441e0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 4483: + -> - (arith) [0x00044253]",
-        "detected": "mismatches=4983"
-      }
-    },
-    {
-      "id": "phys_fn_001832",
-      "rva": "0x000419b0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 742: + -> - (arith) [0x000419b3]",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001840",
-      "rva": "0x00042460",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 1772: + -> - (arith) [0x00042463]",
-        "detected": "mismatches=1"
-      }
-    },
-    {
       "id": "phys_fn_000933",
       "rva": "0x000204e0",
       "proof": "differential_falsified",
@@ -3048,36 +2938,6 @@
       ]
     },
     {
-      "id": "phys_fn_001708",
-      "rva": "0x00036d90",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/Geometry.cpp line 666: remaining == 0 -> !(remaining == 0) (neg)",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001751",
-      "rva": "0x0003b0e0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/NarrowPhase.cpp line 767: 2 -> 3 (const)",
-        "detected": "mismatches=9949"
-      }
-    },
-    {
-      "id": "phys_fn_001791",
-      "rva": "0x0003f700",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsCollisionTests",
-      "falsification": {
-        "mutation": "Physics/src/NarrowPhase.cpp line 858: 7 -> 8 (const)",
-        "detected": "mismatches=48167"
-      }
-    },
-    {
       "id": "phys_fn_000993",
       "rva": "0x00021b70",
       "proof": "differential_falsified",
@@ -3085,34 +2945,6 @@
       "falsification": {
         "mutation": "Physics/src/NpActor.cpp line 939: 6 -> 7 (const)",
         "detected": "stdout_delta=308"
-      },
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        5
-      ]
-    },
-    {
-      "id": "phys_fn_001259",
-      "rva": "0x000251f0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Physics/src/ObjectModel.cpp line 7037: 14 -> 15 (const)",
-        "detected": "mismatches=36"
-      },
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        5
-      ]
-    },
-    {
-      "id": "phys_fn_001369",
-      "rva": "0x00027a30",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Physics/src/ObjectModel.cpp line 4935: round < 2 -> !(round < 2) (neg)",
-        "detected": "mismatches=2"
       },
       "discharged_by_phase": 5,
       "driving_phases": [
@@ -3132,6 +2964,66 @@
       "driving_phases": [
         5
       ]
+    },
+    {
+      "id": "phys_fn_001692",
+      "rva": "0x000345b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/Distance.cpp line 1102: - -> + (arith)",
+        "detected": "mismatches=167231"
+      }
+    },
+    {
+      "id": "phys_fn_001751",
+      "rva": "0x0003b0e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/NarrowPhase.cpp line 764: 2 -> 3 (const)",
+        "detected": "mismatches=15588"
+      }
+    },
+    {
+      "id": "phys_fn_001791",
+      "rva": "0x0003f700",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/NarrowPhase.cpp line 858: !(*((const NxU8*) box + 0xde) & 7) -> !(!(*((const NxU8*) box + 0xde) & 7)) (neg)",
+        "detected": "mismatches=96834"
+      }
+    },
+    {
+      "id": "phys_fn_001828",
+      "rva": "0x00041840",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 588: + -> - (arith) [0x0004187a]",
+        "detected": "mismatches=7343"
+      }
+    },
+    {
+      "id": "phys_fn_001830",
+      "rva": "0x00041930",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 679: + -> - (arith) [0x0004193f]",
+        "detected": "mismatches=30483"
+      }
+    },
+    {
+      "id": "phys_fn_001851",
+      "rva": "0x000441e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 4483: + -> - (arith) [0x00044253]",
+        "detected": "mismatches=4983"
+      }
     }
   ],
   "deferred": [
@@ -4591,6 +4483,96 @@
       "phase_provenance": "callers",
       "driving_phases": [],
       "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+    },
+    {
+      "id": "phys_fn_001259",
+      "rva": "0x000251f0",
+      "size": 351,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "NxPhysicsShapeVtableTests caught 2 of 4 mutations tried (2 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001369",
+      "rva": "0x00027a30",
+      "size": 424,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "NxPhysicsShapeVtableTests caught 4 of 6 mutations tried (2 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001708",
+      "rva": "0x00036d90",
+      "size": 227,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "NxPhysicsCollisionTests caught 3 of 7 mutations tried (4 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001832",
+      "rva": "0x000419b0",
+      "size": 496,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "NxPhysicsCollisionTests caught 5 of 8 mutations tried (3 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001833",
+      "rva": "0x00041ba0",
+      "size": 112,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001834",
+      "rva": "0x00041c10",
+      "size": 961,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "NxPhysicsCollisionTests caught 5 of 7 mutations tried (2 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001840",
+      "rva": "0x00042460",
+      "size": 247,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "NxPhysicsCollisionTests caught 4 of 8 mutations tried (4 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001844",
+      "rva": "0x000427d0",
+      "size": 2170,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "NxPhysicsCollisionTests caught 4 of 6 mutations tried (2 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001846",
+      "rva": "0x00043050",
+      "size": 640,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "NxPhysicsCollisionTests caught 1 of 2 mutations tried (1 survived, 6 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+    },
+    {
+      "id": "phys_fn_001849",
+      "rva": "0x00043680",
+      "size": 2899,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "NxPhysicsCollisionTests caught 2 of 6 mutations tried (4 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     }
   ]
 }

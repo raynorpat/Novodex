@@ -1,0 +1,313 @@
+SURVEY phys_fn_001259 NxPhysicsShapeVtableTests tried=4 caught=2 survived=2 rejected=4 nobuild=0
+CAUGHT phys_fn_001259 NxPhysicsShapeVtableTests mismatches=36 line 7037: 14  ->  15  (const)
+CAUGHT phys_fn_001259 NxPhysicsShapeVtableTests mismatches=2 line 7040: <  ->  <=  (cmp)
+  SURVIVED line 7051: 4  ->  5  (const)
+  SURVIVED line 7025: !mBase.nxFlagBitsDE(8) || !renderer  ->  !(!mBase.nxFlagBitsDE(8) || !renderer)  (neg)
+  rejected line 7032: guard == ref && guard == guard  ->  !(guard == ref && guard == guard)  (neg)  [no change in the DLL]
+  rejected line 7043: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 7044: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 7047: 4  ->  5  (const)  [no change in the DLL]
+SURVEY phys_fn_001369 NxPhysicsShapeVtableTests tried=6 caught=4 survived=2 rejected=2 nobuild=0
+CAUGHT phys_fn_001369 NxPhysicsShapeVtableTests mismatches=2 line 4935: round < 2  ->  !(round < 2)  (neg)
+CAUGHT phys_fn_001369 NxPhysicsShapeVtableTests mismatches=2 line 4937: 9  ->  10  (const)
+CAUGHT phys_fn_001369 NxPhysicsShapeVtableTests mismatches=2 line 4940: 3  ->  4  (const)
+CAUGHT phys_fn_001369 NxPhysicsShapeVtableTests mismatches=2 line 4940: 3  ->  4  (const)
+  SURVIVED line 4925: 12  ->  13  (const)
+  SURVIVED line 4912: !mBase.nxFlagBitsDE(8) || !renderer  ->  !(!mBase.nxFlagBitsDE(8) || !renderer)  (neg)
+  rejected line 4919: guard == ref && guard == guard  ->  !(guard == ref && guard == guard)  (neg)  [changed bytes outside SphereShape::nxSphereDebugRenderDispatch]
+  rejected line 4939: <  ->  <=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_001401 NxPhysicsShapeVtableTests tried=8 caught=8 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_001401 NxPhysicsShapeVtableTests mismatches=2 line 7178: +  ->  -  (arith)
+CAUGHT phys_fn_001401 NxPhysicsShapeVtableTests mismatches=36 line 7190: +  ->  -  (arith)
+SURVEY phys_fn_001670 NxPhysicsCollisionTests tried=7 caught=5 survived=2 rejected=1 nobuild=0
+CAUGHT phys_fn_001670 NxPhysicsCollisionTests mismatches=187634 line 73: -  ->  +  (arith)
+CAUGHT phys_fn_001670 NxPhysicsCollisionTests mismatches=96195 line 77: 3  ->  4  (const)
+  SURVIVED line 117: >  ->  >=  (cmp)
+  SURVIVED line 126: 2  ->  3  (const)
+  rejected line 111: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001676 NxPhysicsCollisionTests tried=5 caught=4 survived=1 rejected=3 nobuild=0
+CAUGHT phys_fn_001676 NxPhysicsCollisionTests mismatches=92210 line 452: 2  ->  3  (const)
+CAUGHT phys_fn_001676 NxPhysicsCollisionTests mismatches=92398 line 456: (double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2]  ->  !((double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2])  (neg)
+  SURVIVED line 449: 3  ->  4  (const)
+  rejected line 452: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 459: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 466: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001678 NxPhysicsCollisionTests tried=8 caught=6 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_001678 NxPhysicsCollisionTests mismatches=15735 line 480: -  ->  +  (arith)
+CAUGHT phys_fn_001678 NxPhysicsCollisionTests mismatches=84 line 485: >=  ->  >  (cmp)
+  SURVIVED line 496: lineParam  ->  !(lineParam)  (neg)
+  SURVIVED line 520: lineParam  ->  !(lineParam)  (neg)
+SURVEY phys_fn_001680 NxPhysicsCollisionTests tried=8 caught=6 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_001680 NxPhysicsCollisionTests mismatches=4866 line 546: -  ->  +  (arith)
+CAUGHT phys_fn_001680 NxPhysicsCollisionTests mismatches=10540 line 551: pnt[i2] < -extents[i2]  ->  !(pnt[i2] < -extents[i2])  (neg)
+  SURVIVED line 545: lineParam  ->  !(lineParam)  (neg)
+  SURVIVED line 557: >  ->  >=  (cmp)
+SURVEY phys_fn_001688 NxPhysicsCollisionTests tried=8 caught=5 survived=3 rejected=0 nobuild=0
+CAUGHT phys_fn_001688 NxPhysicsCollisionTests mismatches=205821 line 701: 2  ->  3  (const)
+CAUGHT phys_fn_001688 NxPhysicsCollisionTests mismatches=185517 line 703: -  ->  +  (arith)
+  SURVIVED line 716: segmentParam  ->  !(segmentParam)  (neg)
+  SURVIVED line 722: 2  ->  3  (const)
+  SURVIVED line 730: segmentParam  ->  !(segmentParam)  (neg)
+SURVEY phys_fn_001692 NxPhysicsCollisionTests tried=8 caught=8 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_001692 NxPhysicsCollisionTests mismatches=167231 line 1102: -  ->  +  (arith)
+CAUGHT phys_fn_001692 NxPhysicsCollisionTests mismatches=91399 line 1106: 2  ->  3  (const)
+SURVEY phys_fn_001708 NxPhysicsCollisionTests tried=7 caught=3 survived=4 rejected=1 nobuild=0
+CAUGHT phys_fn_001708 NxPhysicsCollisionTests mismatches=103684 line 689: NxRayTriIntersect(ray->orig, ray->dir, corners[0], corners[1  ->  !(NxRayTriIntersect(ray->orig, ray->dir, corners[0], corners  (neg)
+CAUGHT phys_fn_001708 NxPhysicsCollisionTests mismatches=57438 line 689: 2  ->  3  (const)
+  SURVIVED line 665: -  ->  +  (arith)
+  SURVIVED line 665: 2  ->  3  (const)
+  SURVIVED line 666: remaining == 0  ->  !(remaining == 0)  (neg)
+  SURVIVED line 666: ==  ->  !=  (cmp)
+  rejected line 684: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001751 NxPhysicsCollisionTests tried=6 caught=6 survived=0 rejected=2 nobuild=0
+CAUGHT phys_fn_001751 NxPhysicsCollisionTests mismatches=15588 line 764: 2  ->  3  (const)
+CAUGHT phys_fn_001751 NxPhysicsCollisionTests mismatches=5414 line 766: 2  ->  3  (const)
+  rejected line 768: <  ->  <=  (cmp)  [no change in the DLL]
+  rejected line 768: 9  ->  10  (const)  [no change in the DLL]
+SURVEY phys_fn_001791 NxPhysicsCollisionTests tried=6 caught=6 survived=0 rejected=2 nobuild=0
+CAUGHT phys_fn_001791 NxPhysicsCollisionTests mismatches=96834 line 858: !(*((const NxU8*) box + 0xde) & 7)  ->  !(!(*((const NxU8*) box + 0xde) & 7))  (neg)
+CAUGHT phys_fn_001791 NxPhysicsCollisionTests mismatches=84412 line 858: +  ->  -  (arith)
+  rejected line 864: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 865: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001828 NxPhysicsCollisionTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_001828 NxPhysicsCollisionTests mismatches=7343 line 588: +  ->  -  (arith) [0x0004187a]
+CAUGHT phys_fn_001828 NxPhysicsCollisionTests mismatches=12002 line 594: +  ->  -  (arith) [0x0004188c]
+  SURVIVED line 569: +  ->  -  (arith) [0x00041849]
+SURVEY phys_fn_001830 NxPhysicsCollisionTests tried=8 caught=6 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_001830 NxPhysicsCollisionTests mismatches=30483 line 679: +  ->  -  (arith) [0x0004193f]
+CAUGHT phys_fn_001830 NxPhysicsCollisionTests mismatches=52630 line 685: +  ->  -  (arith) [0x00041952]
+  SURVIVED line 672: 8  ->  9  (const) [0x00041930]
+  SURVIVED line 720: 8  ->  9  (const) [0x000419a7]
+SURVEY phys_fn_001832 NxPhysicsCollisionTests tried=8 caught=5 survived=3 rejected=0 nobuild=0
+CAUGHT phys_fn_001832 NxPhysicsCollisionTests mismatches=123480 line 769: +  ->  -  (arith) [0x00041a00]
+CAUGHT phys_fn_001832 NxPhysicsCollisionTests mismatches=16598 line 805: 4  ->  5  (const) [0x00041a6e]
+  SURVIVED line 742: +  ->  -  (arith) [0x000419b3]
+  SURVIVED line 788: +  ->  -  (arith) [0x00041a3d]
+  SURVIVED line 907: +  ->  -  (arith) [0x00041b88]
+SURVEY phys_fn_001833 NxPhysicsCollisionTests tried=8 caught=3 survived=5 rejected=0 nobuild=0
+CAUGHT phys_fn_001833 NxPhysicsCollisionTests mismatches=7625 line 970: +  ->  -  (arith) [0x00041beb]
+CAUGHT phys_fn_001833 NxPhysicsCollisionTests mismatches=4151 line 974: 4  ->  5  (const) [0x00041bf6]
+  SURVIVED line 939: +  ->  -  (arith) [0x00041ba2]
+  SURVIVED line 942: 8  ->  9  (const) [0x00041bab]
+  SURVIVED line 948: +  ->  -  (arith) [0x00041bba]
+  SURVIVED line 964: +  ->  -  (arith) [0x00041bdb]
+  SURVIVED line 977: 8  ->  9  (const) [0x00041bff]
+SURVEY phys_fn_001834 NxPhysicsCollisionTests tried=7 caught=5 survived=2 rejected=1 nobuild=1
+CAUGHT phys_fn_001834 NxPhysicsCollisionTests mismatches=5240 line 1054: +  ->  -  (arith) [0x00041c9b]
+CAUGHT phys_fn_001834 NxPhysicsCollisionTests mismatches=3096 line 1090: +  ->  -  (arith) [0x00041cfd]
+  SURVIVED line 1007: -  ->  +  (arith) [0x00041c11]
+  SURVIVED line 1349: -  ->  +  (arith) [0x00041fc4]
+  rejected line 1128: +  ->  -  (arith) [0x00041d64]  [build failed]
+SURVEY phys_fn_001840 NxPhysicsCollisionTests tried=8 caught=4 survived=4 rejected=0 nobuild=0
+CAUGHT phys_fn_001840 NxPhysicsCollisionTests mismatches=18917 line 1808: +  ->  -  (arith) [0x000424c0]
+CAUGHT phys_fn_001840 NxPhysicsCollisionTests mismatches=576 line 1813: 8  ->  9  (const) [0x000424d3]
+  SURVIVED line 1772: +  ->  -  (arith) [0x00042463]
+  SURVIVED line 1785: +  ->  -  (arith) [0x00042485]
+  SURVIVED line 1829: +  ->  -  (arith) [0x00042509]
+  SURVIVED line 1848: +  ->  -  (arith) [0x00042543]
+SURVEY phys_fn_001844 NxPhysicsCollisionTests tried=6 caught=4 survived=2 rejected=2 nobuild=0
+CAUGHT phys_fn_001844 NxPhysicsCollisionTests mismatches=26080 line 2318: +  ->  -  (arith) [0x0004293f]
+CAUGHT phys_fn_001844 NxPhysicsCollisionTests mismatches=51939 line 2585: +  ->  -  (arith) [0x00042c6d]
+  SURVIVED line 2190: -  ->  +  (arith) [0x000427d1]
+  SURVIVED line 2467: +  ->  -  (arith) [0x00042aff]
+  rejected line 2988: -  ->  +  (arith) [0x000430f3]  [line is outside the row's oracle range]
+  rejected line 3149: -  ->  +  (arith) [0x000432c0]  [line is outside the row's oracle range]
+SURVEY phys_fn_001846 NxPhysicsCollisionTests tried=2 caught=1 survived=1 rejected=6 nobuild=0
+CAUGHT phys_fn_001846 NxPhysicsCollisionTests mismatches=42368 line 2988: -  ->  +  (arith) [0x000430f3]
+  SURVIVED line 3149: -  ->  +  (arith) [0x000432c0]
+  rejected line 2190: -  ->  +  (arith) [0x000427d1]  [line is outside the row's oracle range]
+  rejected line 2318: +  ->  -  (arith) [0x0004293f]  [line is outside the row's oracle range]
+  rejected line 2467: +  ->  -  (arith) [0x00042aff]  [line is outside the row's oracle range]
+  rejected line 2585: +  ->  -  (arith) [0x00042c6d]  [line is outside the row's oracle range]
+  rejected line 2704: +  ->  -  (arith) [0x00042dc6]  [line is outside the row's oracle range]
+  rejected line 2843: +  ->  -  (arith) [0x00042f50]  [line is outside the row's oracle range]
+SURVEY phys_fn_001849 NxPhysicsCollisionTests tried=6 caught=2 survived=4 rejected=2 nobuild=2
+CAUGHT phys_fn_001849 NxPhysicsCollisionTests mismatches=16889 line 4003: 4  ->  5  (const) [0x00043d61]
+CAUGHT phys_fn_001849 NxPhysicsCollisionTests mismatches=4855 line 4132: +  ->  -  (arith) [0x00043ec6]
+  SURVIVED line 3451: -  ->  +  (arith) [0x00043681]
+  SURVIVED line 3621: -  ->  +  (arith) [0x00043889]
+  SURVIVED line 3849: -  ->  +  (arith) [0x00043b6b]
+  SURVIVED line 4425: -  ->  +  (arith) [0x000441c3]
+  rejected line 3744: 2  ->  3  (const) [0x00043a08]  [build failed]
+  rejected line 4294: 4  ->  5  (const) [0x00044066]  [build failed]
+SURVEY phys_fn_001851 NxPhysicsCollisionTests tried=8 caught=6 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_001851 NxPhysicsCollisionTests mismatches=4983 line 4483: +  ->  -  (arith) [0x00044253]
+CAUGHT phys_fn_001851 NxPhysicsCollisionTests mismatches=1586 line 4503: +  ->  -  (arith) [0x000442a8]
+  SURVIVED line 4452: +  ->  -  (arith) [0x000441e7]
+  SURVIVED line 4576: +  ->  -  (arith) [0x00044400]
+SURVEY phys_fn_002148 NxPhysicsCollisionTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_002148 NxPhysicsCollisionTests mismatches=2 line 1941: +  ->  -  (arith) [0x00053821]
+CAUGHT phys_fn_002148 NxPhysicsCollisionTests mismatches=1 line 1942: 4  ->  5  (const) [0x00053829]
+  SURVIVED line 1956: 8  ->  9  (const) [0x0005386b]
+SURVEY phys_fn_005223 NxPhysicsCollisionTests tried=8 caught=4 survived=4 rejected=0 nobuild=0
+CAUGHT phys_fn_005223 NxPhysicsCollisionTests mismatches=4 line 2031: 8  ->  9  (const) [0x000e5302]
+CAUGHT phys_fn_005223 NxPhysicsCollisionTests mismatches=4 line 2054: 4  ->  5  (const) [0x000e5340]
+  SURVIVED line 2014: +  ->  -  (arith) [0x000e52d3]
+  SURVIVED line 2041: 4  ->  5  (const) [0x000e531c]
+  SURVIVED line 2076: 4  ->  5  (const) [0x000e536b]
+  SURVIVED line 2109: 4  ->  5  (const) [0x000e53b2]
+SURVEY phys_fn_005238 NxPhysicsCollisionTests tried=7 caught=2 survived=5 rejected=0 nobuild=0
+CAUGHT phys_fn_005238 NxPhysicsCollisionTests mismatches=1 line 2464: +  ->  -  (arith) [0x000e5835]
+CAUGHT phys_fn_005238 NxPhysicsCollisionTests mismatches=2 line 2470: +  ->  -  (arith) [0x000e584b]
+  SURVIVED line 2453: +  ->  -  (arith) [0x000e5814]
+  SURVIVED line 2463: +  ->  -  (arith) [0x000e5832]
+  SURVIVED line 2466: +  ->  -  (arith) [0x000e583c]
+  SURVIVED line 2476: +  ->  -  (arith) [0x000e585c]
+  SURVIVED line 2481: 4  ->  5  (const) [0x000e5863]
+SURVEY phys_fn_005248 NxPhysicsCollisionTests tried=6 caught=0 survived=6 rejected=0 nobuild=0
+  SURVIVED line 2657: +  ->  -  (arith) [0x000e5a03]
+  SURVIVED line 2660: +  ->  -  (arith) [0x000e5a09]
+  SURVIVED line 2663: +  ->  -  (arith) [0x000e5a11]
+  SURVIVED line 2668: +  ->  -  (arith) [0x000e5a1b]
+  SURVIVED line 2668: 4  ->  5  (const) [0x000e5a1b]
+  SURVIVED line 2672: 4  ->  5  (const) [0x000e5a25]
+SURVEY phys_fn_005250 NxPhysicsCollisionTests tried=8 caught=0 survived=8 rejected=0 nobuild=0
+  SURVIVED line 2682: +  ->  -  (arith) [0x000e5a31]
+  SURVIVED line 2685: +  ->  -  (arith) [0x000e5a38]
+  SURVIVED line 2689: +  ->  -  (arith) [0x000e5a40]
+  SURVIVED line 2693: +  ->  -  (arith) [0x000e5a4c]
+  SURVIVED line 2708: +  ->  -  (arith) [0x000e5a6f]
+  SURVIVED line 2713: +  ->  -  (arith) [0x000e5a7a]
+  SURVIVED line 2715: +  ->  -  (arith) [0x000e5a7e]
+  SURVIVED line 2720: 4  ->  5  (const) [0x000e5a8a]
+SURVEY phys_fn_005252 NxPhysicsCollisionTests tried=5 caught=1 survived=4 rejected=0 nobuild=0
+CAUGHT phys_fn_005252 NxPhysicsCollisionTests mismatches=15 line 2729: +  ->  -  (arith) [0x000e5a90]
+  SURVIVED line 2730: +  ->  -  (arith) [0x000e5a93]
+  SURVIVED line 2733: +  ->  -  (arith) [0x000e5a9a]
+  SURVIVED line 2733: 4  ->  5  (const) [0x000e5a9a]
+  SURVIVED line 2739: 4  ->  5  (const) [0x000e5aa9]
+SURVEY phys_fn_005254 NxPhysicsCollisionTests tried=8 caught=5 survived=3 rejected=0 nobuild=0
+CAUGHT phys_fn_005254 NxPhysicsCollisionTests mismatches=11 line 2749: +  ->  -  (arith) [0x000e5ab3]
+CAUGHT phys_fn_005254 NxPhysicsCollisionTests mismatches=8 line 2859: 4  ->  5  (const) [0x000e5c09]
+  SURVIVED line 2789: +  ->  -  (arith) [0x000e5b3e]
+  SURVIVED line 2825: 4  ->  5  (const) [0x000e5bab]
+  SURVIVED line 3020: +  ->  -  (arith) [0x000e5dc2]
+SURVEY phys_fn_005256 NxPhysicsCollisionTests tried=7 caught=2 survived=5 rejected=1 nobuild=1
+CAUGHT phys_fn_005256 NxPhysicsCollisionTests mismatches=2 line 3143: +  ->  -  (arith) [0x000e5f0e]
+CAUGHT phys_fn_005256 NxPhysicsCollisionTests mismatches=8 line 3174: +  ->  -  (arith) [0x000e5f63]
+  SURVIVED line 3043: +  ->  -  (arith) [0x000e5de6]
+  SURVIVED line 3078: 36  ->  37  (const) [0x000e5e57]
+  SURVIVED line 3112: +  ->  -  (arith) [0x000e5ebf]
+  SURVIVED line 3192: 44  ->  45  (const) [0x000e5fa3]
+  SURVIVED line 3251: 4  ->  5  (const) [0x000e6040]
+  rejected line 3223: 2  ->  3  (const) [0x000e5ffa]  [build failed]
+SURVEY phys_fn_005258 NxPhysicsCollisionTests tried=3 caught=1 survived=2 rejected=5 nobuild=0
+CAUGHT phys_fn_005258 NxPhysicsCollisionTests mismatches=1 line 3302: 88  ->  89  (const) [0x000e60b8]
+  SURVIVED line 3276: +  ->  -  (arith) [0x000e6065]
+  SURVIVED line 3319: +  ->  -  (arith) [0x000e60fa]
+  rejected line 3337: 4  ->  5  (const) [0x000e6139]  [line is outside the row's oracle range]
+  rejected line 3359: +  ->  -  (arith) [0x000e6174]  [line is outside the row's oracle range]
+  rejected line 3384: +  ->  -  (arith) [0x000e61b2]  [line is outside the row's oracle range]
+  rejected line 3406: 4  ->  5  (const) [0x000e61e9]  [line is outside the row's oracle range]
+  rejected line 3424: 4  ->  5  (const) [0x000e6218]  [line is outside the row's oracle range]
+SURVEY phys_fn_005295 NxPhysicsCollisionTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_005295 NxPhysicsCollisionTests mismatches=393 line 232: +  ->  -  (arith) [0x000e7253]
+CAUGHT phys_fn_005295 NxPhysicsCollisionTests mismatches=327 line 238: +  ->  -  (arith) [0x000e7264]
+  SURVIVED line 289: 4  ->  5  (const) [0x000e7326]
+SURVEY phys_fn_005301 NxPhysicsCollisionTests tried=7 caught=6 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_005301 NxPhysicsCollisionTests mismatches=1 line 1969: +  ->  -  (arith) [0x000e7364]
+CAUGHT phys_fn_005301 NxPhysicsCollisionTests mismatches=1 line 1970: +  ->  -  (arith) [0x000e7367]
+  SURVIVED line 1975: +  ->  -  (arith) [0x000e7376]
+SURVEY phys_fn_005303 NxPhysicsCollisionTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_005303 NxPhysicsCollisionTests mismatches=24 line 299: +  ->  -  (arith) [0x000e7383]
+CAUGHT phys_fn_005303 NxPhysicsCollisionTests mismatches=24 line 321: +  ->  -  (arith) [0x000e73bd]
+  SURVIVED line 461: 8  ->  9  (const) [0x000e7541]
+SURVEY phys_fn_005305 NxPhysicsCollisionTests tried=7 caught=2 survived=5 rejected=1 nobuild=1
+CAUGHT phys_fn_005305 NxPhysicsCollisionTests mismatches=24 line 478: +  ->  -  (arith) [0x000e7582]
+CAUGHT phys_fn_005305 NxPhysicsCollisionTests mismatches=16 line 504: 8  ->  9  (const) [0x000e75bd]
+  SURVIVED line 472: +  ->  -  (arith) [0x000e7573]
+  SURVIVED line 477: +  ->  -  (arith) [0x000e757f]
+  SURVIVED line 482: 5  ->  6  (const) [0x000e758d]
+  SURVIVED line 487: +  ->  -  (arith) [0x000e7595]
+  SURVIVED line 495: +  ->  -  (arith) [0x000e75aa]
+  rejected line 499: +  ->  -  (arith) [0x000e75b1]  [build failed]
+SURVEY phys_fn_005307 NxPhysicsCollisionTests tried=2 caught=0 survived=2 rejected=0 nobuild=0
+  SURVIVED line 521: +  ->  -  (arith) [0x000e75d0]
+  SURVIVED line 521: 8  ->  9  (const) [0x000e75d0]
+SURVEY phys_fn_005309 NxPhysicsCollisionTests tried=7 caught=3 survived=4 rejected=1 nobuild=1
+CAUGHT phys_fn_005309 NxPhysicsCollisionTests mismatches=24 line 567: +  ->  -  (arith) [0x000e762d]
+CAUGHT phys_fn_005309 NxPhysicsCollisionTests mismatches=20 line 578: +  ->  -  (arith) [0x000e7647]
+  SURVIVED line 538: +  ->  -  (arith) [0x000e75f1]
+  SURVIVED line 546: +  ->  -  (arith) [0x000e7602]
+  SURVIVED line 572: +  ->  -  (arith) [0x000e763a]
+  SURVIVED line 592: 4  ->  5  (const) [0x000e7662]
+  rejected line 556: +  ->  -  (arith) [0x000e7618]  [build failed]
+SURVEY phys_fn_005313 NxPhysicsCollisionTests tried=6 caught=2 survived=4 rejected=0 nobuild=0
+CAUGHT phys_fn_005313 NxPhysicsCollisionTests mismatches=24 line 607: +  ->  -  (arith) [0x000e769d]
+CAUGHT phys_fn_005313 NxPhysicsCollisionTests mismatches=24 line 607: 8  ->  9  (const) [0x000e769d]
+  SURVIVED line 601: +  ->  -  (arith) [0x000e7690]
+  SURVIVED line 601: 4  ->  5  (const) [0x000e7690]
+  SURVIVED line 605: 8  ->  9  (const) [0x000e769a]
+  SURVIVED line 614: 8  ->  9  (const) [0x000e76ae]
+SURVEY phys_fn_005315 NxPhysicsCollisionTests tried=8 caught=3 survived=5 rejected=0 nobuild=0
+CAUGHT phys_fn_005315 NxPhysicsCollisionTests mismatches=24 line 677: 4  ->  5  (const) [0x000e774a]
+CAUGHT phys_fn_005315 NxPhysicsCollisionTests mismatches=24 line 730: +  ->  -  (arith) [0x000e77bd]
+  SURVIVED line 629: +  ->  -  (arith) [0x000e76c9]
+  SURVIVED line 656: 2  ->  3  (const) [0x000e7710]
+  SURVIVED line 666: +  ->  -  (arith) [0x000e7729]
+  SURVIVED line 714: +  ->  -  (arith) [0x000e778b]
+  SURVIVED line 778: 8  ->  9  (const) [0x000e7844]
+SURVEY phys_fn_005317 NxPhysicsCollisionTests tried=8 caught=2 survived=6 rejected=0 nobuild=0
+CAUGHT phys_fn_005317 NxPhysicsCollisionTests mismatches=23 line 816: +  ->  -  (arith) [0x000e78af]
+CAUGHT phys_fn_005317 NxPhysicsCollisionTests mismatches=24 line 850: +  ->  -  (arith) [0x000e7915]
+  SURVIVED line 787: +  ->  -  (arith) [0x000e7850]
+  SURVIVED line 902: +  ->  -  (arith) [0x000e799a]
+  SURVIVED line 956: +  ->  -  (arith) [0x000e7a34]
+  SURVIVED line 1004: +  ->  -  (arith) [0x000e7ab6]
+  SURVIVED line 1061: +  ->  -  (arith) [0x000e7b33]
+  SURVIVED line 1093: 8  ->  9  (const) [0x000e7b7d]
+SURVEY phys_fn_005318 NxPhysicsCollisionTests tried=8 caught=4 survived=4 rejected=0 nobuild=0
+CAUGHT phys_fn_005318 NxPhysicsCollisionTests mismatches=24 line 1123: 8  ->  9  (const) [0x000e7bb1]
+CAUGHT phys_fn_005318 NxPhysicsCollisionTests mismatches=24 line 1125: 8  ->  9  (const) [0x000e7bb9]
+  SURVIVED line 1104: +  ->  -  (arith) [0x000e7b84]
+  SURVIVED line 1113: 4  ->  5  (const) [0x000e7b9b]
+  SURVIVED line 1118: 8  ->  9  (const) [0x000e7ba6]
+  SURVIVED line 1156: 4  ->  5  (const) [0x000e7c05]
+SURVEY phys_fn_005550 NxPhysicsCollisionTests tried=8 caught=6 survived=2 rejected=0 nobuild=0
+CAUGHT phys_fn_005550 NxPhysicsCollisionTests mismatches=20 line 1336: +  ->  -  (arith) [0x000f1ac3]
+CAUGHT phys_fn_005550 NxPhysicsCollisionTests mismatches=18 line 1365: +  ->  -  (arith) [0x000f1b1b]
+  SURVIVED line 1348: 4  ->  5  (const) [0x000f1ae8]
+  SURVIVED line 1409: +  ->  -  (arith) [0x000f1bb1]
+SURVEY phys_fn_005552 NxPhysicsCollisionTests tried=8 caught=1 survived=7 rejected=0 nobuild=0
+CAUGHT phys_fn_005552 NxPhysicsCollisionTests mismatches=20 line 1508: +  ->  -  (arith) [0x000f1c84]
+  SURVIVED line 1499: +  ->  -  (arith) [0x000f1c63]
+  SURVIVED line 1501: +  ->  -  (arith) [0x000f1c69]
+  SURVIVED line 1503: +  ->  -  (arith) [0x000f1c70]
+  SURVIVED line 1504: 4  ->  5  (const) [0x000f1c74]
+  SURVIVED line 1505: +  ->  -  (arith) [0x000f1c78]
+  SURVIVED line 1507: +  ->  -  (arith) [0x000f1c80]
+  SURVIVED line 1511: 8  ->  9  (const) [0x000f1c8f]
+SURVEY phys_fn_005554 NxPhysicsCollisionTests tried=6 caught=3 survived=3 rejected=2 nobuild=2
+CAUGHT phys_fn_005554 NxPhysicsCollisionTests mismatches=20 line 1529: +  ->  -  (arith) [0x000f1cb1]
+CAUGHT phys_fn_005554 NxPhysicsCollisionTests mismatches=20 line 1543: +  ->  -  (arith) [0x000f1cd4]
+  SURVIVED line 1531: +  ->  -  (arith) [0x000f1cb6]
+  SURVIVED line 1534: 4  ->  5  (const) [0x000f1cbe]
+  SURVIVED line 1551: 8  ->  9  (const) [0x000f1ce6]
+  rejected line 1538: +  ->  -  (arith) [0x000f1cc7]  [build failed]
+  rejected line 1557: 8  ->  9  (const) [0x000f1cf6]  [build failed]
+SURVEY phys_fn_005556 NxPhysicsCollisionTests tried=8 caught=1 survived=7 rejected=0 nobuild=0
+CAUGHT phys_fn_005556 NxPhysicsCollisionTests mismatches=20 line 1580: +  ->  -  (arith) [0x000f1d13]
+  SURVIVED line 1581: +  ->  -  (arith) [0x000f1d16]
+  SURVIVED line 1582: +  ->  -  (arith) [0x000f1d19]
+  SURVIVED line 1583: +  ->  -  (arith) [0x000f1d1d]
+  SURVIVED line 1586: +  ->  -  (arith) [0x000f1d27]
+  SURVIVED line 1589: +  ->  -  (arith) [0x000f1d2e]
+  SURVIVED line 1590: +  ->  -  (arith) [0x000f1d32]
+  SURVIVED line 1593: 8  ->  9  (const) [0x000f1d3e]
+SURVEY phys_fn_005558 NxPhysicsCollisionTests tried=6 caught=3 survived=3 rejected=2 nobuild=2
+CAUGHT phys_fn_005558 NxPhysicsCollisionTests mismatches=20 line 1603: +  ->  -  (arith) [0x000f1d51]
+CAUGHT phys_fn_005558 NxPhysicsCollisionTests mismatches=20 line 1617: +  ->  -  (arith) [0x000f1d74]
+  SURVIVED line 1605: +  ->  -  (arith) [0x000f1d56]
+  SURVIVED line 1608: 4  ->  5  (const) [0x000f1d5e]
+  SURVIVED line 1625: 8  ->  9  (const) [0x000f1d86]
+  rejected line 1612: +  ->  -  (arith) [0x000f1d67]  [build failed]
+  rejected line 1631: 8  ->  9  (const) [0x000f1d96]  [build failed]
+SURVEY phys_fn_005560 NxPhysicsCollisionTests tried=8 caught=1 survived=7 rejected=0 nobuild=0
+CAUGHT phys_fn_005560 NxPhysicsCollisionTests mismatches=20 line 1654: +  ->  -  (arith) [0x000f1db3]
+  SURVIVED line 1655: +  ->  -  (arith) [0x000f1db6]
+  SURVIVED line 1656: +  ->  -  (arith) [0x000f1db9]
+  SURVIVED line 1657: +  ->  -  (arith) [0x000f1dbd]
+  SURVIVED line 1660: +  ->  -  (arith) [0x000f1dc7]
+  SURVIVED line 1663: +  ->  -  (arith) [0x000f1dce]
+  SURVIVED line 1664: +  ->  -  (arith) [0x000f1dd2]
+  SURVIVED line 1667: 8  ->  9  (const) [0x000f1dde]

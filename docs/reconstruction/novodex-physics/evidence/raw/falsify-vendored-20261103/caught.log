@@ -1,0 +1,203 @@
+CAUGHT phys_fn_002493 NxPhysicsThirdPartyTests mismatches=1 line 976: absval > maxval  ->  !(absval > maxval)  (neg)
+CAUGHT phys_fn_005111 NxPhysicsThirdPartyTests mismatches=1 line 607: +  ->  -  (arith) [0x000e1530]
+CAUGHT phys_fn_002425 NxPhysicsThirdPartyTests mismatches=27 line 270: +  ->  -  (arith) [0x0005c5c0]
+CAUGHT phys_fn_002425 NxPhysicsThirdPartyTests mismatches=51 line 307: +  ->  -  (arith) [0x0005c60b]
+CAUGHT phys_fn_002477 NxPhysicsThirdPartyTests mismatches=20 line 410: +  ->  -  (arith)
+CAUGHT phys_fn_002566 NxPhysicsThirdPartyTests mismatches=10 line 1847: +  ->  -  (arith) [0x00062072]
+CAUGHT phys_fn_002566 NxPhysicsThirdPartyTests mismatches=51 line 1884: 8  ->  9  (const) [0x000620c9]
+CAUGHT phys_fn_003200 NxPhysicsThirdPartyTests mismatches=12 line 1715: i < 0  ->  !(i < 0)  (neg)
+CAUGHT phys_fn_003200 NxPhysicsThirdPartyTests mismatches=51 line 1743: qh ONLYgood  ->  !(qh ONLYgood)  (neg)
+CAUGHT phys_fn_003312 NxPhysicsThirdPartyTests mismatches=29 line 1203: qhmem.IStracing >= 5  ->  !(qhmem.IStracing >= 5)  (neg)
+CAUGHT phys_fn_003312 NxPhysicsThirdPartyTests mismatches=1 line 1203: >=  ->  >  (cmp)
+CAUGHT phys_fn_003312 NxPhysicsThirdPartyTests mismatches=1 line 1203: 5  ->  6  (const)
+CAUGHT phys_fn_003330 NxPhysicsThirdPartyTests mismatches=51 line 945: <  ->  <=  (cmp)
+CAUGHT phys_fn_003344 NxPhysicsThirdPartyTests mismatches=51 line 1272: !qh_setin (*set, elem)  ->  !(!qh_setin (*set, elem))  (neg)
+CAUGHT phys_fn_002997 NxPhysicsThirdPartyTests mismatches=40 line 2395: mindist  ->  !(mindist)  (neg)
+CAUGHT phys_fn_002997 NxPhysicsThirdPartyTests mismatches=47 line 2421: qh IStracing >=4  ->  !(qh IStracing >=4)  (neg)
+CAUGHT phys_fn_003338 NxPhysicsThirdPartyTests mismatches=47 line 210: !*setp || !*(sizep= SETsizeaddr_(*setp))  ->  !(!*setp || !*(sizep= SETsizeaddr_(*setp)))  (neg)
+CAUGHT phys_fn_003336 NxPhysicsThirdPartyTests mismatches=45 line 171: !*setp  ->  !(!*setp)  (neg)
+CAUGHT phys_fn_003336 NxPhysicsThirdPartyTests mismatches=3 line 178: size + sizeA > (*setp)->maxsize  ->  !(size + sizeA > (*setp)->maxsize)  (neg)
+CAUGHT phys_fn_003168 NxPhysicsThirdPartyTests mismatches=23 line 1169: facet->simplicial  ->  !(facet->simplicial)  (neg)
+CAUGHT phys_fn_003168 NxPhysicsThirdPartyTests mismatches=23 line 1170: !=  ->  ==  (cmp)
+CAUGHT phys_fn_002518 NxPhysicsThirdPartyTests mismatches=3 line 933: +  ->  -  (arith) [0x0005fec0]
+CAUGHT phys_fn_002518 NxPhysicsThirdPartyTests mismatches=3 line 935: +  ->  -  (arith) [0x0005fec5]
+CAUGHT phys_fn_002910 NxPhysicsThirdPartyTests mismatches=12 line 981: size > qh_BESTcentrum2 * qh hull_dim + qh_BESTcentrum  ->  !(size > qh_BESTcentrum2 * qh hull_dim + qh_BESTcentrum)  (neg)
+CAUGHT phys_fn_002910 NxPhysicsThirdPartyTests mismatches=12 line 981: +  ->  -  (arith)
+CAUGHT phys_fn_002505 NxPhysicsThirdPartyTests mismatches=3 line 1358: dim > 0  ->  !(dim > 0)  (neg)
+CAUGHT phys_fn_002697 NxPhysicsThirdPartyTests mismatches=4 line 3126: 8  ->  9  (const) [0x00066b20]
+CAUGHT phys_fn_002697 NxPhysicsThirdPartyTests mismatches=4 line 3137: +  ->  -  (arith) [0x00066b47]
+CAUGHT phys_fn_002483 NxPhysicsThirdPartyTests mismatches=14 line 558: vertex == notvertex  ->  !(vertex == notvertex)  (neg)
+CAUGHT phys_fn_002483 NxPhysicsThirdPartyTests mismatches=3 line 564: notvertex  ->  !(notvertex)  (neg)
+CAUGHT phys_fn_002832 NxPhysicsThirdPartyTests mismatches=4 line 2334: qh PRINTnoplanes || (facet->visible && qh NEWfacets)  ->  !(qh PRINTnoplanes || (facet->visible && qh NEWfacets))  (neg)
+CAUGHT phys_fn_002832 NxPhysicsThirdPartyTests mismatches=4 line 2337: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002906 NxPhysicsThirdPartyTests mismatches=14 line 768: (size= qh_setsize (facet->neighbors)) < qh hull_dim  ->  !((size= qh_setsize (facet->neighbors)) < qh hull_dim)  (neg)
+CAUGHT phys_fn_002906 NxPhysicsThirdPartyTests mismatches=87 line 772: !delfacet  ->  !(!delfacet)  (neg)
+CAUGHT phys_fn_003081 NxPhysicsThirdPartyTests mismatches=61 line 658: !neighbor->seen && !neighbor->visible  ->  !(!neighbor->seen && !neighbor->visible)  (neg)
+CAUGHT phys_fn_003081 NxPhysicsThirdPartyTests mismatches=61 line 662: neighbor->toporient  ->  !(neighbor->toporient)  (neg)
+CAUGHT phys_fn_003150 NxPhysicsThirdPartyTests mismatches=3 line 3105: -  ->  +  (arith)
+CAUGHT phys_fn_003150 NxPhysicsThirdPartyTests mismatches=70 line 3110: *vertexA == *vertexB  ->  !(*vertexA == *vertexB)  (neg)
+CAUGHT phys_fn_002497 NxPhysicsThirdPartyTests mismatches=51 line 1136: sizinit < 2  ->  !(sizinit < 2)  (neg)
+CAUGHT phys_fn_002497 NxPhysicsThirdPartyTests mismatches=8 line 1139: <  ->  <=  (cmp)
+CAUGHT phys_fn_002571 NxPhysicsThirdPartyTests mismatches=51 line 2013: +  ->  -  (arith) [0x00062210]
+CAUGHT phys_fn_002571 NxPhysicsThirdPartyTests mismatches=8 line 2027: +  ->  -  (arith) [0x00062251]
+CAUGHT phys_fn_002678 NxPhysicsThirdPartyTests mismatches=51 line 461: qhmem.LASTsize == 0  ->  !(qhmem.LASTsize == 0)  (neg)
+CAUGHT phys_fn_002678 NxPhysicsThirdPartyTests mismatches=51 line 461: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002862 NxPhysicsThirdPartyTests mismatches=6 line 2688: ==  ->  !=  (cmp)
+CAUGHT phys_fn_003180 NxPhysicsThirdPartyTests mismatches=28 line 1806: dist > 0  ->  !(dist > 0)  (neg)
+CAUGHT phys_fn_003180 NxPhysicsThirdPartyTests mismatches=51 line 1813: !qh_checkflipped (facet, NULL, qh_ALL)  ->  !(!qh_checkflipped (facet, NULL, qh_ALL))  (neg)
+CAUGHT phys_fn_003224 NxPhysicsThirdPartyTests mismatches=4 line 1128: qh ONLYmax  ->  !(qh ONLYmax)  (neg)
+CAUGHT phys_fn_003224 NxPhysicsThirdPartyTests mismatches=51 line 1143: newfacet == qh facet_tail  ->  !(newfacet == qh facet_tail)  (neg)
+CAUGHT phys_fn_003291 NxPhysicsThirdPartyTests mismatches=51 line 662: elemA == skipAp  ->  !(elemA == skipAp)  (neg)
+CAUGHT phys_fn_003291 NxPhysicsThirdPartyTests mismatches=51 line 662: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002972 NxPhysicsThirdPartyTests mismatches=49 line 6150: +  ->  -  (arith) [0x00070f50]
+CAUGHT phys_fn_002972 NxPhysicsThirdPartyTests mismatches=10 line 6165: +  ->  -  (arith) [0x00070f77]
+CAUGHT phys_fn_002530 NxPhysicsThirdPartyTests mismatches=27 line 2091: facet == qh newfacet_list  ->  !(facet == qh newfacet_list)  (neg)
+CAUGHT phys_fn_002530 NxPhysicsThirdPartyTests mismatches=27 line 2091: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002725 NxPhysicsThirdPartyTests mismatches=3 line 2095: offset != 0.0  ->  !(offset != 0.0)  (neg)
+CAUGHT phys_fn_002725 NxPhysicsThirdPartyTests mismatches=6 line 2102: <  ->  <=  (cmp)
+CAUGHT phys_fn_003285 NxPhysicsThirdPartyTests mismatches=33 line 507: !=  ->  ==  (cmp)
+CAUGHT phys_fn_003285 NxPhysicsThirdPartyTests mismatches=20 line 514: !(*sizep)--  ->  !(!(*sizep)--)  (neg)
+CAUGHT phys_fn_002487 NxPhysicsThirdPartyTests mismatches=3 line 834: 8  ->  9  (const) [0x0005f394]
+CAUGHT phys_fn_002487 NxPhysicsThirdPartyTests mismatches=3 line 862: 8  ->  9  (const) [0x0005f3e0]
+CAUGHT phys_fn_002836 NxPhysicsThirdPartyTests mismatches=8 line 2465: facet->tested  ->  !(facet->tested)  (neg)
+CAUGHT phys_fn_002836 NxPhysicsThirdPartyTests mismatches=8 line 2506: facet->nummerge  ->  !(facet->nummerge)  (neg)
+CAUGHT phys_fn_003169 NxPhysicsThirdPartyTests mismatches=1 line 1282: dist > bestdist  ->  !(dist > bestdist)  (neg)
+CAUGHT phys_fn_002951 NxPhysicsThirdPartyTests mismatches=7 line 5945: +  ->  -  (arith) [0x00070271]
+CAUGHT phys_fn_002937 NxPhysicsThirdPartyTests mismatches=9 line 5480: +  ->  -  (arith) [0x0006fdc0]
+CAUGHT phys_fn_002937 NxPhysicsThirdPartyTests mismatches=9 line 5493: 4  ->  5  (const) [0x0006fde6]
+CAUGHT phys_fn_002721 NxPhysicsThirdPartyTests mismatches=3 line 1978: offset != 0.0  ->  !(offset != 0.0)  (neg)
+CAUGHT phys_fn_002721 NxPhysicsThirdPartyTests mismatches=3 line 1978: !=  ->  ==  (cmp)
+CAUGHT phys_fn_002719 NxPhysicsThirdPartyTests mismatches=9 line 1574: string  ->  !(string)  (neg)
+CAUGHT phys_fn_002719 NxPhysicsThirdPartyTests mismatches=77 line 1579: !facet->center  ->  !(!facet->center)  (neg)
+CAUGHT phys_fn_002834 NxPhysicsThirdPartyTests mismatches=4 line 2334: qh PRINTnoplanes || (facet->visible && qh NEWfacets)  ->  !(qh PRINTnoplanes || (facet->visible && qh NEWfacets))  (neg)
+CAUGHT phys_fn_002834 NxPhysicsThirdPartyTests mismatches=4 line 2337: ==  ->  !=  (cmp)
+CAUGHT phys_fn_005368 NxPhysicsThirdPartyTests mismatches=4 line 1392: +  ->  -  (arith) [0x000e9105]
+CAUGHT phys_fn_005368 NxPhysicsThirdPartyTests mismatches=4 line 1422: 4  ->  5  (const) [0x000e9161]
+CAUGHT phys_fn_005069 NxPhysicsThirdPartyTests mismatches=3 line 124: +  ->  -  (arith) [0x000de240]
+CAUGHT phys_fn_005069 NxPhysicsThirdPartyTests mismatches=3 line 194: +  ->  -  (arith) [0x000de30b]
+CAUGHT phys_fn_003161 NxPhysicsThirdPartyTests mismatches=51 line 923: !vertex->seen  ->  !(!vertex->seen)  (neg)
+CAUGHT phys_fn_003161 NxPhysicsThirdPartyTests mismatches=11 line 951: totvneighbors != totvertices  ->  !(totvneighbors != totvertices)  (neg)
+CAUGHT phys_fn_003281 NxPhysicsThirdPartyTests mismatches=49 line 349: !=  ->  ==  (cmp)
+CAUGHT phys_fn_003281 NxPhysicsThirdPartyTests mismatches=49 line 351: *elemp  ->  !(*elemp)  (neg)
+CAUGHT phys_fn_003148 NxPhysicsThirdPartyTests mismatches=3 line 3105: -  ->  +  (arith)
+CAUGHT phys_fn_003148 NxPhysicsThirdPartyTests mismatches=34 line 3110: *vertexA == *vertexB  ->  !(*vertexA == *vertexB)  (neg)
+CAUGHT phys_fn_002753 NxPhysicsThirdPartyTests mismatches=2 line 3662: 2  ->  3  (const)
+CAUGHT phys_fn_003173 NxPhysicsThirdPartyTests mismatches=8 line 1400: facet->good  ->  !(facet->good)  (neg)
+CAUGHT phys_fn_003173 NxPhysicsThirdPartyTests mismatches=16 line 1413: facet->good && facet->normal  ->  !(facet->good && facet->normal)  (neg)
+CAUGHT phys_fn_002987 NxPhysicsThirdPartyTests mismatches=18 line 6242: +  ->  -  (arith) [0x00071961]
+CAUGHT phys_fn_002987 NxPhysicsThirdPartyTests mismatches=18 line 6253: +  ->  -  (arith) [0x00071986]
+CAUGHT phys_fn_003326 NxPhysicsThirdPartyTests mismatches=18 line 467: nth < 0 || (*sizep && nth >= *sizep-1) || nth >= set->maxsiz  ->  !(nth < 0 || (*sizep && nth >= *sizep-1) || nth >= set->maxs  (neg)
+CAUGHT phys_fn_003326 NxPhysicsThirdPartyTests mismatches=18 line 477: !(*sizep)--  ->  !(!(*sizep)--)  (neg)
+CAUGHT phys_fn_003287 NxPhysicsThirdPartyTests mismatches=3 line 574: sizeA != sizeB  ->  !(sizeA != sizeB)  (neg)
+CAUGHT phys_fn_003287 NxPhysicsThirdPartyTests mismatches=12 line 580: !memcmp((char *)elemAp, (char *)elemBp, sizeA*SETelemsize)  ->  !(!memcmp((char *)elemAp, (char *)elemBp, sizeA*SETelemsize)  (neg)
+CAUGHT phys_fn_002978 NxPhysicsThirdPartyTests mismatches=12 line 1230: ridge->tested && !ridge->nonconvex  ->  !(ridge->tested && !ridge->nonconvex)  (neg)
+CAUGHT phys_fn_002978 NxPhysicsThirdPartyTests mismatches=12 line 1237: neighbor->visitid != qh visit_id  ->  !(neighbor->visitid != qh visit_id)  (neg)
+CAUGHT phys_fn_002520 NxPhysicsThirdPartyTests mismatches=5 line 1735: qh IStracing >= 1  ->  !(qh IStracing >= 1)  (neg)
+CAUGHT phys_fn_002939 NxPhysicsThirdPartyTests mismatches=9 line 5601: +  ->  -  (arith) [0x0006fed1]
+CAUGHT phys_fn_002939 NxPhysicsThirdPartyTests mismatches=9 line 5612: 4  ->  5  (const) [0x0006fef0]
+CAUGHT phys_fn_002755 NxPhysicsThirdPartyTests mismatches=3 line 3685: 2  ->  3  (const)
+CAUGHT phys_fn_002822 NxPhysicsThirdPartyTests mismatches=2 line 2056: -  ->  +  (arith)
+CAUGHT phys_fn_002822 NxPhysicsThirdPartyTests mismatches=4 line 2068: neighbor->visitid != qh visit_id  ->  !(neighbor->visitid != qh visit_id)  (neg)
+CAUGHT phys_fn_002462 NxPhysicsThirdPartyTests mismatches=87 line 990: !facet->normal  ->  !(!facet->normal)  (neg)
+CAUGHT phys_fn_002462 NxPhysicsThirdPartyTests mismatches=4 line 1004: qh RANDOMdist  ->  !(qh RANDOMdist)  (neg)
+CAUGHT phys_fn_002499 NxPhysicsThirdPartyTests mismatches=61 line 1136: sizinit < 2  ->  !(sizinit < 2)  (neg)
+CAUGHT phys_fn_002499 NxPhysicsThirdPartyTests mismatches=8 line 1139: <  ->  <=  (cmp)
+CAUGHT phys_fn_002727 NxPhysicsThirdPartyTests mismatches=3 line 2095: offset != 0.0  ->  !(offset != 0.0)  (neg)
+CAUGHT phys_fn_002727 NxPhysicsThirdPartyTests mismatches=6 line 2102: <  ->  <=  (cmp)
+CAUGHT phys_fn_002446 NxPhysicsThirdPartyTests mismatches=48 line 865: +  ->  -  (arith)
+CAUGHT phys_fn_002446 NxPhysicsThirdPartyTests mismatches=40 line 884: !toporient  ->  !(!toporient)  (neg)
+CAUGHT phys_fn_003051 NxPhysicsThirdPartyTests mismatches=51 line 6911: +  ->  -  (arith) [0x000744a0]
+CAUGHT phys_fn_003051 NxPhysicsThirdPartyTests mismatches=51 line 6940: 4  ->  5  (const) [0x000744e0]
+CAUGHT phys_fn_003115 NxPhysicsThirdPartyTests mismatches=10 line 2293: 5  ->  6  (const)
+CAUGHT phys_fn_003164 NxPhysicsThirdPartyTests mismatches=12 line 7789: +  ->  -  (arith) [0x00078973]
+CAUGHT phys_fn_003164 NxPhysicsThirdPartyTests mismatches=8 line 7809: +  ->  -  (arith) [0x000789c5]
+CAUGHT phys_fn_003186 NxPhysicsThirdPartyTests mismatches=51 line 2024: visible->simplicial  ->  !(visible->simplicial)  (neg)
+CAUGHT phys_fn_003186 NxPhysicsThirdPartyTests mismatches=50 line 2026: !qh ONLYgood  ->  !(!qh ONLYgood)  (neg)
+CAUGHT phys_fn_003230 NxPhysicsThirdPartyTests mismatches=51 line 377: facet->visible || facet->newfacet  ->  !(facet->visible || facet->newfacet)  (neg)
+CAUGHT phys_fn_003230 NxPhysicsThirdPartyTests mismatches=2 line 391: ==  ->  !=  (cmp)
+CAUGHT phys_fn_003298 NxPhysicsThirdPartyTests mismatches=51 line 806: *elem++ == atelem  ->  !(*elem++ == atelem)  (neg)
+CAUGHT phys_fn_003298 NxPhysicsThirdPartyTests mismatches=51 line 806: ==  ->  !=  (cmp)
+CAUGHT phys_fn_003340 NxPhysicsThirdPartyTests mismatches=29 line 1125: qhmem.IStracing >= 5  ->  !(qhmem.IStracing >= 5)  (neg)
+CAUGHT phys_fn_003340 NxPhysicsThirdPartyTests mismatches=1 line 1125: >=  ->  >  (cmp)
+CAUGHT phys_fn_002957 NxPhysicsThirdPartyTests mismatches=49 line 3142: !vertex->seen  ->  !(!vertex->seen)  (neg)
+CAUGHT phys_fn_002979 NxPhysicsThirdPartyTests mismatches=27 line 1297: neighbor->visitid != qh visit_id  ->  !(neighbor->visitid != qh visit_id)  (neg)
+CAUGHT phys_fn_002979 NxPhysicsThirdPartyTests mismatches=27 line 1297: !=  ->  ==  (cmp)
+CAUGHT phys_fn_003306 NxPhysicsThirdPartyTests mismatches=49 line 1060: !=  ->  ==  (cmp)
+CAUGHT phys_fn_003306 NxPhysicsThirdPartyTests mismatches=49 line 1062: *elemp  ->  !(*elemp)  (neg)
+CAUGHT phys_fn_003222 NxPhysicsThirdPartyTests mismatches=25 line 918: bestdist < -qh NEARinside  ->  !(bestdist < -qh NEARinside)  (neg)
+CAUGHT phys_fn_003222 NxPhysicsThirdPartyTests mismatches=35 line 935: bestdist > qh max_outside  ->  !(bestdist > qh max_outside)  (neg)
+CAUGHT phys_fn_002970 NxPhysicsThirdPartyTests mismatches=2 line 6082: +  ->  -  (arith) [0x00070e93]
+CAUGHT phys_fn_002970 NxPhysicsThirdPartyTests mismatches=1 line 6103: +  ->  -  (arith) [0x00070ed9]
+CAUGHT phys_fn_002819 NxPhysicsThirdPartyTests mismatches=19 line 1680: !qh printoutnum  ->  !(!qh printoutnum)  (neg)
+CAUGHT phys_fn_002819 NxPhysicsThirdPartyTests mismatches=10 line 1684: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002501 NxPhysicsThirdPartyTests mismatches=3 line 1280: dist > 0  ->  !(dist > 0)  (neg)
+CAUGHT phys_fn_002501 NxPhysicsThirdPartyTests mismatches=3 line 1280: >  ->  >=  (cmp)
+CAUGHT phys_fn_002444 NxPhysicsThirdPartyTests mismatches=13 line 525: +  ->  -  (arith) [0x0005d56b]
+CAUGHT phys_fn_002444 NxPhysicsThirdPartyTests mismatches=13 line 544: +  ->  -  (arith) [0x0005d595]
+CAUGHT phys_fn_002532 NxPhysicsThirdPartyTests mismatches=6 line 1177: +  ->  -  (arith) [0x000605f9]
+CAUGHT phys_fn_002558 NxPhysicsThirdPartyTests mismatches=1 line 1812: +  ->  -  (arith) [0x00061cd0]
+CAUGHT phys_fn_002558 NxPhysicsThirdPartyTests mismatches=3 line 1816: +  ->  -  (arith) [0x00061cde]
+CAUGHT phys_fn_002884 NxPhysicsThirdPartyTests mismatches=13 line 4234: +  ->  -  (arith) [0x0006e0b1]
+CAUGHT phys_fn_002884 NxPhysicsThirdPartyTests mismatches=1 line 4253: +  ->  -  (arith) [0x0006e0ed]
+CAUGHT phys_fn_002999 NxPhysicsThirdPartyTests mismatches=2 line 3101: (vertices= qh_neighbor_intersections (vertex))  ->  !((vertices= qh_neighbor_intersections (vertex)))  (neg)
+CAUGHT phys_fn_002703 NxPhysicsThirdPartyTests mismatches=6 line 3464: 4  ->  5  (const) [0x00066e63]
+CAUGHT phys_fn_002703 NxPhysicsThirdPartyTests mismatches=6 line 3504: +  ->  -  (arith) [0x00066ee1]
+CAUGHT phys_fn_002773 NxPhysicsThirdPartyTests mismatches=2 line 995: qh ATinfinity  ->  !(qh ATinfinity)  (neg)
+CAUGHT phys_fn_002773 NxPhysicsThirdPartyTests mismatches=4 line 1001: !facet->upperdelaunay  ->  !(!facet->upperdelaunay)  (neg)
+CAUGHT phys_fn_002560 NxPhysicsThirdPartyTests mismatches=1 line 1769: !qh POINTSmalloc  ->  !(!qh POINTSmalloc)  (neg)
+CAUGHT phys_fn_002826 NxPhysicsThirdPartyTests mismatches=4 line 2282: qh PRINTnoplanes || (facet->visible && qh NEWfacets)  ->  !(qh PRINTnoplanes || (facet->visible && qh NEWfacets))  (neg)
+CAUGHT phys_fn_002826 NxPhysicsThirdPartyTests mismatches=4 line 2286: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002864 NxPhysicsThirdPartyTests mismatches=3 line 2970: facetA == facetB  ->  !(facetA == facetB)  (neg)
+CAUGHT phys_fn_002864 NxPhysicsThirdPartyTests mismatches=3 line 2975: facet->visitid != qh visit_id  ->  !(facet->visitid != qh visit_id)  (neg)
+CAUGHT phys_fn_002731 NxPhysicsThirdPartyTests mismatches=3 line 2197: notfirst  ->  !(notfirst)  (neg)
+CAUGHT phys_fn_002731 NxPhysicsThirdPartyTests mismatches=3 line 2207: format == qh_PRINTmaple  ->  !(format == qh_PRINTmaple)  (neg)
+CAUGHT phys_fn_003067 NxPhysicsThirdPartyTests mismatches=87 line 1145: qh VERTEXneighbors  ->  !(qh VERTEXneighbors)  (neg)
+CAUGHT phys_fn_003067 NxPhysicsThirdPartyTests mismatches=87 line 1148: neighbor->visible  ->  !(neighbor->visible)  (neg)
+CAUGHT phys_fn_002450 NxPhysicsThirdPartyTests mismatches=34 line 1177: 2  ->  3  (const)
+CAUGHT phys_fn_002450 NxPhysicsThirdPartyTests mismatches=11 line 1206: 3  ->  4  (const)
+CAUGHT phys_fn_002552 NxPhysicsThirdPartyTests mismatches=5 line 1023: qh ZEROcentrum  ->  !(qh ZEROcentrum)  (neg)
+CAUGHT phys_fn_002552 NxPhysicsThirdPartyTests mismatches=24 line 1036: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002670 NxPhysicsThirdPartyTests mismatches=5 line 2224: +  ->  -  (arith) [0x00065116]
+CAUGHT phys_fn_002670 NxPhysicsThirdPartyTests mismatches=7 line 2550: +  ->  -  (arith) [0x00065554]
+CAUGHT phys_fn_003117 NxPhysicsThirdPartyTests mismatches=47 line 2322: qh vertex_id == qh tracevertex_id  ->  !(qh vertex_id == qh tracevertex_id)  (neg)
+CAUGHT phys_fn_003117 NxPhysicsThirdPartyTests mismatches=47 line 2322: ==  ->  !=  (cmp)
+CAUGHT phys_fn_003198 NxPhysicsThirdPartyTests mismatches=11 line 289: qh STOPcone  ->  !(qh STOPcone)  (neg)
+CAUGHT phys_fn_003198 NxPhysicsThirdPartyTests mismatches=25 line 291: qh VERIFYoutput | qh IStracing | qh CHECKfrequently  ->  !(qh VERIFYoutput | qh IStracing | qh CHECKfrequently)  (neg)
+CAUGHT phys_fn_003214 NxPhysicsThirdPartyTests mismatches=46 line 1018: qh findbestnew  ->  !(qh findbestnew)  (neg)
+CAUGHT phys_fn_003214 NxPhysicsThirdPartyTests mismatches=3 line 1029: bestdist >= -qh NEARinside  ->  !(bestdist >= -qh NEARinside)  (neg)
+CAUGHT phys_fn_003328 NxPhysicsThirdPartyTests mismatches=8 line 839: 2  ->  3  (const)
+CAUGHT phys_fn_003328 NxPhysicsThirdPartyTests mismatches=51 line 846: set == oldset  ->  !(set == oldset)  (neg)
+CAUGHT phys_fn_002428 NxPhysicsThirdPartyTests mismatches=11 line 329: !ischeckmax  ->  !(!ischeckmax)  (neg)
+CAUGHT phys_fn_002428 NxPhysicsThirdPartyTests mismatches=34 line 350: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002983 NxPhysicsThirdPartyTests mismatches=40 line 2709: mergeapex  ->  !(mergeapex)  (neg)
+CAUGHT phys_fn_002983 NxPhysicsThirdPartyTests mismatches=38 line 2722: ==  ->  !=  (cmp)
+CAUGHT phys_fn_003127 NxPhysicsThirdPartyTests mismatches=38 line 2500: vertex->visitid != qh vertex_visit  ->  !(vertex->visitid != qh vertex_visit)  (neg)
+CAUGHT phys_fn_003127 NxPhysicsThirdPartyTests mismatches=38 line 2500: !=  ->  ==  (cmp)
+CAUGHT phys_fn_003320 NxPhysicsThirdPartyTests mismatches=49 line 282: +  ->  -  (arith)
+CAUGHT phys_fn_003320 NxPhysicsThirdPartyTests mismatches=49 line 284: !(*destp++ = *elemp++)  ->  !(!(*destp++ = *elemp++))  (neg)
+CAUGHT phys_fn_002503 NxPhysicsThirdPartyTests mismatches=38 line 1312: outerplane  ->  !(outerplane)  (neg)
+CAUGHT phys_fn_002503 NxPhysicsThirdPartyTests mismatches=4 line 1317: +  ->  -  (arith)
+CAUGHT phys_fn_003146 NxPhysicsThirdPartyTests mismatches=2 line 7739: +  ->  -  (arith) [0x000775b8]
+CAUGHT phys_fn_003146 NxPhysicsThirdPartyTests mismatches=2 line 7758: +  ->  -  (arith) [0x000775e4]
+CAUGHT phys_fn_003412 NxPhysicsThirdPartyTests mismatches=1 line 8701: +  ->  -  (arith) [0x000847e6]
+CAUGHT phys_fn_003412 NxPhysicsThirdPartyTests mismatches=1 line 8702: 8  ->  9  (const) [0x000847ea]
+CAUGHT phys_fn_002554 NxPhysicsThirdPartyTests mismatches=19 line 1463: <  ->  <=  (cmp)
+CAUGHT phys_fn_002554 NxPhysicsThirdPartyTests mismatches=2 line 1464: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002803 NxPhysicsThirdPartyTests mismatches=7 line 3168: ridge->tested  ->  !(ridge->tested)  (neg)
+CAUGHT phys_fn_002803 NxPhysicsThirdPartyTests mismatches=7 line 3170: ridge->nonconvex  ->  !(ridge->nonconvex)  (neg)
+CAUGHT phys_fn_002707 NxPhysicsThirdPartyTests mismatches=3 line 785: facet->toporient ^ qh_ORIENTclock  ->  !(facet->toporient ^ qh_ORIENTclock)  (neg)
+CAUGHT phys_fn_002707 NxPhysicsThirdPartyTests mismatches=2 line 792: 2  ->  3  (const)
+CAUGHT phys_fn_003324 NxPhysicsThirdPartyTests mismatches=11 line 428: !(*sizep)--  ->  !(!(*sizep)--)  (neg)
+CAUGHT phys_fn_003324 NxPhysicsThirdPartyTests mismatches=11 line 430: nth < 0 || nth >= *sizep  ->  !(nth < 0 || nth >= *sizep)  (neg)
+CAUGHT phys_fn_002947 NxPhysicsThirdPartyTests mismatches=9 line 5798: +  ->  -  (arith) [0x00070102]
+CAUGHT phys_fn_002947 NxPhysicsThirdPartyTests mismatches=9 line 5828: 4  ->  5  (const) [0x00070157]
+CAUGHT phys_fn_002777 NxPhysicsThirdPartyTests mismatches=4 line 1757: !=  ->  ==  (cmp)
+CAUGHT phys_fn_002777 NxPhysicsThirdPartyTests mismatches=2 line 1760: 2  ->  3  (const)
+CAUGHT phys_fn_002540 NxPhysicsThirdPartyTests mismatches=1 line 165: <  ->  <=  (cmp)
+CAUGHT phys_fn_002540 NxPhysicsThirdPartyTests mismatches=1 line 166: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002680 NxPhysicsThirdPartyTests mismatches=61 line 461: qhmem.LASTsize == 0  ->  !(qhmem.LASTsize == 0)  (neg)
+CAUGHT phys_fn_002680 NxPhysicsThirdPartyTests mismatches=61 line 461: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002828 NxPhysicsThirdPartyTests mismatches=4 line 2282: qh PRINTnoplanes || (facet->visible && qh NEWfacets)  ->  !(qh PRINTnoplanes || (facet->visible && qh NEWfacets))  (neg)
+CAUGHT phys_fn_002828 NxPhysicsThirdPartyTests mismatches=4 line 2286: ==  ->  !=  (cmp)
+CAUGHT phys_fn_003220 NxPhysicsThirdPartyTests mismatches=53 line 797: (id= qh_pointid(vertex->point)) >= 0  ->  !((id= qh_pointid(vertex->point)) >= 0)  (neg)
+CAUGHT phys_fn_003220 NxPhysicsThirdPartyTests mismatches=2 line 803: qh GOODvertexp && qh ONLYgood && !qh MERGING  ->  !(qh GOODvertexp && qh ONLYgood && !qh MERGING)  (neg)

@@ -707,37 +707,64 @@ Per-row measurements (row, mutation, count):
 
 ## Testing pass
 
-- `phys_fn_001676`: Physics/src/Distance.cpp line 456: (double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2] -> !((double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2]) (neg); `NxPhysicsCollisionTests` mismatches=92398.
-- `phys_fn_001670`: Physics/src/Distance.cpp line 73: - -> + (arith); `NxPhysicsCollisionTests` mismatches=187634.
-- `phys_fn_001688`: Physics/src/Distance.cpp line 701: 2 -> 3 (const); `NxPhysicsCollisionTests` mismatches=205821.
-- `phys_fn_001678`: Physics/src/Distance.cpp line 485: >= -> > (cmp); `NxPhysicsCollisionTests` mismatches=84.
-- `phys_fn_001680`: Physics/src/Distance.cpp line 545: lineParam -> !(lineParam) (neg); `NxPhysicsCollisionTests` mismatches=1.
 - `phys_fn_001990`: Physics/src/PMap.cpp line 1898: 5 -> 6 (const); `NxPhysicsTriangleMeshApiTests` stdout_delta=32.
 - `phys_fn_002017`: Physics/src/PMap.cpp line 1984: != -> == (cmp); `NxPhysicsTriangleMeshApiTests` stdout_delta=32.
+- `phys_fn_005468`: Physics/src/opcode/IcePruner.cpp line 1442: + -> - (arith); `NxPhysicsSceneRaycastTests` stdout_delta=5167.
+- `phys_fn_005481`: Physics/src/opcode/IcePruner.cpp line 138: mNbTotal == mMaxNbObjects -> !(mNbTotal == mMaxNbObjects) (neg); `NxPhysicsSceneRaycastTests` stdout_delta=2811.
+
+## Testing pass
+
+## Testing pass
+
+- `phys_fn_002501`: External/qhull/upstream/src/geom2.c line 1280: dist > 0 -> !(dist > 0) (neg); `NxPhysicsThirdPartyTests` mismatches=3.
+- `phys_fn_002530`: External/qhull/upstream/src/geom2.c line 2091: facet == qh newfacet_list -> !(facet == qh newfacet_list) (neg); `NxPhysicsThirdPartyTests` mismatches=27.
+- `phys_fn_002753`: External/qhull/novodex/io.c line 3662: 2 -> 3 (const); `NxPhysicsThirdPartyTests` mismatches=2.
+- `phys_fn_002819`: External/qhull/novodex/io.c line 1680: !qh printoutnum -> !(!qh printoutnum) (neg); `NxPhysicsThirdPartyTests` mismatches=19.
+- `phys_fn_002834`: External/qhull/novodex/io.c line 2334: qh PRINTnoplanes || (facet->visible && qh NEWfacets) -> !(qh PRINTnoplanes || (facet->visible && qh NEWfacets)) (neg); `NxPhysicsThirdPartyTests` mismatches=4.
+- `phys_fn_002906`: External/qhull/upstream/src/merge.c line 768: (size= qh_setsize (facet->neighbors)) < qh hull_dim -> !((size= qh_setsize (facet->neighbors)) < qh hull_dim) (neg); `NxPhysicsThirdPartyTests` mismatches=14.
+- `phys_fn_002979`: External/qhull/upstream/src/merge.c line 1297: neighbor->visitid != qh visit_id -> !(neighbor->visitid != qh visit_id) (neg); `NxPhysicsThirdPartyTests` mismatches=27.
+- `phys_fn_003186`: External/qhull/novodex/poly2.c line 2024: visible->simplicial -> !(visible->simplicial) (neg); `NxPhysicsThirdPartyTests` mismatches=51.
+- `phys_fn_003287`: External/qhull/upstream/src/qset.c line 574: sizeA != sizeB -> !(sizeA != sizeB) (neg); `NxPhysicsThirdPartyTests` mismatches=3.
+- `phys_fn_002532`: External/qhull/novodex/QhullRows.c line 1177: + -> - (arith) [0x000605f9]; `NxPhysicsThirdPartyTests` mismatches=6.
+- `phys_fn_002560`: External/qhull/upstream/src/geom2.c line 1769: !qh POINTSmalloc -> !(!qh POINTSmalloc) (neg); `NxPhysicsThirdPartyTests` mismatches=1.
+- `phys_fn_002755`: External/qhull/novodex/io.c line 3685: 2 -> 3 (const); `NxPhysicsThirdPartyTests` mismatches=3.
+- `phys_fn_003168`: External/qhull/novodex/poly2.c line 1170: cntvertices != 3 -> !(cntvertices != 3) (neg); `NxPhysicsThirdPartyTests` mismatches=23.
+- `phys_fn_003198`: External/qhull/novodex/poly2.c line 289: qh STOPcone -> !(qh STOPcone) (neg); `NxPhysicsThirdPartyTests` mismatches=11.
+- `phys_fn_003224`: External/qhull/upstream/src/qhull.c line 1128: qh ONLYmax -> !(qh ONLYmax) (neg); `NxPhysicsThirdPartyTests` mismatches=4.
+- `phys_fn_003291`: External/qhull/upstream/src/qset.c line 662: elemA == skipAp -> !(elemA == skipAp) (neg); `NxPhysicsThirdPartyTests` mismatches=51.
+- `phys_fn_002540`: External/qhull/upstream/src/geom2.c line 166: == -> != (cmp); `NxPhysicsThirdPartyTests` mismatches=1.
+- `phys_fn_002725`: External/qhull/novodex/io.c line 2095: offset != 0.0 -> !(offset != 0.0) (neg); `NxPhysicsThirdPartyTests` mismatches=3.
+- `phys_fn_002773`: External/qhull/novodex/io.c line 995: qh ATinfinity -> !(qh ATinfinity) (neg); `NxPhysicsThirdPartyTests` mismatches=2.
+- `phys_fn_002826`: External/qhull/novodex/io.c line 2282: qh PRINTnoplanes || (facet->visible && qh NEWfacets) -> !(qh PRINTnoplanes || (facet->visible && qh NEWfacets)) (neg); `NxPhysicsThirdPartyTests` mismatches=4.
+- `phys_fn_003230`: External/qhull/upstream/src/qhull.c line 377: facet->visible || facet->newfacet -> !(facet->visible || facet->newfacet) (neg); `NxPhysicsThirdPartyTests` mismatches=51.
+- `phys_fn_003340`: External/qhull/upstream/src/qset.c line 1125: qhmem.IStracing >= 5 -> !(qhmem.IStracing >= 5) (neg); `NxPhysicsThirdPartyTests` mismatches=29.
+- `phys_fn_002727`: External/qhull/novodex/io.c line 2095: offset != 0.0 -> !(offset != 0.0) (neg); `NxPhysicsThirdPartyTests` mismatches=3.
+- `phys_fn_002828`: External/qhull/novodex/io.c line 2282: qh PRINTnoplanes || (facet->visible && qh NEWfacets) -> !(qh PRINTnoplanes || (facet->visible && qh NEWfacets)) (neg); `NxPhysicsThirdPartyTests` mismatches=4.
+- `phys_fn_002864`: External/qhull/novodex/io.c line 2970: == -> != (cmp); `NxPhysicsThirdPartyTests` mismatches=3.
+- `phys_fn_003344`: External/qhull/upstream/src/qset.c line 1272: !qh_setin (*set, elem) -> !(!qh_setin (*set, elem)) (neg); `NxPhysicsThirdPartyTests` mismatches=51.
+- `phys_fn_002477`: External/qhull/upstream/src/geom2.c line 410: + -> - (arith); `NxPhysicsThirdPartyTests` mismatches=20.
+- `phys_fn_002499`: External/qhull/upstream/src/geom2.c line 1136: sizinit < 2 -> !(sizinit < 2) (neg); `NxPhysicsThirdPartyTests` mismatches=61.
+- `phys_fn_002554`: External/qhull/upstream/src/geom2.c line 1463: < -> <= (cmp); `NxPhysicsThirdPartyTests` mismatches=19.
+- `phys_fn_002670`: External/qhull/novodex/QhullRows.c line 2224: + -> - (arith) [0x00065116]; `NxPhysicsThirdPartyTests` mismatches=5.
+- `phys_fn_002707`: External/qhull/novodex/io.c line 785: facet->toporient ^ qh_ORIENTclock -> !(facet->toporient ^ qh_ORIENTclock) (neg); `NxPhysicsThirdPartyTests` mismatches=3.
+- `phys_fn_002731`: External/qhull/novodex/io.c line 2197: notfirst -> !(notfirst) (neg); `NxPhysicsThirdPartyTests` mismatches=3.
+- `phys_fn_002803`: External/qhull/novodex/io.c line 3168: ridge->tested -> !(ridge->tested) (neg); `NxPhysicsThirdPartyTests` mismatches=7.
+- `phys_fn_002832`: External/qhull/novodex/io.c line 2334: qh PRINTnoplanes || (facet->visible && qh NEWfacets) -> !(qh PRINTnoplanes || (facet->visible && qh NEWfacets)) (neg); `NxPhysicsThirdPartyTests` mismatches=4.
+- `phys_fn_002978`: External/qhull/upstream/src/merge.c line 1230: ridge->tested && !ridge->nonconvex -> !(ridge->tested && !ridge->nonconvex) (neg); `NxPhysicsThirdPartyTests` mismatches=12.
+- `phys_fn_002999`: External/qhull/upstream/src/merge.c line 3101: (vertices= qh_neighbor_intersections (vertex)) -> !((vertices= qh_neighbor_intersections (vertex))) (neg); `NxPhysicsThirdPartyTests` mismatches=2.
+- `phys_fn_003117`: External/qhull/novodex/poly2.c line 2322: qh vertex_id == qh tracevertex_id -> !(qh vertex_id == qh tracevertex_id) (neg); `NxPhysicsThirdPartyTests` mismatches=47.
+- `phys_fn_003161`: External/qhull/novodex/poly2.c line 881: == -> != (cmp); `NxPhysicsThirdPartyTests` mismatches=4.
+- `phys_fn_003220`: External/qhull/upstream/src/qhull.c line 797: (id= qh_pointid(vertex->point)) >= 0 -> !((id= qh_pointid(vertex->point)) >= 0) (neg); `NxPhysicsThirdPartyTests` mismatches=53.
+- `phys_fn_003312`: External/qhull/upstream/src/qset.c line 1203: qhmem.IStracing >= 5 -> !(qhmem.IStracing >= 5) (neg); `NxPhysicsThirdPartyTests` mismatches=29.
+- `phys_fn_003412`: External/qhull/novodex/QhullRows.c line 8701: + -> - (arith) [0x000847e6]; `NxPhysicsThirdPartyTests` mismatches=1.
+
+## Testing pass
+
+- `phys_fn_001676`: Physics/src/Distance.cpp line 452: 2 -> 3 (const); `NxPhysicsCollisionTests` mismatches=92210.
+- `phys_fn_001678`: Physics/src/Distance.cpp line 480: - -> + (arith); `NxPhysicsCollisionTests` mismatches=15735.
+- `phys_fn_001680`: Physics/src/Distance.cpp line 546: - -> + (arith); `NxPhysicsCollisionTests` mismatches=4866.
 - `phys_fn_002148`: Physics/src/opcode/PrunerOctree.cpp line 1941: + -> - (arith) [0x00053821]; `NxPhysicsCollisionTests` mismatches=2.
 - `phys_fn_005295`: Physics/src/opcode/PrunerOctree.cpp line 232: + -> - (arith) [0x000e7253]; `NxPhysicsCollisionTests` mismatches=393.
-- `phys_fn_005223`: Physics/src/opcode/PrunerOctree.cpp line 2014: + -> - (arith) [0x000e52d3]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005303`: Physics/src/opcode/PrunerOctree.cpp line 299: + -> - (arith) [0x000e7383]; `NxPhysicsCollisionTests` mismatches=24.
-- `phys_fn_005305`: Physics/src/opcode/PrunerOctree.cpp line 472: + -> - (arith) [0x000e7573]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005307`: Physics/src/opcode/PrunerOctree.cpp line 521: + -> - (arith) [0x000e75d0]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005550`: Physics/src/opcode/PrunerOctree.cpp line 1336: + -> - (arith) [0x000f1ac3]; `NxPhysicsCollisionTests` mismatches=20.
-- `phys_fn_005238`: Physics/src/opcode/PrunerOctree.cpp line 2463: + -> - (arith) [0x000e5832]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005309`: Physics/src/opcode/PrunerOctree.cpp line 546: + -> - (arith) [0x000e7602]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005552`: Physics/src/opcode/PrunerOctree.cpp line 1501: + -> - (arith) [0x000f1c69]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005313`: Physics/src/opcode/PrunerOctree.cpp line 601: 4 -> 5 (const) [0x000e7690]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005554`: Physics/src/opcode/PrunerOctree.cpp line 1531: + -> - (arith) [0x000f1cb6]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005315`: Physics/src/opcode/PrunerOctree.cpp line 656: 2 -> 3 (const) [0x000e7710]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005556`: Physics/src/opcode/PrunerOctree.cpp line 1581: + -> - (arith) [0x000f1d16]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005317`: Physics/src/opcode/PrunerOctree.cpp line 816: + -> - (arith) [0x000e78af]; `NxPhysicsCollisionTests` mismatches=23.
-- `phys_fn_005558`: Physics/src/opcode/PrunerOctree.cpp line 1605: + -> - (arith) [0x000f1d56]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005248`: Physics/src/opcode/PrunerOctree.cpp line 2657: + -> - (arith) [0x000e5a03]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005318`: Physics/src/opcode/PrunerOctree.cpp line 1104: + -> - (arith) [0x000e7b84]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005560`: Physics/src/opcode/PrunerOctree.cpp line 1654: + -> - (arith) [0x000f1db3]; `NxPhysicsCollisionTests` mismatches=20.
-- `phys_fn_005250`: Physics/src/opcode/PrunerOctree.cpp line 2682: + -> - (arith) [0x000e5a31]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005252`: Physics/src/opcode/PrunerOctree.cpp line 2729: + -> - (arith) [0x000e5a90]; `NxPhysicsCollisionTests` mismatches=15.
-- `phys_fn_005254`: Physics/src/opcode/PrunerOctree.cpp line 2749: + -> - (arith) [0x000e5ab3]; `NxPhysicsCollisionTests` mismatches=11.
-- `phys_fn_005256`: Physics/src/opcode/PrunerOctree.cpp line 3043: + -> - (arith) [0x000e5de6]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005468`: Physics/src/opcode/IcePruner.cpp line 1442: + -> - (arith); `NxPhysicsSceneRaycastTests` stdout_delta=5167.
-- `phys_fn_005258`: Physics/src/opcode/PrunerOctree.cpp line 3276: + -> - (arith) [0x000e6065]; `NxPhysicsCollisionTests` mismatches=1.
-- `phys_fn_005481`: Physics/src/opcode/IcePruner.cpp line 138: mNbTotal == mMaxNbObjects -> !(mNbTotal == mMaxNbObjects) (neg); `NxPhysicsSceneRaycastTests` stdout_delta=2811.
 - `phys_fn_005301`: Physics/src/opcode/PrunerOctree.cpp line 1969: + -> - (arith) [0x000e7364]; `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005303`: Physics/src/opcode/PrunerOctree.cpp line 299: + -> - (arith) [0x000e7383]; `NxPhysicsCollisionTests` mismatches=24.
+- `phys_fn_005550`: Physics/src/opcode/PrunerOctree.cpp line 1336: + -> - (arith) [0x000f1ac3]; `NxPhysicsCollisionTests` mismatches=20.

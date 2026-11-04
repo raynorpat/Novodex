@@ -1,0 +1,30 @@
+CAUGHT phys_fn_001401 NxPhysicsShapeVtableTests mismatches=2 line 7178: +  ->  -  (arith)
+CAUGHT phys_fn_001401 NxPhysicsShapeVtableTests mismatches=36 line 7190: +  ->  -  (arith)
+CAUGHT phys_fn_001676 NxPhysicsCollisionTests mismatches=92210 line 452: 2  ->  3  (const)
+CAUGHT phys_fn_001676 NxPhysicsCollisionTests mismatches=92398 line 456: (double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2]  ->  !((double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2])  (neg)
+CAUGHT phys_fn_001678 NxPhysicsCollisionTests mismatches=15735 line 480: -  ->  +  (arith)
+CAUGHT phys_fn_001678 NxPhysicsCollisionTests mismatches=84 line 485: >=  ->  >  (cmp)
+CAUGHT phys_fn_001680 NxPhysicsCollisionTests mismatches=4866 line 546: -  ->  +  (arith)
+CAUGHT phys_fn_001680 NxPhysicsCollisionTests mismatches=10540 line 551: pnt[i2] < -extents[i2]  ->  !(pnt[i2] < -extents[i2])  (neg)
+CAUGHT phys_fn_001692 NxPhysicsCollisionTests mismatches=167231 line 1102: -  ->  +  (arith)
+CAUGHT phys_fn_001692 NxPhysicsCollisionTests mismatches=91399 line 1106: 2  ->  3  (const)
+CAUGHT phys_fn_001751 NxPhysicsCollisionTests mismatches=15588 line 764: 2  ->  3  (const)
+CAUGHT phys_fn_001751 NxPhysicsCollisionTests mismatches=5414 line 766: 2  ->  3  (const)
+CAUGHT phys_fn_001791 NxPhysicsCollisionTests mismatches=96834 line 858: !(*((const NxU8*) box + 0xde) & 7)  ->  !(!(*((const NxU8*) box + 0xde) & 7))  (neg)
+CAUGHT phys_fn_001791 NxPhysicsCollisionTests mismatches=84412 line 858: +  ->  -  (arith)
+CAUGHT phys_fn_001828 NxPhysicsCollisionTests mismatches=7343 line 588: +  ->  -  (arith) [0x0004187a]
+CAUGHT phys_fn_001828 NxPhysicsCollisionTests mismatches=12002 line 594: +  ->  -  (arith) [0x0004188c]
+CAUGHT phys_fn_001830 NxPhysicsCollisionTests mismatches=30483 line 679: +  ->  -  (arith) [0x0004193f]
+CAUGHT phys_fn_001830 NxPhysicsCollisionTests mismatches=52630 line 685: +  ->  -  (arith) [0x00041952]
+CAUGHT phys_fn_001851 NxPhysicsCollisionTests mismatches=4983 line 4483: +  ->  -  (arith) [0x00044253]
+CAUGHT phys_fn_001851 NxPhysicsCollisionTests mismatches=1586 line 4503: +  ->  -  (arith) [0x000442a8]
+CAUGHT phys_fn_002148 NxPhysicsCollisionTests mismatches=2 line 1941: +  ->  -  (arith) [0x00053821]
+CAUGHT phys_fn_002148 NxPhysicsCollisionTests mismatches=1 line 1942: 4  ->  5  (const) [0x00053829]
+CAUGHT phys_fn_005295 NxPhysicsCollisionTests mismatches=393 line 232: +  ->  -  (arith) [0x000e7253]
+CAUGHT phys_fn_005295 NxPhysicsCollisionTests mismatches=327 line 238: +  ->  -  (arith) [0x000e7264]
+CAUGHT phys_fn_005301 NxPhysicsCollisionTests mismatches=1 line 1969: +  ->  -  (arith) [0x000e7364]
+CAUGHT phys_fn_005301 NxPhysicsCollisionTests mismatches=1 line 1970: +  ->  -  (arith) [0x000e7367]
+CAUGHT phys_fn_005303 NxPhysicsCollisionTests mismatches=24 line 299: +  ->  -  (arith) [0x000e7383]
+CAUGHT phys_fn_005303 NxPhysicsCollisionTests mismatches=24 line 321: +  ->  -  (arith) [0x000e73bd]
+CAUGHT phys_fn_005550 NxPhysicsCollisionTests mismatches=20 line 1336: +  ->  -  (arith) [0x000f1ac3]
+CAUGHT phys_fn_005550 NxPhysicsCollisionTests mismatches=18 line 1365: +  ->  -  (arith) [0x000f1b1b]

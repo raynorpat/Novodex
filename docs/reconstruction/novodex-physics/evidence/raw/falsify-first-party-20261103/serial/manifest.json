@@ -1,0 +1,118 @@
+{
+ "doc": "evidence/raw/falsify-first-party-20261103/serial/survey.log",
+ "rows": {
+  "phys_fn_001401": {
+   "gate": "NxPhysicsShapeVtableTests",
+   "family": "NxPhysicsShapeVtableTests",
+   "mutation": "Physics/src/ObjectModel.cpp line 7178: + -> - (arith)",
+   "detected": "mismatches=2",
+   "source_mutation": true
+  },
+  "phys_fn_001676": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "line_box",
+   "mutation": "Physics/src/Distance.cpp line 452: 2 -> 3 (const)",
+   "detected": "mismatches=92210",
+   "source_mutation": true
+  },
+  "phys_fn_001678": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "line_box",
+   "mutation": "Physics/src/Distance.cpp line 480: - -> + (arith)",
+   "detected": "mismatches=15735",
+   "source_mutation": true
+  },
+  "phys_fn_001680": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "line_box",
+   "mutation": "Physics/src/Distance.cpp line 546: - -> + (arith)",
+   "detected": "mismatches=4866",
+   "source_mutation": true
+  },
+  "phys_fn_001692": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "line_line",
+   "mutation": "Physics/src/Distance.cpp line 1102: - -> + (arith)",
+   "detected": "mismatches=167231",
+   "source_mutation": true
+  },
+  "phys_fn_001751": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "box_capsule.random",
+   "mutation": "Physics/src/NarrowPhase.cpp line 764: 2 -> 3 (const)",
+   "detected": "mismatches=15588",
+   "source_mutation": true
+  },
+  "phys_fn_001791": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "box_compound",
+   "mutation": "Physics/src/NarrowPhase.cpp line 858: !(*((const NxU8*) box + 0xde) & 7) -> !(!(*((const NxU8*) box + 0xde) & 7)) (neg)",
+   "detected": "mismatches=96834",
+   "source_mutation": true
+  },
+  "phys_fn_001828": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "convex_mesh_faces",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 588: + -> - (arith) [0x0004187a]",
+   "detected": "mismatches=7343",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_001830": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "convex_mesh_faces",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 679: + -> - (arith) [0x0004193f]",
+   "detected": "mismatches=30483",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_001851": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "contact_convex_mesh",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 4483: + -> - (arith) [0x00044253]",
+   "detected": "mismatches=4983",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002148": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "pruner_cluster",
+   "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1941: + -> - (arith) [0x00053821]",
+   "detected": "mismatches=2",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_005295": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "pruner_octree",
+   "mutation": "Physics/src/opcode/PrunerOctree.cpp line 232: + -> - (arith) [0x000e7253]",
+   "detected": "mismatches=393",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_005301": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "pruner_cluster",
+   "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1969: + -> - (arith) [0x000e7364]",
+   "detected": "mismatches=1",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_005303": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "pruner_octree",
+   "mutation": "Physics/src/opcode/PrunerOctree.cpp line 299: + -> - (arith) [0x000e7383]",
+   "detected": "mismatches=24",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_005550": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "pruner_octree_query",
+   "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1336: + -> - (arith) [0x000f1ac3]",
+   "detected": "mismatches=20",
+   "source_mutation": true,
+   "listing": true
+  }
+ }
+}

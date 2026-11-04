@@ -1,0 +1,1253 @@
+{
+ "doc": "evidence/falsify-vendored.md",
+ "rows": {
+  "phys_fn_002513": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004846": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_005355": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_005141": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABB::Add."
+  },
+  "phys_fn_005169": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RadixSort::Sort."
+  },
+  "phys_fn_004930": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005275": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SweepAndPrune::UpdateObject."
+  },
+  "phys_fn_004915": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_SegmentStab."
+  },
+  "phys_fn_004917": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_SegmentStab."
+  },
+  "phys_fn_004979": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005074": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::InitQuery."
+  },
+  "phys_fn_002872": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004958": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_CollideTriBox."
+  },
+  "phys_fn_002890": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005018": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_Collide."
+  },
+  "phys_fn_005033": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::InitQuery."
+  },
+  "phys_fn_003071": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_deletevisible (672 bytes) is far larger than the row (234 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005065": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005092": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_Collide."
+  },
+  "phys_fn_005115": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_Collide."
+  },
+  "phys_fn_005140": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005023": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005084": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_Collide."
+  },
+  "phys_fn_003216": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_partitionall (896 bytes) is far larger than the row (89 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005123": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_003021": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_reducevertices (400 bytes) is far larger than the row (58 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003153": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_003208": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printsummary (2224 bytes) is far larger than the row (109 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002793": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printpoint (144 bytes) is far larger than the row (39 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002857": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printafacet (3088 bytes) is far larger than the row (1018 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003408": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_003188": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_003413": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002965": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_test_vneighbors (352 bytes) is far larger than the row (105 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002686": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002442": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_getcenter (224 bytes) is far larger than the row (69 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002536": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002570": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002603": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (68 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002621": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (68 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002637": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (148 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002651": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (72 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002663": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (2397 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002682": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_init_B (368 bytes) is far larger than the row (93 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002705": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002771": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_facetvertices (352 bytes) is far larger than the row (54 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002847": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printbegin (3912 bytes) is far larger than the row (664 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002886": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_basevertices (192 bytes) is far larger than the row (58 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002927": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002949": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002989": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_003107": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003194": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_003226": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_partitionvisible (496 bytes) is far larger than the row (174 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003410": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004946": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::InitQuery."
+  },
+  "phys_fn_005051": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005082": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005125": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005167": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RadixSort::Sort."
+  },
+  "phys_fn_005285": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SweepAndPrune::Init."
+  },
+  "phys_fn_002515": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004836": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_005143": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABB::MakeCube."
+  },
+  "phys_fn_005187": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_005199": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBB::ComputePlanes."
+  },
+  "phys_fn_005267": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SAP_PairData::AddPair."
+  },
+  "phys_fn_004932": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::Collide."
+  },
+  "phys_fn_004923": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_RayStab."
+  },
+  "phys_fn_004948": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::PrimTest."
+  },
+  "phys_fn_004980": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005103": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005364": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for Model::GetUsedBytes."
+  },
+  "phys_fn_002874": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004966": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_Collide."
+  },
+  "phys_fn_003030": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005019": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005037": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_Collide."
+  },
+  "phys_fn_003075": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_makenewfacet (592 bytes) is far larger than the row (125 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005067": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::Collide."
+  },
+  "phys_fn_003105": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_005094": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005117": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_004962": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_CollideBoxTri."
+  },
+  "phys_fn_005045": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_Collide."
+  },
+  "phys_fn_005088": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005131": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_Collide."
+  },
+  "phys_fn_003346": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_settempfree (624 bytes) is far larger than the row (128 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002456": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_getcentrum (400 bytes) is far larger than the row (140 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003001": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_rename_sharedvertex (576 bytes) is far larger than the row (103 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003025": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_all_merges (720 bytes) is far larger than the row (137 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002689": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_detvnorm (1600 bytes) is far larger than the row (317 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002896": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002715": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printcenter (352 bytes) is far larger than the row (116 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002838": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printfacetridges (560 bytes) is far larger than the row (234 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002481": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_facetarea_simplex (576 bytes) is far larger than the row (157 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003036": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_attachnewfacets (672 bytes) is far larger than the row (269 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002538": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002573": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002607": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (1590 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002625": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (68 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002641": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (72 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002653": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (72 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002665": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (2199 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002691": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_detvnorm (1600 bytes) is far larger than the row (389 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002775": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_markvoronoi (464 bytes) is far larger than the row (92 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002849": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printbegin (3912 bytes) is far larger than the row (170 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002929": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002953": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002993": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_003017": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_mergecycle_all (512 bytes) is far larger than the row (58 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003109": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003155": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004897": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004960": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_CollideTriBox."
+  },
+  "phys_fn_005004": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_Collide."
+  },
+  "phys_fn_005035": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::InitQuery."
+  },
+  "phys_fn_005055": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_Collide."
+  },
+  "phys_fn_005086": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_Collide."
+  },
+  "phys_fn_005129": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_Collide."
+  },
+  "phys_fn_005171": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RadixSort::Sort."
+  },
+  "phys_fn_005287": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SweepAndPrune::Init."
+  },
+  "phys_fn_003296": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_005161": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RadixSort::Resize."
+  },
+  "phys_fn_004919": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_SegmentStab."
+  },
+  "phys_fn_005100": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_Collide."
+  },
+  "phys_fn_005145": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004842": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for Container::SetSize."
+  },
+  "phys_fn_004905": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::InitQuery."
+  },
+  "phys_fn_005269": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SAP_PairData::RemovePair."
+  },
+  "phys_fn_002460": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_setfacetplane (1648 bytes) is far larger than the row (439 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005358": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for MeshInterface::SetPointers."
+  },
+  "phys_fn_005283": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SweepAndPrune::Init."
+  },
+  "phys_fn_004927": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_RayStab."
+  },
+  "phys_fn_004950": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_CollideTriBox."
+  },
+  "phys_fn_004984": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005206": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBB::IsInside."
+  },
+  "phys_fn_002876": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004977": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005000": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::InitQuery."
+  },
+  "phys_fn_003047": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_makenewplanes (112 bytes) is far larger than the row (13 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005025": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005041": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_003079": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_makenew_simplicial (304 bytes) is far larger than the row (42 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005105": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::Collide."
+  },
+  "phys_fn_005127": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_Collide."
+  },
+  "phys_fn_005010": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_Collide."
+  },
+  "phys_fn_005049": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005096": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_Collide."
+  },
+  "phys_fn_005135": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_003390": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002904": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_degen_redundant_neighbors (816 bytes) is far larger than the row (375 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003077": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002489": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_inthresholds (272 bytes) is far larger than the row (45 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002894": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002699": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003402": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_newstats (176 bytes) is far larger than the row (39 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002465": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002150": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002556": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_projectinput (784 bytes) is far larger than the row (206 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002591": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (68 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002609": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (68 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002629": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (132 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002643": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (136 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002655": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (148 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002672": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002693": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_detvnorm (1600 bytes) is far larger than the row (90 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002840": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printfacetridges (560 bytes) is far larger than the row (218 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002851": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printbegin (3912 bytes) is far larger than the row (247 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002892": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002921": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002931": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002995": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003065": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_updatevertices (832 bytes) is far larger than the row (39 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003093": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003133": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003159": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_checkfacet (2096 bytes) is far larger than the row (198 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003182": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initialhull (720 bytes) is far larger than the row (83 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003304": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_004909": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_SegmentStab."
+  },
+  "phys_fn_004964": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_CollideBoxTri."
+  },
+  "phys_fn_005008": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005039": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_Collide."
+  },
+  "phys_fn_005061": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_Collide."
+  },
+  "phys_fn_005090": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005133": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_Collide."
+  },
+  "phys_fn_005173": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RadixSort::Sort."
+  },
+  "phys_fn_003300": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004903": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004928": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_RayStab."
+  },
+  "phys_fn_005107": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::Collide."
+  },
+  "phys_fn_005147": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABB::ComputePoints."
+  },
+  "phys_fn_005189": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004921": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_RayStab."
+  },
+  "phys_fn_005271": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SAP_PairData::DumpPairs."
+  },
+  "phys_fn_002152": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_005289": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_005357": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for MeshInterface::CheckTopology."
+  },
+  "phys_fn_004954": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_Collide."
+  },
+  "phys_fn_002587": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (356 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_004986": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::Collide."
+  },
+  "phys_fn_005356": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002868": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004952": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_CollideBoxTri."
+  },
+  "phys_fn_002878": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005002": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_Collide."
+  },
+  "phys_fn_005027": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::Collide."
+  },
+  "phys_fn_003063": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_updatevertices (832 bytes) is far larger than the row (205 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005053": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_Collide."
+  },
+  "phys_fn_005076": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_Collide."
+  },
+  "phys_fn_005130": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005014": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005059": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_Collide."
+  },
+  "phys_fn_005098": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_002916": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_makeridges (352 bytes) is far larger than the row (141 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003009": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_merge_degenredundant (704 bytes) is far larger than the row (42 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002763": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_countfacets (464 bytes) is far larger than the row (40 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002882": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002745": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printvertex (320 bytes) is far larger than the row (125 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003031": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002154": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002471": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_detsimplex (480 bytes) is far larger than the row (29 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002526": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_scalepoints (752 bytes) is far larger than the row (211 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002564": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_freebuild (768 bytes) is far larger than the row (343 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002595": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (68 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002613": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (196 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002633": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (72 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002645": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (84 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002659": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (58 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002676": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initthresholds (1024 bytes) is far larger than the row (97 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002815": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002842": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printfacetridges (560 bytes) is far larger than the row (112 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002853": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printbegin (3912 bytes) is far larger than the row (976 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002900": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002923": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002933": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003101": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003135": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_003163": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_checkpolygon (1440 bytes) is far larger than the row (304 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003190": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_003218": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_partitionall (896 bytes) is far larger than the row (333 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003394": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004913": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_SegmentStab."
+  },
+  "phys_fn_004975": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::Collide."
+  },
+  "phys_fn_005012": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_Collide."
+  },
+  "phys_fn_005043": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005102": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_Collide."
+  },
+  "phys_fn_005175": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RadixSort::Sort."
+  },
+  "phys_fn_005163": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RadixSort::Sort."
+  },
+  "phys_fn_004944": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::InitQuery."
+  },
+  "phys_fn_004934": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::Collide."
+  },
+  "phys_fn_005265": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SAP_PairData::GetFreeElem."
+  },
+  "phys_fn_004844": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for IceCore::Container::Container."
+  },
+  "phys_fn_004925": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_RayStab."
+  },
+  "phys_fn_005273": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SweepAndPrune::GetPairs."
+  },
+  "phys_fn_002469": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_detsimplex (480 bytes) is far larger than the row (61 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_004907": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_SegmentStab."
+  },
+  "phys_fn_004911": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RayCollider::_SegmentStab."
+  },
+  "phys_fn_004973": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005360": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002870": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004956": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for AABBTreeCollider::_Collide."
+  },
+  "phys_fn_002880": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005006": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005057": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005080": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005113": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::InitQuery."
+  },
+  "phys_fn_003139": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_resetlists (272 bytes) is far larger than the row (29 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005138": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::Collide."
+  },
+  "phys_fn_003175": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_findgood_all (592 bytes) is far larger than the row (185 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_005021": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_Collide."
+  },
+  "phys_fn_005063": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005119": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_Collide."
+  },
+  "phys_fn_003015": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_mergecycle_all (512 bytes) is far larger than the row (173 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002517": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002843": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printbegin (3912 bytes) is far larger than the row (845 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003119": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002830": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printfacet4geom_simplicial (432 bytes) is far larger than the row (87 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003392": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002729": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printfacet3math (384 bytes) is far larger than the row (102 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003406": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printstats (512 bytes) is far larger than the row (103 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002687": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002684": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_002473": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_detsimplex (480 bytes) is far larger than the row (161 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002534": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002568": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002599": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (68 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002617": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (68 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002635": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (85 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002649": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (55 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002661": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_initflags (11276 bytes) is far larger than the row (1325 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002701": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002739": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printfacetNvertex_simplicial (272 bytes) is far larger than the row (70 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002769": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_facetvertices (352 bytes) is far larger than the row (103 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002845": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printbegin (3912 bytes) is far larger than the row (295 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002859": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_printafacet (3088 bytes) is far larger than the row (1081 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002902": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002925": {
+   "reason": "keep",
+   "note": "Not surveyed: no source file."
+  },
+  "phys_fn_002945": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002985": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_mergesimplex (1168 bytes) is far larger than the row (313 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003007": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_forcedmerges (720 bytes) is far larger than the row (108 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003073": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function qh_deletevisible (672 bytes) is far larger than the row (39 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003166": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_003192": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004942": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_004988": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_005016": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for LSSCollider::_CollideNoPrimitiveTest."
+  },
+  "phys_fn_005047": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for OBBCollider::_Collide."
+  },
+  "phys_fn_005078": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SphereCollider::_Collide."
+  },
+  "phys_fn_005121": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for PlanesCollider::_Collide."
+  },
+  "phys_fn_005165": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for RadixSort::Sort."
+  },
+  "phys_fn_005277": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for SweepAndPrune::UpdateObject."
+  }
+ }
+}

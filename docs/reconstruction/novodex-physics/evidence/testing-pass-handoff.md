@@ -611,11 +611,13 @@ calls take early or empty paths); 002400 is the simulation thread's endless loop
 recorded as `pass` (547 + 1 closed, 12 deferred, as phases 2-6 pass with deferrals), and the six carried obligations plus the
 disposition matrix and trajectory scenarios move to the Phase 8 audit.
 
-## Falsifying the remaining reconstructed rows (twenty-sixth slice)
+## Falsifying the remaining reconstructed rows (twenty-sixth and twenty-seventh slices)
 
-New tools: `falsify_queue.py`, `mutate_cpp.py`, `defer_rows.py`, `survey_to_deferrals.py`, `reopen_rows.py`; `close_static_rows.py`
-closes C++ rows on a source mutation. 71 rows closed (18 joints, 53 collision/mesh/pruner/other), 173 deferred after a survey with
-the counts in the ledger note, 32 not surveyed (control not exact, shared function, not located) and 321 deferred without a
-survey because no gate or family could be named; the rest of the 1,365 (636 vendored, 114 undriven, 17 unmapped, 25 others)
-are untouched. An independent review found the first run's collision-test closures rested on crashes only (a keying bug);
-they were reopened and re-run (see `evidence/falsify-first-party.md`). Details: `evidence/falsify-joints.md`.
+Tools: `falsify_queue.py`, `mutate_cpp.py`, `vendor_gate.py`, `defer_rows.py`, `survey_to_deferrals.py`, `reopen_rows.py`;
+`close_static_rows.py` closes C++ rows on a source mutation. **80 rows closed** (18 joints, 6 staged-pair, 15 collision and
+shape-vtable, 41 vendored). 1,153 of the remaining 1,285 queue rows carry a deferral note (surveyed with too many survivors,
+nothing caught, nothing to mutate, or not surveyed because no gate or family could be named, the function could not be located
+or is shared); 132 are untouched (114 with no dynamic proof, 17 with no implementation mapping, 1 other). Two independent
+reviews each found closures resting on wrong evidence (a mis-keyed family so only crashes counted; crashes counted in the
+vendored gate; shared functions credited to one row); the affected closures were reopened and re-surveyed, and the figures above
+are those that survived. Details: `evidence/falsify-joints.md`, `evidence/falsify-first-party.md`, `evidence/falsify-vendored.md`.

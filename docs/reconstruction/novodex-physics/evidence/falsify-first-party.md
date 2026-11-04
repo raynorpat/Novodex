@@ -42,3 +42,11 @@ is drivers, not the tool. Rows that are compiler-generated (the `Np*Joint` adjus
 first-party rows with no dynamic proof, 17 with no implementation mapping and 25 others. The vendored families
 (`NxPhysicsThirdPartyTests`) share one target across many rows, so a batch holds only a few rows and 636 rows at eight rounds
 each is far beyond this session: they need a faster per-row gate or a decision to accept the matcher's outcome-exact evidence.
+
+**Second review and the re-survey (final state).** The same crash question applied to the `NxPhysicsCollisionTests` and
+`NxPhysicsShapeVtableTests` closures (25 of the 44 recorded exactly one mismatch, the signature of a counted crash). The 47
+non-staged closed rows were re-surveyed one at a time in the main build with crashes not counted (a parallel attempt corrupted
+itself: workers sharing `Physics/src` mutate the same files, so those results were discarded, the two mutated files restored
+from git). **15 held and stay closed; 32 were reopened and deferred with their survey counts.** The staged-pair closures
+(joints 18, `TriangleMeshApi` 2, `ActorDynamicSetter` 2, `SceneRaycast` 2) were detected by stdout delta and were not
+re-surveyed. First-party closed rows in total: 18 + 6 + 15 = 39.

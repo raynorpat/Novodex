@@ -1,0 +1,801 @@
+{
+ "doc": "evidence/raw/falsify-vendored-20261103/survey.log",
+ "rows": {
+  "phys_fn_002493": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 976: absval > maxval -> !(absval > maxval) (neg)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_005111": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/opcode/novodex/OpcodeVendoredRows.cpp line 607: + -> - (arith) [0x000e1530]",
+   "detected": "mismatches=1",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002425": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 270: + -> - (arith) [0x0005c5c0]",
+   "detected": "mismatches=27",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002477": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 410: + -> - (arith)",
+   "detected": "mismatches=20",
+   "source_mutation": true
+  },
+  "phys_fn_002566": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 1847: + -> - (arith) [0x00062072]",
+   "detected": "mismatches=10",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_003200": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 1715: i < 0 -> !(i < 0) (neg)",
+   "detected": "mismatches=12",
+   "source_mutation": true
+  },
+  "phys_fn_003312": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 1203: qhmem.IStracing >= 5 -> !(qhmem.IStracing >= 5) (neg)",
+   "detected": "mismatches=29",
+   "source_mutation": true
+  },
+  "phys_fn_003330": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 945: < -> <= (cmp)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_003344": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 1272: !qh_setin (*set, elem) -> !(!qh_setin (*set, elem)) (neg)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_002997": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/merge.c line 2395: mindist -> !(mindist) (neg)",
+   "detected": "mismatches=40",
+   "source_mutation": true
+  },
+  "phys_fn_003338": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 210: !*setp || !*(sizep= SETsizeaddr_(*setp)) -> !(!*setp || !*(sizep= SETsizeaddr_(*setp))) (neg)",
+   "detected": "mismatches=47",
+   "source_mutation": true
+  },
+  "phys_fn_003336": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 171: !*setp -> !(!*setp) (neg)",
+   "detected": "mismatches=45",
+   "source_mutation": true
+  },
+  "phys_fn_003168": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 1169: facet->simplicial -> !(facet->simplicial) (neg)",
+   "detected": "mismatches=23",
+   "source_mutation": true
+  },
+  "phys_fn_002518": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 933: + -> - (arith) [0x0005fec0]",
+   "detected": "mismatches=3",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002910": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/merge.c line 981: size > qh_BESTcentrum2 * qh hull_dim + qh_BESTcentrum -> !(size > qh_BESTcentrum2 * qh hull_dim + qh_BESTcentrum) (neg)",
+   "detected": "mismatches=12",
+   "source_mutation": true
+  },
+  "phys_fn_002505": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1358: dim > 0 -> !(dim > 0) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002697": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 3126: 8 -> 9 (const) [0x00066b20]",
+   "detected": "mismatches=4",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002483": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 558: vertex == notvertex -> !(vertex == notvertex) (neg)",
+   "detected": "mismatches=14",
+   "source_mutation": true
+  },
+  "phys_fn_002832": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2334: qh PRINTnoplanes || (facet->visible && qh NEWfacets) -> !(qh PRINTnoplanes || (facet->visible && qh NEWfacets)) (neg)",
+   "detected": "mismatches=4",
+   "source_mutation": true
+  },
+  "phys_fn_002906": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/merge.c line 768: (size= qh_setsize (facet->neighbors)) < qh hull_dim -> !((size= qh_setsize (facet->neighbors)) < qh hull_dim) (neg)",
+   "detected": "mismatches=14",
+   "source_mutation": true
+  },
+  "phys_fn_003081": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/poly.c line 658: !neighbor->seen && !neighbor->visible -> !(!neighbor->seen && !neighbor->visible) (neg)",
+   "detected": "mismatches=61",
+   "source_mutation": true
+  },
+  "phys_fn_003150": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 3105: - -> + (arith)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002497": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1136: sizinit < 2 -> !(sizinit < 2) (neg)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_002571": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 2013: + -> - (arith) [0x00062210]",
+   "detected": "mismatches=51",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002678": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/global.c line 461: qhmem.LASTsize == 0 -> !(qhmem.LASTsize == 0) (neg)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_002862": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2688: == -> != (cmp)",
+   "detected": "mismatches=6",
+   "source_mutation": true
+  },
+  "phys_fn_003180": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 1806: dist > 0 -> !(dist > 0) (neg)",
+   "detected": "mismatches=28",
+   "source_mutation": true
+  },
+  "phys_fn_003224": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qhull.c line 1128: qh ONLYmax -> !(qh ONLYmax) (neg)",
+   "detected": "mismatches=4",
+   "source_mutation": true
+  },
+  "phys_fn_003291": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 662: elemA == skipAp -> !(elemA == skipAp) (neg)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_002972": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 6150: + -> - (arith) [0x00070f50]",
+   "detected": "mismatches=49",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002530": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 2091: facet == qh newfacet_list -> !(facet == qh newfacet_list) (neg)",
+   "detected": "mismatches=27",
+   "source_mutation": true
+  },
+  "phys_fn_002725": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2095: offset != 0.0 -> !(offset != 0.0) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_003285": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 507: != -> == (cmp)",
+   "detected": "mismatches=33",
+   "source_mutation": true
+  },
+  "phys_fn_002487": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 834: 8 -> 9 (const) [0x0005f394]",
+   "detected": "mismatches=3",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002836": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2465: facet->tested -> !(facet->tested) (neg)",
+   "detected": "mismatches=8",
+   "source_mutation": true
+  },
+  "phys_fn_003169": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 1282: dist > bestdist -> !(dist > bestdist) (neg)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_002951": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 5945: + -> - (arith) [0x00070271]",
+   "detected": "mismatches=7",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002937": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 5480: + -> - (arith) [0x0006fdc0]",
+   "detected": "mismatches=9",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002721": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 1978: offset != 0.0 -> !(offset != 0.0) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002719": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 1574: string -> !(string) (neg)",
+   "detected": "mismatches=9",
+   "source_mutation": true
+  },
+  "phys_fn_002834": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2334: qh PRINTnoplanes || (facet->visible && qh NEWfacets) -> !(qh PRINTnoplanes || (facet->visible && qh NEWfacets)) (neg)",
+   "detected": "mismatches=4",
+   "source_mutation": true
+  },
+  "phys_fn_005368": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/opcode/novodex/OpcodeVendoredRows.cpp line 1392: + -> - (arith) [0x000e9105]",
+   "detected": "mismatches=4",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_005069": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/opcode/novodex/OpcodeVendoredRows.cpp line 124: + -> - (arith) [0x000de240]",
+   "detected": "mismatches=3",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_003161": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 923: !vertex->seen -> !(!vertex->seen) (neg)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_003281": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 349: != -> == (cmp)",
+   "detected": "mismatches=49",
+   "source_mutation": true
+  },
+  "phys_fn_003148": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 3105: - -> + (arith)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002753": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 3662: 2 -> 3 (const)",
+   "detected": "mismatches=2",
+   "source_mutation": true
+  },
+  "phys_fn_003173": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 1400: facet->good -> !(facet->good) (neg)",
+   "detected": "mismatches=8",
+   "source_mutation": true
+  },
+  "phys_fn_002987": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 6242: + -> - (arith) [0x00071961]",
+   "detected": "mismatches=18",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_003326": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 467: nth < 0 || (*sizep && nth >= *sizep-1) || nth >= set->maxsiz -> !(nth < 0 || (*sizep && nth >= *sizep-1) || nth >= set->maxs (neg)",
+   "detected": "mismatches=18",
+   "source_mutation": true
+  },
+  "phys_fn_003287": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 574: sizeA != sizeB -> !(sizeA != sizeB) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002978": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/merge.c line 1230: ridge->tested && !ridge->nonconvex -> !(ridge->tested && !ridge->nonconvex) (neg)",
+   "detected": "mismatches=12",
+   "source_mutation": true
+  },
+  "phys_fn_002520": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1735: qh IStracing >= 1 -> !(qh IStracing >= 1) (neg)",
+   "detected": "mismatches=5",
+   "source_mutation": true
+  },
+  "phys_fn_002939": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 5601: + -> - (arith) [0x0006fed1]",
+   "detected": "mismatches=9",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002755": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 3685: 2 -> 3 (const)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002822": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2056: - -> + (arith)",
+   "detected": "mismatches=2",
+   "source_mutation": true
+  },
+  "phys_fn_002462": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/geom.c line 990: !facet->normal -> !(!facet->normal) (neg)",
+   "detected": "mismatches=87",
+   "source_mutation": true
+  },
+  "phys_fn_002499": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1136: sizinit < 2 -> !(sizinit < 2) (neg)",
+   "detected": "mismatches=61",
+   "source_mutation": true
+  },
+  "phys_fn_002727": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2095: offset != 0.0 -> !(offset != 0.0) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002446": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/geom.c line 865: + -> - (arith)",
+   "detected": "mismatches=48",
+   "source_mutation": true
+  },
+  "phys_fn_003051": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 6911: + -> - (arith) [0x000744a0]",
+   "detected": "mismatches=51",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_003115": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 2293: 5 -> 6 (const)",
+   "detected": "mismatches=10",
+   "source_mutation": true
+  },
+  "phys_fn_003164": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 7789: + -> - (arith) [0x00078973]",
+   "detected": "mismatches=12",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_003186": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 2024: visible->simplicial -> !(visible->simplicial) (neg)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_003230": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qhull.c line 377: facet->visible || facet->newfacet -> !(facet->visible || facet->newfacet) (neg)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_003298": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 806: *elem++ == atelem -> !(*elem++ == atelem) (neg)",
+   "detected": "mismatches=51",
+   "source_mutation": true
+  },
+  "phys_fn_003340": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 1125: qhmem.IStracing >= 5 -> !(qhmem.IStracing >= 5) (neg)",
+   "detected": "mismatches=29",
+   "source_mutation": true
+  },
+  "phys_fn_002957": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/merge.c line 3142: !vertex->seen -> !(!vertex->seen) (neg)",
+   "detected": "mismatches=49",
+   "source_mutation": true
+  },
+  "phys_fn_002979": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/merge.c line 1297: neighbor->visitid != qh visit_id -> !(neighbor->visitid != qh visit_id) (neg)",
+   "detected": "mismatches=27",
+   "source_mutation": true
+  },
+  "phys_fn_003306": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 1060: != -> == (cmp)",
+   "detected": "mismatches=49",
+   "source_mutation": true
+  },
+  "phys_fn_003222": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qhull.c line 918: bestdist < -qh NEARinside -> !(bestdist < -qh NEARinside) (neg)",
+   "detected": "mismatches=25",
+   "source_mutation": true
+  },
+  "phys_fn_002970": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 6082: + -> - (arith) [0x00070e93]",
+   "detected": "mismatches=2",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002819": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 1680: !qh printoutnum -> !(!qh printoutnum) (neg)",
+   "detected": "mismatches=19",
+   "source_mutation": true
+  },
+  "phys_fn_002501": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1280: dist > 0 -> !(dist > 0) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002444": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 525: + -> - (arith) [0x0005d56b]",
+   "detected": "mismatches=13",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002532": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 1177: + -> - (arith) [0x000605f9]",
+   "detected": "mismatches=6",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002558": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 1812: + -> - (arith) [0x00061cd0]",
+   "detected": "mismatches=1",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002884": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 4234: + -> - (arith) [0x0006e0b1]",
+   "detected": "mismatches=13",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002999": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/merge.c line 3101: (vertices= qh_neighbor_intersections (vertex)) -> !((vertices= qh_neighbor_intersections (vertex))) (neg)",
+   "detected": "mismatches=2",
+   "source_mutation": true
+  },
+  "phys_fn_002703": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 3464: 4 -> 5 (const) [0x00066e63]",
+   "detected": "mismatches=6",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002773": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 995: qh ATinfinity -> !(qh ATinfinity) (neg)",
+   "detected": "mismatches=2",
+   "source_mutation": true
+  },
+  "phys_fn_002560": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1769: !qh POINTSmalloc -> !(!qh POINTSmalloc) (neg)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_002826": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2282: qh PRINTnoplanes || (facet->visible && qh NEWfacets) -> !(qh PRINTnoplanes || (facet->visible && qh NEWfacets)) (neg)",
+   "detected": "mismatches=4",
+   "source_mutation": true
+  },
+  "phys_fn_002864": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2970: facetA == facetB -> !(facetA == facetB) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_002731": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2197: notfirst -> !(notfirst) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_003067": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/poly.c line 1145: qh VERTEXneighbors -> !(qh VERTEXneighbors) (neg)",
+   "detected": "mismatches=87",
+   "source_mutation": true
+  },
+  "phys_fn_002450": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/geom.c line 1177: 2 -> 3 (const)",
+   "detected": "mismatches=34",
+   "source_mutation": true
+  },
+  "phys_fn_002552": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1023: qh ZEROcentrum -> !(qh ZEROcentrum) (neg)",
+   "detected": "mismatches=5",
+   "source_mutation": true
+  },
+  "phys_fn_002670": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 2224: + -> - (arith) [0x00065116]",
+   "detected": "mismatches=5",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_003117": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 2322: qh vertex_id == qh tracevertex_id -> !(qh vertex_id == qh tracevertex_id) (neg)",
+   "detected": "mismatches=47",
+   "source_mutation": true
+  },
+  "phys_fn_003198": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 289: qh STOPcone -> !(qh STOPcone) (neg)",
+   "detected": "mismatches=11",
+   "source_mutation": true
+  },
+  "phys_fn_003214": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qhull.c line 1018: qh findbestnew -> !(qh findbestnew) (neg)",
+   "detected": "mismatches=46",
+   "source_mutation": true
+  },
+  "phys_fn_003328": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 839: 2 -> 3 (const)",
+   "detected": "mismatches=8",
+   "source_mutation": true
+  },
+  "phys_fn_002428": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/geom.c line 329: !ischeckmax -> !(!ischeckmax) (neg)",
+   "detected": "mismatches=11",
+   "source_mutation": true
+  },
+  "phys_fn_002983": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/merge.c line 2709: mergeapex -> !(mergeapex) (neg)",
+   "detected": "mismatches=40",
+   "source_mutation": true
+  },
+  "phys_fn_003127": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/poly2.c line 2500: vertex->visitid != qh vertex_visit -> !(vertex->visitid != qh vertex_visit) (neg)",
+   "detected": "mismatches=38",
+   "source_mutation": true
+  },
+  "phys_fn_003320": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 282: + -> - (arith)",
+   "detected": "mismatches=49",
+   "source_mutation": true
+  },
+  "phys_fn_002503": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1312: outerplane -> !(outerplane) (neg)",
+   "detected": "mismatches=38",
+   "source_mutation": true
+  },
+  "phys_fn_003146": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 7739: + -> - (arith) [0x000775b8]",
+   "detected": "mismatches=2",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_003412": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 8701: + -> - (arith) [0x000847e6]",
+   "detected": "mismatches=1",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002554": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 1463: < -> <= (cmp)",
+   "detected": "mismatches=19",
+   "source_mutation": true
+  },
+  "phys_fn_002803": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 3168: ridge->tested -> !(ridge->tested) (neg)",
+   "detected": "mismatches=7",
+   "source_mutation": true
+  },
+  "phys_fn_002707": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 785: facet->toporient ^ qh_ORIENTclock -> !(facet->toporient ^ qh_ORIENTclock) (neg)",
+   "detected": "mismatches=3",
+   "source_mutation": true
+  },
+  "phys_fn_003324": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qset.c line 428: !(*sizep)-- -> !(!(*sizep)--) (neg)",
+   "detected": "mismatches=11",
+   "source_mutation": true
+  },
+  "phys_fn_002947": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/QhullRows.c line 5798: + -> - (arith) [0x00070102]",
+   "detected": "mismatches=9",
+   "source_mutation": true,
+   "listing": true
+  },
+  "phys_fn_002777": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 1757: != -> == (cmp)",
+   "detected": "mismatches=4",
+   "source_mutation": true
+  },
+  "phys_fn_002540": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/geom2.c line 165: < -> <= (cmp)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_002680": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/global.c line 461: qhmem.LASTsize == 0 -> !(qhmem.LASTsize == 0) (neg)",
+   "detected": "mismatches=61",
+   "source_mutation": true
+  },
+  "phys_fn_002828": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/novodex/io.c line 2282: qh PRINTnoplanes || (facet->visible && qh NEWfacets) -> !(qh PRINTnoplanes || (facet->visible && qh NEWfacets)) (neg)",
+   "detected": "mismatches=4",
+   "source_mutation": true
+  },
+  "phys_fn_003220": {
+   "gate": "NxPhysicsThirdPartyTests",
+   "family": "NxPhysicsThirdPartyTests",
+   "mutation": "External/qhull/upstream/src/qhull.c line 797: (id= qh_pointid(vertex->point)) >= 0 -> !((id= qh_pointid(vertex->point)) >= 0) (neg)",
+   "detected": "mismatches=53",
+   "source_mutation": true
+  }
+ }
+}
